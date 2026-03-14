@@ -1,59 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Dashboard - 100Day Wellness</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard · WellTrack 100</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
 
-    <header>
-        <h1>WellTrack 100</h1>
+  <div class="app-layout">
 
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="progress.html">Progress</a>
-            <a href="index.html">Logout</a>
-        </nav>
-    </header>
-
-    <section style="padding:50px;color:white;max-width:1100px;margin:auto;">
-
-        <h2 style="margin-bottom:10px;">Welcome back 👋</h2>
-        <p style="opacity:0.9;margin-bottom:40px;">Keep building your healthy habits.</p>
-
-        <div class="dashboard">
-
-            <div class="dashboard-card">
-                <h3>Current Day</h3>
-                <p style="font-size:22px;font-weight:bold;">Day 12 / 100</p>
-            </div>
-
-            <div class="dashboard-card">
-                <h3>Water Intake</h3>
-                <p>6 / 8 glasses</p>
-            </div>
-
-            <div class="dashboard-card">
-                <h3>Workout</h3>
-                <p>Completed</p>
-            </div>
-
-            <div class="dashboard-card">
-                <h3>Sleep</h3>
-                <p>7 hours</p>
-            </div>
-
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">W</div>
+        <div class="logo-text">
+          WellTrack
+          <small>100-Day Challenge</small>
         </div>
+      </div>
 
-        <div style="margin-top:40px;text-align:center;">
-            <a class="btn" href="progress.html">View Full Progress</a>
+      <span class="nav-section-label">Main</span>
+      <a class="nav-item active" href="dashboard.html">
+        <span class="nav-icon">⚡</span> Dashboard
+      </a>
+      <a class="nav-item" href="progress.html">
+        <span class="nav-icon">📈</span> Progress
+      </a>
+
+      <span class="nav-section-label">Account</span>
+      <div class="nav-item" style="cursor:default;opacity:0.5">
+        <span class="nav-icon">⚙️</span> Settings
+        <span style="margin-left:auto;font-size:0.68rem;color:var(--text-muted)">Soon</span>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="user-chip">
+          <div class="user-avatar user-avatar-init">A</div>
+          <span class="user-name user-display-name">Loading...</span>
+          <button class="logout-btn" title="Log out">⏏</button>
         </div>
+      </div>
+    </aside>
 
-    </section>
+    <!-- Main -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span></p>
+      </div>
 
+      <!-- Day Hero -->
+      <div class="day-hero">
+        <div class="day-info">
+          <h2 id="current-day">Day 1</h2>
+          <p id="days-remaining">99 days remaining on your challenge</p>
+          <p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.85rem">Keep showing up every day 💪</p>
+        </div>
+        <div class="day-progress-ring" id="day-ring">
+          <svg viewBox="0 0 100 100" width="100" height="100">
+            <circle class="ring-bg" cx="50" cy="50" r="42" />
+            <circle class="ring-fill" cx="50" cy="50" r="42"
+              stroke-dasharray="264" stroke-dashoffset="264" />
+          </svg>
+          <div class="ring-label" style="font-size:0.75rem;color:var(--text-muted)">
+            <span id="ring-pct" style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--accent)">1%</span>
+            <span>done</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stats-grid">
+        <div class="stat-card water">
+          <div class="stat-icon">💧</div>
+          <div class="stat-label">Water Today</div>
+          <div class="stat-value" id="water-stat">0.0</div>
+          <div class="stat-target">Goal: 2.5L / day</div>
+        </div>
+        <div class="stat-card workout">
+          <div class="stat-icon">🏋️</div>
+          <div class="stat-label">Workout</div>
+          <div class="stat-value" id="workout-stat">—</div>
+          <div class="stat-target">Complete daily workout</div>
+        </div>
+        <div class="stat-card sleep">
+          <div class="stat-icon">😴</div>
+          <div class="stat-label">Sleep Last Night</div>
+          <div class="stat-value" id="sleep-stat">0.0</div>
+          <div class="stat-target">Goal: 7–9h / night</div>
+        </div>
+      </div>
+
+      <!-- Log Form -->
+      <div class="log-section">
+        <h3>
+          Log Today's Progress
+          <span class="badge">Day <span id="log-day-badge">1</span></span>
+        </h3>
+
+        <form id="log-form" class="log-form">
+          <div class="input-group">
+            <label for="water-input">Water Intake</label>
+            <div class="input-with-unit">
+              <input type="number" id="water-input" min="0" max="10" step="0.1" placeholder="2.5" />
+              <span class="unit">L</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="sleep-input">Sleep Hours</label>
+            <div class="input-with-unit">
+              <input type="number" id="sleep-input" min="0" max="24" step="0.5" placeholder="8.0" />
+              <span class="unit">hrs</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Workout</label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="workout-input" />
+              <span>Completed today's workout</span>
+            </label>
+          </div>
+          <div class="input-group">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn-primary" style="margin-top:0">Save Progress</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Quick tip -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;display:flex;gap:1rem;align-items:flex-start">
+        <span style="font-size:1.5rem">💡</span>
+        <div>
+          <strong style="font-family:'Syne',sans-serif;font-size:0.95rem">Pro Tip</strong>
+          <p style="color:var(--text-muted);font-size:0.88rem;margin-top:0.3rem;line-height:1.6">
+            Consistency beats perfection. Even on your hardest days, logging your progress keeps the streak alive and your momentum going. Head to <a href="progress.html" style="color:var(--accent)">Progress</a> to see your full history.
+          </p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script src="js/app.js"></script>
+  <script>
+    // Update ring and badge on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const ring = document.getElementById('day-ring');
+      const pctEl = document.getElementById('ring-pct');
+      const badge = document.getElementById('log-day-badge');
+
+      // Recompute after app.js runs
+      setTimeout(() => {
+        const user = JSON.parse(localStorage.getItem('wt_user'));
+        if (!user) return;
+        const startDate = new Date(user.startDate || Date.now());
+        const day = Math.min(Math.max(Math.floor((new Date() - startDate) / 86400000) + 1, 1), 100);
+        if (pctEl) pctEl.textContent = day + '%';
+        if (badge) badge.textContent = day;
+
+        // Set ring
+        const fill = ring && ring.querySelector('.ring-fill');
+        if (fill) {
+          fill.style.strokeDashoffset = 264 * (1 - day / 100);
+        }
+      }, 100);
+    });
+  </script>
 </body>
-
 </html>

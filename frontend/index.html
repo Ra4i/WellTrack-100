@@ -1,55 +1,79 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>100Day Wellness</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WellTrack 100 · Your 100-Day Wellness Challenge</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
 
-    <header>
-        <h1>100Day Wellness</h1>
+  <nav class="home-nav">
+    <div class="logo-area">
+      <div class="logo-mark">W</div>
+      WellTrack <span style="color:var(--accent);margin-left:4px">100</span>
+    </div>
+    <div class="nav-links">
+      <a href="login.html" id="nav-login">Login</a>
+      <a href="register.html" class="cta">Start Challenge →</a>
+      <a href="dashboard.html" id="nav-dashboard" class="hidden">Dashboard</a>
+    </div>
+  </nav>
 
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="login.html">Login</a>
-            <a href="register.html">Register</a>
-        </nav>
-    </header>
+  <section class="home-hero">
+    <div class="tagline">100 Days to Transform</div>
 
-    <section class="hero">
+    <h1>
+      Build habits.<br>
+      Track <span class="highlight">progress.</span><br>
+      Change your life.
+    </h1>
 
-        <h2>Transform Your Health in 100 Days</h2>
-        <p>Track habits. Build discipline. Become healthier.</p>
+    <p>
+      WellTrack 100 is your personal wellness companion for the 100-day challenge.
+      Log water, workouts, and sleep — watch yourself transform day by day.
+    </p>
 
-        <a class="btn" href="register.html">Start Now</a>
+    <div class="home-cta">
+      <a href="register.html" class="btn-home-primary">Start Your 100 Days</a>
+      <a href="login.html" class="btn-home-ghost">I have an account</a>
+    </div>
 
-    </section>
+    <div class="features-grid">
+      <div class="feature-chip">
+        <div class="feat-icon">💧</div>
+        <h3>Hydration Tracking</h3>
+        <p>Log daily water intake and hit your hydration goals every single day.</p>
+      </div>
+      <div class="feature-chip">
+        <div class="feat-icon">🏋️</div>
+        <h3>Workout Logging</h3>
+        <p>Mark workout completions and build an unbreakable fitness streak.</p>
+      </div>
+      <div class="feature-chip">
+        <div class="feat-icon">😴</div>
+        <h3>Sleep Analysis</h3>
+        <p>Track sleep hours and discover the patterns that power peak performance.</p>
+      </div>
+      <div class="feature-chip">
+        <div class="feat-icon">📈</div>
+        <h3>Progress Visualization</h3>
+        <p>Beautiful charts and rings show how far you've come on your journey.</p>
+      </div>
+      <div class="feature-chip">
+        <div class="feat-icon">🎯</div>
+        <h3>100-Day Dashboard</h3>
+        <p>See exactly where you are in your challenge with real-time progress rings.</p>
+      </div>
+      <div class="feature-chip">
+        <div class="feat-icon">🚀</div>
+        <h3>Cross-Platform</h3>
+        <p>Built to expand to desktop (Electron) and mobile (Capacitor) apps.</p>
+      </div>
+    </div>
+  </section>
 
-    <section class="features">
-
-        <div class="card">
-            <h3>Track Habits</h3>
-            <p>Log your daily habits and stay consistent.</p>
-        </div>
-
-        <div class="card">
-            <h3>Monitor Progress</h3>
-            <p>Watch your improvement day by day.</p>
-        </div>
-
-        <div class="card">
-            <h3>Stay Motivated</h3>
-            <p>Keep your streak and reach 100 days.</p>
-        </div>
-
-    </section>
-
-    <footer>
-        <p>© 2026 100Day Wellness</p>
-    </footer>
-
+  <div id="toast-container" class="toast-container"></div>
+  <script src="js/app.js"></script>
 </body>
-
 </html>
