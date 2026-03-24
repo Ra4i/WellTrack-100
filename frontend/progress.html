@@ -9,30 +9,15 @@
 <body>
 
   <div class="app-layout">
-
     <aside class="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">W</div>
-        <div class="logo-text">
-          WellTrack
-          <small>100-Day Challenge</small>
-        </div>
+        <div class="logo-text">WellTrack <small>100-Day Challenge</small></div>
       </div>
-
       <span class="nav-section-label">Main</span>
-      <a class="nav-item" href="dashboard.html">
-        <span class="nav-icon">⚡</span> Dashboard
-      </a>
-      <a class="nav-item active" href="progress.html">
-        <span class="nav-icon">📈</span> Progress
-      </a>
-
-      <span class="nav-section-label">Account</span>
-      <div class="nav-item" style="cursor:default;opacity:0.5">
-        <span class="nav-icon">⚙️</span> Settings
-        <span style="margin-left:auto;font-size:0.68rem;color:var(--text-muted)">Soon</span>
-      </div>
-
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> Dashboard</a>
+      <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> Levels</a>
+      <a class="nav-item active" href="progress.html"><span class="nav-icon">📈</span> Progress</a>
       <div class="sidebar-bottom">
         <div class="user-chip">
           <div class="user-avatar user-avatar-init">A</div>
@@ -45,13 +30,10 @@
     <main class="main-content">
       <div class="page-header">
         <h1>Progress</h1>
-        <p class="breadcrumb">WellTrack 100 · <span>Your 100-Day Journey</span></p>
+        <p class="breadcrumb">WellTrack 100 · <span>Your Recovery Journey</span></p>
       </div>
 
-      <!-- Overview -->
       <div class="progress-overview">
-
-        <!-- Big Ring -->
         <div class="progress-summary-card">
           <div class="big-ring" id="big-ring">
             <svg viewBox="0 0 160 160" width="160" height="160">
@@ -62,8 +44,7 @@
                 </linearGradient>
               </defs>
               <circle class="ring-bg" cx="80" cy="80" r="70" />
-              <circle class="ring-fill" cx="80" cy="80" r="70"
-                stroke-dasharray="440" stroke-dashoffset="440" />
+              <circle class="ring-fill" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="440" />
             </svg>
             <div class="ring-label">
               <span class="pct" id="ring-pct">0%</span>
@@ -72,11 +53,10 @@
           </div>
           <div>
             <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700">Challenge Progress</div>
-            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Keep going — every day counts</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:4px">Every day counts</div>
           </div>
         </div>
 
-        <!-- Summary Stats -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
           <div class="stat-card">
             <div class="stat-icon">📅</div>
@@ -85,10 +65,10 @@
             <div class="stat-target">out of 100 days</div>
           </div>
           <div class="stat-card workout">
-            <div class="stat-icon">🏋️</div>
-            <div class="stat-label">Workout Days</div>
-            <div class="stat-value" id="prog-workouts">0</div>
-            <div class="stat-target">workouts completed</div>
+            <div class="stat-icon">🔥</div>
+            <div class="stat-label">Current Streak</div>
+            <div class="stat-value" id="prog-streak" style="color:var(--warn)">0</div>
+            <div class="stat-target">resets if day missed</div>
           </div>
           <div class="stat-card water">
             <div class="stat-icon">💧</div>
@@ -105,7 +85,6 @@
         </div>
       </div>
 
-      <!-- History Table -->
       <div class="progress-history">
         <h3>Daily Log History</h3>
         <table class="history-table">
@@ -114,16 +93,12 @@
               <th>Day</th>
               <th>Water</th>
               <th>Sleep</th>
-              <th>Workout</th>
+              <th>Activity</th>
               <th>Date</th>
             </tr>
           </thead>
           <tbody id="history-tbody">
-            <tr>
-              <td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">
-                Loading...
-              </td>
-            </tr>
+            <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">Loading...</td></tr>
           </tbody>
         </table>
       </div>
@@ -132,21 +107,5 @@
 
   <div id="toast-container" class="toast-container"></div>
   <script src="js/app.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        const bigRing = document.getElementById('big-ring');
-        if (!bigRing) return;
-        const user = JSON.parse(localStorage.getItem('wt_user'));
-        if (!user) return;
-        const startDate = new Date(user.startDate || Date.now());
-        const day = Math.min(Math.max(Math.floor((new Date() - startDate) / 86400000) + 1, 1), 100);
-        const fill = bigRing.querySelector('.ring-fill');
-        if (fill) fill.style.strokeDashoffset = 440 * (1 - day / 100);
-        document.getElementById('ring-pct').textContent = day + '%';
-        document.getElementById('ring-day').textContent = 'Day ' + day;
-      }, 150);
-    });
-  </script>
 </body>
 </html>

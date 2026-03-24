@@ -9,31 +9,15 @@
 <body>
 
   <div class="app-layout">
-
-    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">W</div>
-        <div class="logo-text">
-          WellTrack
-          <small>100-Day Challenge</small>
-        </div>
+        <div class="logo-text">WellTrack <small>100-Day Challenge</small></div>
       </div>
-
       <span class="nav-section-label">Main</span>
-      <a class="nav-item active" href="dashboard.html">
-        <span class="nav-icon">⚡</span> Dashboard
-      </a>
-      <a class="nav-item" href="progress.html">
-        <span class="nav-icon">📈</span> Progress
-      </a>
-
-      <span class="nav-section-label">Account</span>
-      <div class="nav-item" style="cursor:default;opacity:0.5">
-        <span class="nav-icon">⚙️</span> Settings
-        <span style="margin-left:auto;font-size:0.68rem;color:var(--text-muted)">Soon</span>
-      </div>
-
+      <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⚡</span> Dashboard</a>
+      <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> Levels</a>
+      <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> Progress</a>
       <div class="sidebar-bottom">
         <div class="user-chip">
           <div class="user-avatar user-avatar-init">A</div>
@@ -43,7 +27,6 @@
       </div>
     </aside>
 
-    <!-- Main -->
     <main class="main-content">
       <div class="page-header">
         <h1>Dashboard</h1>
@@ -55,17 +38,31 @@
         <div class="day-info">
           <h2 id="current-day">Day 1</h2>
           <p id="days-remaining">99 days remaining on your challenge</p>
-          <p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.85rem">Keep showing up every day 💪</p>
+          <p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.85rem">You are stronger than any craving 💪</p>
         </div>
-        <div class="day-progress-ring" id="day-ring">
-          <svg viewBox="0 0 100 100" width="100" height="100">
-            <circle class="ring-bg" cx="50" cy="50" r="42" />
-            <circle class="ring-fill" cx="50" cy="50" r="42"
-              stroke-dasharray="264" stroke-dashoffset="264" />
-          </svg>
-          <div class="ring-label" style="font-size:0.75rem;color:var(--text-muted)">
-            <span id="ring-pct" style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--accent)">1%</span>
-            <span>done</span>
+        <div style="display:flex;gap:1.5rem;align-items:center">
+          <!-- Streak -->
+          <div style="text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--warn);line-height:1" id="workout-streak">0</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px">Day Streak</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">resets if missed</div>
+          </div>
+          <!-- Level -->
+          <div style="text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent3);line-height:1" id="current-level">0</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px">Level</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">catch-up ok</div>
+          </div>
+          <!-- Ring -->
+          <div class="day-progress-ring" id="day-ring">
+            <svg viewBox="0 0 100 100" width="100" height="100">
+              <circle class="ring-bg" cx="50" cy="50" r="42" />
+              <circle class="ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264" />
+            </svg>
+            <div class="ring-label">
+              <span id="ring-pct" style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--accent)">1%</span>
+              <span style="font-size:0.75rem;color:var(--text-muted)">done</span>
+            </div>
           </div>
         </div>
       </div>
@@ -79,10 +76,10 @@
           <div class="stat-target">Goal: 2.5L / day</div>
         </div>
         <div class="stat-card workout">
-          <div class="stat-icon">🏋️</div>
-          <div class="stat-label">Workout</div>
+          <div class="stat-icon">🏃</div>
+          <div class="stat-label">Activity</div>
           <div class="stat-value" id="workout-stat">—</div>
-          <div class="stat-target">Complete daily workout</div>
+          <div class="stat-target">Streak resets if missed</div>
         </div>
         <div class="stat-card sleep">
           <div class="stat-icon">😴</div>
@@ -94,11 +91,7 @@
 
       <!-- Log Form -->
       <div class="log-section">
-        <h3>
-          Log Today's Progress
-          <span class="badge">Day <span id="log-day-badge">1</span></span>
-        </h3>
-
+        <h3>Log Today's Progress <span class="badge">Day <span id="log-day-badge">1</span></span></h3>
         <form id="log-form" class="log-form">
           <div class="input-group">
             <label for="water-input">Water Intake</label>
@@ -115,10 +108,10 @@
             </div>
           </div>
           <div class="input-group">
-            <label>Workout</label>
+            <label>Activity Done</label>
             <label class="checkbox-group">
               <input type="checkbox" id="workout-input" />
-              <span>Completed today's workout</span>
+              <span>Completed today's activity</span>
             </label>
           </div>
           <div class="input-group">
@@ -132,40 +125,31 @@
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;display:flex;gap:1rem;align-items:flex-start">
         <span style="font-size:1.5rem">💡</span>
         <div>
-          <strong style="font-family:'Syne',sans-serif;font-size:0.95rem">Pro Tip</strong>
+          <strong style="font-family:'Syne',sans-serif;font-size:0.95rem">Keep Your Streak Alive</strong>
           <p style="color:var(--text-muted);font-size:0.88rem;margin-top:0.3rem;line-height:1.6">
-            Consistency beats perfection. Even on your hardest days, logging your progress keeps the streak alive and your momentum going. Head to <a href="progress.html" style="color:var(--accent)">Progress</a> to see your full history.
+            Your activity streak resets to zero if you miss a day — but your <strong>level progress never disappears</strong>. Miss a day? Catch up the next. Check your <a href="levels.html" style="color:var(--accent3)">Levels page</a> for today's motivation to quit smoking and alcohol.
           </p>
         </div>
       </div>
-
     </main>
   </div>
 
   <div id="toast-container" class="toast-container"></div>
   <script src="js/app.js"></script>
   <script>
-    // Update ring and badge on load
     document.addEventListener('DOMContentLoaded', () => {
-      const ring = document.getElementById('day-ring');
-      const pctEl = document.getElementById('ring-pct');
-      const badge = document.getElementById('log-day-badge');
-
-      // Recompute after app.js runs
       setTimeout(() => {
         const user = JSON.parse(localStorage.getItem('wt_user'));
         if (!user) return;
         const startDate = new Date(user.startDate || Date.now());
         const day = Math.min(Math.max(Math.floor((new Date() - startDate) / 86400000) + 1, 1), 100);
+        const pctEl = document.getElementById('ring-pct');
+        const badge = document.getElementById('log-day-badge');
         if (pctEl) pctEl.textContent = day + '%';
         if (badge) badge.textContent = day;
-
-        // Set ring
-        const fill = ring && ring.querySelector('.ring-fill');
-        if (fill) {
-          fill.style.strokeDashoffset = 264 * (1 - day / 100);
-        }
-      }, 100);
+        const fill = document.querySelector('#day-ring .ring-fill');
+        if (fill) fill.style.strokeDashoffset = 264 * (1 - day / 100);
+      }, 150);
     });
   </script>
 </body>
