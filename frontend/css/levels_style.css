@@ -158,6 +158,27 @@
     .level-card.done .level-card-title { color: var(--accent); }
     .level-card.current .level-card-title { color: var(--accent3); }
 
+    .level-complete-btn {
+      display: none;
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.4rem 0.5rem;
+      background: rgba(249,125,204,0.15);
+      border: 1px solid rgba(249,125,204,0.3);
+      color: var(--accent3);
+      border-radius: 6px;
+      font-size: 0.62rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .level-card.current .level-complete-btn { display: block; }
+    .level-complete-btn:hover {
+      background: rgba(249,125,204,0.25);
+      border-color: rgba(249,125,204,0.5);
+    }
+    .level-complete-btn:active { transform: scale(0.95); }
+
     /* ── Modal ── */
     .level-modal-overlay {
       position: fixed;
@@ -237,6 +258,7 @@
     .modal-card.smoke .mot-label { color: var(--accent2); }
     .modal-card.alcohol .mot-label { color: var(--accent3); }
     .modal-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; }
+    .modal-card.exercises .mot-label { color: var(--accent); }
 
     @media (max-width: 768px) {
       .motivation-cards { grid-template-columns: 1fr; }

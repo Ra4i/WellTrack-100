@@ -53,17 +53,6 @@
             <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px">Level</div>
             <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">catch-up ok</div>
           </div>
-          <!-- Ring -->
-          <div class="day-progress-ring" id="day-ring">
-            <svg viewBox="0 0 100 100" width="100" height="100">
-              <circle class="ring-bg" cx="50" cy="50" r="42" />
-              <circle class="ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264" />
-            </svg>
-            <div class="ring-label">
-              <span id="ring-pct" style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--accent)">1%</span>
-              <span style="font-size:0.75rem;color:var(--text-muted)">done</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -86,6 +75,35 @@
           <div class="stat-label">Sleep Last Night</div>
           <div class="stat-value" id="sleep-stat">0.0</div>
           <div class="stat-target">Goal: 7–9h / night</div>
+        </div>
+      </div>
+
+      <!-- Cigarette Savings Section -->
+      <div class="savings-section">
+        <h3>💰 Cigarette Savings <span class="badge">Every day counts</span></h3>
+        <div class="savings-content">
+          <div class="savings-card">
+            <div class="savings-icon">💵</div>
+            <div class="savings-info">
+              <div class="savings-label">Money Saved</div>
+              <div class="savings-value" id="money-saved">$0.00</div>
+            </div>
+          </div>
+          <div class="savings-card">
+            <div class="savings-icon">🚬</div>
+            <div class="savings-info">
+              <div class="savings-label">Cigarettes Avoided</div>
+              <div class="savings-value" id="cigs-avoided">0</div>
+            </div>
+          </div>
+          <div class="savings-price-input">
+            <label for="cig-price">Your Local Cigarette Price</label>
+            <div class="price-input-group">
+              <span class="currency">$</span>
+              <input type="number" id="cig-price" min="1" max="30" step="0.50" placeholder="7.50" value="7.50" />
+              <span class="unit">/pack</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -143,12 +161,8 @@
         if (!user) return;
         const startDate = new Date(user.startDate || Date.now());
         const day = Math.min(Math.max(Math.floor((new Date() - startDate) / 86400000) + 1, 1), 100);
-        const pctEl = document.getElementById('ring-pct');
         const badge = document.getElementById('log-day-badge');
-        if (pctEl) pctEl.textContent = day + '%';
         if (badge) badge.textContent = day;
-        const fill = document.querySelector('#day-ring .ring-fill');
-        if (fill) fill.style.strokeDashoffset = 264 * (1 - day / 100);
       }, 150);
     });
   </script>
