@@ -197,36 +197,33 @@ function loginUser(email, password) {
   return user ? { user } : { error: 'Invalid email or password.' };
 }
 
-// ── Exercise tracking (daily reset at 00:00) ────────
-function getExerciseCompletions(userId) {
-  try { return JSON.parse(localStorage.getItem(`wt_exercise_${userId}`)) || {}; } catch { return {}; }
+// ── Exercise tracking (per-level tracking) ────────────────────────
+function getCompletedLevels(userId) {
+  try { return JSON.parse(localStorage.getItem(`wt_completed_levels_${userId}`)) || {}; } catch { return {}; }
 }
-function saveExerciseCompletion(userId) {
-  const completions = getExerciseCompletions(userId);
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  completions[today] = true;
-  localStorage.setItem(`wt_exercise_${userId}`, JSON.stringify(completions));
-}
-function canDoExercisesToday(userId) {
-  const completions = getExerciseCompletions(userId);
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  return !completions[today];
-}
-function getTimeUntilExercisesReset(userId) {
-  const completions = getExerciseCompletions(userId);
+function getLevelKey(levelNumber) {
   const today = new Date().toISOString().split('T')[0];
-
-  if (!completions[today]) return 0; // Already can do today
-
-  // Calculate milliseconds until midnight
-  const now = new Date();
-  const midnight = new Date(now);
-  midnight.setHours(24, 0, 0, 0); // Next midnight
-
-  const msRemaining = midnight - now;
-  const hoursRemaining = msRemaining / (1000 * 60 * 60);
-
-  return hoursRemaining;
+  return `${today}_level_${levelNumber}`;
+}
+function saveLevelCompletion(userId, levelNumber) {
+  const completions = getCompletedLevels(userId);
+  const key = getLevelKey(levelNumber);
+  completions[key] = true;
+  localStorage.setItem(`wt_completed_levels_${userId}`, JSON.stringify(completions));
+}
+function canCompleteLevelToday(userId, levelNumber) {
+  const completions = getCompletedLevels(userId);
+  const key = getLevelKey(levelNumber);
+  return !completions[key]; // Can complete if NOT already done today
+}
+function getLevelsCompletedToday(userId) {
+  const completions = getCompletedLevels(userId);
+  const today = new Date().toISOString().split('T')[0];
+  let count = 0;
+  for (const key in completions) {
+    if (key.startsWith(today)) count++;
+  }
+  return count;
 }
 
 // ── API ───────────────────────────────────────────────────
@@ -592,7 +589,7 @@ function renderLevelGrid(completedLevel, nextLevel, currentDay) {
   if (!grid) return;
 
   const user = getCurrentUser();
-  const canDoEx = user ? canDoExercisesToday(user.id) : false;
+  const canDoEx = user ? getLevelsCompletedToday(user.id) < 5 : false; // Allow up to 5 levels per day
 
   grid.innerHTML = LEVELS.map(lvl => {
     let state = 'locked';
@@ -649,17 +646,14 @@ function showLevelDetail(levelNum) {
   // Display exercises with 24-hour timer
   if (modalExercises) {
     if (lvl.exercises && lvl.exercises.length) {
-      const canDo = canDoExercisesToday(user.id);
+      const canDo = canCompleteLevelToday(user.id, levelNum);
       const exerciseList = lvl.exercises.map(ex => `<li style="padding: 0.4rem 0; font-size: 0.9rem; color: var(--text-dim); line-height: 1.6;">✓ ${ex}</li>`).join('');
 
       let timerText = '';
       if (!canDo) {
-        const hoursRemaining = getTimeUntilExercisesReset(user.id);
-        const h = Math.floor(hoursRemaining);
-        const m = Math.round((hoursRemaining % 1) * 60);
-        timerText = `<div style="margin-top: 0.8rem; padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent-warn); border-radius: 4px; font-size: 0.85rem; color: var(--text-muted);">⏳ Next exercises available at 00:00 (~${h}h ${m}m)</div>`;
+        timerText = `<div style="margin-top: 0.8rem; padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent-warn); border-radius: 4px; font-size: 0.85rem; color: var(--text-muted);">You already completed this level today! Come back tomorrow for more 🔄</div>`;
       } else {
-        timerText = `<div style="margin-top: 0.8rem; padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 0.85rem; color: var(--accent);">✓ Exercises available now!</div>`;
+        timerText = `<div style="margin-top: 0.8rem; padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 0.85rem; color: var(--accent);">✓ Exercises available - complete this level anytime!</div>`;
       }
 
       modalExercises.innerHTML = exerciseList + timerText;
@@ -671,7 +665,7 @@ function showLevelDetail(levelNum) {
         completeBtn.style.cssText = 'margin-top: 0.8rem; width: 100%; padding: 0.6rem; background: var(--accent); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;';
         completeBtn.onclick = (e) => {
           e.stopPropagation();
-          saveExerciseCompletion(user.id);
+          saveLevelCompletion(user.id, levelNum);
           showToast('Exercises marked complete! 💪 Available again at 00:00');
           setTimeout(() => showLevelDetail(levelNum), 500);
         };
