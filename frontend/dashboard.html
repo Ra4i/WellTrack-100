@@ -16,11 +16,11 @@
         <div class="logo-text">WellTrack <small>100-Day Challenge</small></div>
       </div>
       <span class="nav-section-label">Main</span>
-      <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⚡</span> Dashboard</a>
-      <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> Levels</a>
-      <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> Progress</a>
-      <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> Messages</a>
-      <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+      <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+      <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Levels</span></a>
+      <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Progress</span></a>
+      <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Messages</span></a>
+      <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Settings</span></a>
       <div class="sidebar-bottom">
         <div class="user-chip">
           <div class="user-avatar user-avatar-init">A</div>
@@ -32,29 +32,27 @@
 
     <main class="main-content">
       <div class="page-header">
-        <h1>Dashboard</h1>
+        <h1 data-i18n="dashboard.title">Dashboard</h1>
         <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span></p>
       </div>
 
       <!-- Day Hero -->
       <div class="day-hero">
         <div class="day-info">
-          <h2 id="current-day">Day 1</h2>
+          <h2 id="current-day" data-i18n="common.day">Day 1</h2>
           <p id="days-remaining">99 days remaining on your challenge</p>
-          <p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.85rem">You are stronger than any craving 💪</p>
+          <p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.85rem" data-i18n="dashboard.youAreStronger">You are stronger than any craving 💪</p>
         </div>
         <div style="display:flex;gap:1.5rem;align-items:center">
           <!-- Streak -->
           <div style="text-align:center">
             <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--warn);line-height:1" id="workout-streak">0</div>
-            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px">Day Streak</div>
-            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">resets if missed</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px" data-i18n="dashboard.dayStreak">Day Streak</div>
           </div>
           <!-- Level -->
           <div style="text-align:center">
             <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent3);line-height:1" id="current-level">0</div>
-            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px">Level</div>
-            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">catch-up ok</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px" data-i18n="dashboard.level">Level</div>
           </div>
         </div>
       </div>
@@ -63,48 +61,48 @@
       <div class="stats-grid">
         <div class="stat-card water">
           <div class="stat-icon">💧</div>
-          <div class="stat-label">Water Today</div>
+          <div class="stat-label" data-i18n="dashboard.waterIntake">Water Today</div>
           <div class="stat-value" id="water-stat">0.0</div>
-          <div class="stat-target">Goal: 2.5L / day</div>
+          <div class="stat-target" data-i18n="dashboard.waterGoal">Goal: 2.5L / day</div>
         </div>
         <div class="stat-card workout">
           <div class="stat-icon">🏃</div>
-          <div class="stat-label">Activity</div>
+          <div class="stat-label" data-i18n="dashboard.activity">Activity</div>
           <div class="stat-value" id="workout-stat">—</div>
-          <div class="stat-target">Streak resets if missed</div>
+          <div class="stat-target" data-i18n="dashboard.streakResets">Streak resets if missed</div>
         </div>
         <div class="stat-card sleep">
           <div class="stat-icon">😴</div>
-          <div class="stat-label">Sleep Last Night</div>
+          <div class="stat-label" data-i18n="dashboard.sleepTrack">Sleep Last Night</div>
           <div class="stat-value" id="sleep-stat">0.0</div>
-          <div class="stat-target">Goal: 7–9h / night</div>
+          <div class="stat-target" data-i18n="dashboard.sleepGoal">Goal: 7–9h / night</div>
         </div>
       </div>
 
       <!-- Cigarette Savings Section -->
       <div class="savings-section">
-        <h3>💰 Cigarette Savings <span class="badge">Every day counts</span></h3>
+        <h3 data-i18n="dashboard.cigSavings">💰 Cigarette Savings</h3> <span class="badge" data-i18n="dashboard.everydayMatters">Every day counts</span>
         <div class="savings-content">
           <div class="savings-card">
             <div class="savings-icon">💵</div>
             <div class="savings-info">
-              <div class="savings-label">Money Saved</div>
+              <div class="savings-label" data-i18n="dashboard.moneySaved">Money Saved</div>
               <div class="savings-value" id="money-saved">$0.00</div>
             </div>
           </div>
           <div class="savings-card">
             <div class="savings-icon">🚬</div>
             <div class="savings-info">
-              <div class="savings-label">Cigarettes Avoided</div>
+              <div class="savings-label" data-i18n="dashboard.cigsSaved">Cigarettes Avoided</div>
               <div class="savings-value" id="cigs-avoided">0</div>
             </div>
           </div>
           <div class="savings-price-input">
-            <label for="cig-price">Your Local Cigarette Price</label>
+            <label for="cig-price" data-i18n="dashboard.packPrice">Your Local Cigarette Price</label>
             <div class="price-input-group">
               <span class="currency">$</span>
               <input type="number" id="cig-price" min="1" max="30" step="0.50" placeholder="7.50" value="7.50" />
-              <span class="unit">/pack</span>
+              <span class="unit" data-i18n="dashboard.perPack">/pack</span>
             </div>
           </div>
         </div>
@@ -112,32 +110,32 @@
 
       <!-- Log Form -->
       <div class="log-section">
-        <h3>Log Today's Progress <span class="badge">Day <span id="log-day-badge">1</span></span></h3>
+        <h3 data-i18n="dashboard.logTodayProgress">Log Today's Progress</h3> <span class="badge" data-i18n="dashboard.logDay">Day</span> <span id="log-day-badge">1</span>
         <form id="log-form" class="log-form">
           <div class="input-group">
-            <label for="water-input">Water Intake</label>
+            <label for="water-input" data-i18n="dashboard.water">Water Intake</label>
             <div class="input-with-unit">
               <input type="number" id="water-input" min="0" max="10" step="0.1" placeholder="2.5" />
-              <span class="unit">L</span>
+              <span class="unit" data-i18n="dashboard.liters">L</span>
             </div>
           </div>
           <div class="input-group">
-            <label for="sleep-input">Sleep Hours</label>
+            <label for="sleep-input" data-i18n="dashboard.sleep">Sleep Hours</label>
             <div class="input-with-unit">
               <input type="number" id="sleep-input" min="0" max="24" step="0.5" placeholder="8.0" />
               <span class="unit">hrs</span>
             </div>
           </div>
           <div class="input-group">
-            <label>Activity Done</label>
+            <label data-i18n="dashboard.activityDone">Activity Done</label>
             <label class="checkbox-group">
               <input type="checkbox" id="workout-input" />
-              <span>Completed today's activity</span>
+              <span data-i18n="dashboard.completedActivity">Completed today's activity</span>
             </label>
           </div>
           <div class="input-group">
             <label>&nbsp;</label>
-            <button type="submit" class="btn-primary" style="margin-top:0">Save Progress</button>
+            <button type="submit" class="btn-primary" style="margin-top:0" data-i18n="dashboard.saveTodayProgress">Save Progress</button>
           </div>
         </form>
       </div>
@@ -146,9 +144,9 @@
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;display:flex;gap:1rem;align-items:flex-start">
         <span style="font-size:1.5rem">💡</span>
         <div>
-          <strong style="font-family:'Syne',sans-serif;font-size:0.95rem">Keep Your Streak Alive</strong>
-          <p style="color:var(--text-muted);font-size:0.88rem;margin-top:0.3rem;line-height:1.6">
-            Your activity streak resets to zero if you miss a day — but your <strong>level progress never disappears</strong>. Miss a day? Catch up the next. Check your <a href="levels.html" style="color:var(--accent3)">Levels page</a> for today's motivation to quit smoking and alcohol.
+          <strong style="font-family:'Syne',sans-serif;font-size:0.95rem" data-i18n="dashboard.keepStreakAlive">Keep Your Streak Alive</strong>
+          <p style="color:var(--text-muted);font-size:0.88rem;margin-top:0.3rem;line-height:1.6" data-i18n="dashboard.streakResetInfo">
+            Your activity streak resets to zero if you miss a day — but your <strong>level progress never disappears</strong>. Miss a day? Catch up the next. Check your <a href="levels.html" style="color:var(--accent3)" data-i18n="dashboard.levelsPage">Levels page</a> for today's motivation to quit smoking and alcohol.
           </p>
         </div>
       </div>
@@ -168,6 +166,7 @@
         if (badge) badge.textContent = day;
       }, 150);
     });
+    applyTranslations();
   </script>
 </body>
 </html>

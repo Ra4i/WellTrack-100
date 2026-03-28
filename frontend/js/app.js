@@ -647,13 +647,16 @@ function showLevelDetail(levelNum) {
   if (modalExercises) {
     if (lvl.exercises && lvl.exercises.length) {
       const canDo = canCompleteLevelToday(user.id, levelNum);
-      const exerciseList = lvl.exercises.map(ex => `<li style="padding: 0.4rem 0; font-size: 0.9rem; color: var(--text-dim); line-height: 1.6;">✓ ${ex}</li>`).join('');
+      const difficulty = getUserDifficulty();
+      const scaledExercises = getExercisesForDifficulty(lvl.exercises, difficulty);
+      const difficultyLabel = difficulty !== 'normal' ? ` <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem;">[${difficulty.toUpperCase()}]</span>` : '';
+      const exerciseList = scaledExercises.map(ex => `<li style="padding: 0.4rem 0; font-size: 0.9rem; color: var(--text-dim); line-height: 1.6;">✓ ${ex}</li>`).join('');
 
       let timerText = '';
       if (!canDo) {
         timerText = `<div style="margin-top: 0.8rem; padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent-warn); border-radius: 4px; font-size: 0.85rem; color: var(--text-muted);">You already completed this level today! Come back tomorrow for more 🔄</div>`;
       } else {
-        timerText = `<div style="margin-top: 0.8rem; padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 0.85rem; color: var(--accent);">✓ Exercises available - complete this level anytime!</div>`;
+        timerText = `<div style="margin-top: 0.8rem; padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 0.85rem; color: var(--accent);">✓ Exercises available${difficultyLabel} - complete this level anytime!</div>`;
       }
 
       modalExercises.innerHTML = exerciseList + timerText;
@@ -692,6 +695,126 @@ function setActiveNav() {
     if (href && page.includes(href.replace('.html', ''))) item.classList.add('active');
   });
 }
+
+// ── Difficulty Settings ────────────────────────────────────────
+function getUserDifficulty() {
+  const settings = JSON.parse(localStorage.getItem('wt_user_settings')) || { difficulty: 'normal' };
+  return settings.difficulty || 'normal';
+}
+
+function scaleExercise(exercise, difficulty) {
+  if (!exercise) return exercise;
+  const matches = exercise.match(/\d+/g);
+  if (!matches || matches.length === 0) return exercise;
+
+  if (difficulty === 'easy') {
+    return exercise.replace(/\d+/g, (match) => Math.ceil(parseInt(match) * 0.7));
+  } else if (difficulty === 'hard') {
+    return exercise.replace(/\d+/g, (match) => Math.ceil(parseInt(match) * 1.3));
+  }
+  return exercise;
+}
+
+function getExercisesForDifficulty(exercises, difficulty) {
+  if (!exercises) return [];
+  return exercises.map(ex => scaleExercise(ex, difficulty));
+}
+
+// ── Friend Request System ────────────────────────────────────────
+function getFriendRequests(userId) {
+  try {
+    return JSON.parse(localStorage.getItem(`wt_friend_requests_${userId}`)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function getPendingRequests(userId) {
+  return getFriendRequests(userId).filter(r => r.status === 'pending');
+}
+
+function getAcceptedFriends(userId) {
+  try {
+    const requests = getFriendRequests(userId);
+    const friends = JSON.parse(localStorage.getItem('wt_friends')) || [];
+    const accepted = requests.filter(r => r.status === 'accepted').map(r => r.fromUserId);
+    return friends.filter(f => accepted.includes(f.id));
+  } catch {
+    return [];
+  }
+}
+
+function sendFriendRequest(fromUserId, toEmail) {
+  try {
+    const fromUser = JSON.parse(localStorage.getItem('wt_user'));
+    const requests = getFriendRequests(fromUserId);
+
+    const request = {
+      id: Date.now(),
+      fromUserId: fromUserId,
+      fromName: fromUser?.name || 'User',
+      fromEmail: fromUser?.email || 'unknown',
+      toEmail: toEmail,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    };
+    requests.push(request);
+    localStorage.setItem(`wt_friend_requests_${fromUserId}`, JSON.stringify(requests));
+    return { success: true, message: 'Friend request sent!' };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+function acceptFriendRequest(userId, requestId) {
+  try {
+    const requests = getFriendRequests(userId);
+    const request = requests.find(r => r.id === requestId);
+
+    if (request) {
+      request.status = 'accepted';
+      localStorage.setItem(`wt_friend_requests_${userId}`, JSON.stringify(requests));
+
+      let friends = JSON.parse(localStorage.getItem('wt_friends')) || [];
+      if (!friends.find(f => f.email === request.fromEmail)) {
+        friends.push({
+          id: request.fromUserId,
+          name: request.fromName || 'Friend',
+          email: request.fromEmail,
+          status: 'online',
+          currentDay: 1,
+          avatar: request.fromName?.charAt(0).toUpperCase() || '👤'
+        });
+        localStorage.setItem('wt_friends', JSON.stringify(friends));
+      }
+
+      // Create messages entry for this friend
+      let messages = JSON.parse(localStorage.getItem('wt_messages')) || {};
+      if (!messages[request.fromUserId]) {
+        messages[request.fromUserId] = [];
+      }
+      localStorage.setItem('wt_messages', JSON.stringify(messages));
+
+      return { success: true };
+    }
+    return { success: false, error: 'Request not found' };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+function rejectFriendRequest(userId, requestId) {
+  try {
+    let requests = getFriendRequests(userId);
+    requests = requests.filter(r => r.id !== requestId);
+    localStorage.setItem(`wt_friend_requests_${userId}`, JSON.stringify(requests));
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const page = window.location.pathname.split('/').pop() || 'index.html';

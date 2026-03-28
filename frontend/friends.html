@@ -20,7 +20,7 @@
       <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Dashboard</span></a>
       <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Levels</span></a>
       <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Progress</span></a>
-      <a class="nav-item active" href="friends.html"><span class="nav-icon">👥</span> <span>Friends</span></a>
+      <a class="nav-item active" href="friends.html"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Friends</span></a>
       <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Messages</span></a>
       <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Settings</span></a>
       <div class="sidebar-bottom">
@@ -34,25 +34,31 @@
 
     <main class="main-content">
       <div class="page-header">
-        <h1>Friends & Messages</h1>
-        <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span></p>
+        <h1 data-i18n="friends.friendsMessaging">Friends & Messages</h1>
+        <p class="breadcrumb" data-i18n="friends.yourRecoveryJourney">WellTrack 100 · Your Recovery Journey</p>
       </div>
 
       <div class="friends-container">
         <!-- Friends List -->
         <div class="friends-list-section">
           <div class="friends-list-header">
-            <h3>👥 Friends <span id="friend-count">(0)</span></h3>
-            <button class="btn btn-sm" id="add-friend-btn">+ Add</button>
+            <h3 data-i18n="friends.friends">👥 Friends</h3> <span id="friend-count">(0)</span>
+            <button class="btn btn-sm" id="add-friend-btn" data-i18n="friends.addFriend">+ Add</button>
+          </div>
+
+          <!-- Pending Requests Section -->
+          <div id="pending-requests-section" style="display: none; margin-bottom: 1.5rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);">
+            <h4 style="margin: 0 0 0.8rem 0; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">📨 Pending Requests</h4>
+            <div id="pending-requests-list"></div>
           </div>
 
           <div class="friends-search">
-            <input type="text" id="friend-search" placeholder="Search friends..." class="search-input" />
+            <input type="text" id="friend-search" placeholder="Search friends..." class="search-input" data-i18n="friends.searchFriends" />
           </div>
 
           <div class="friends-list" id="friends-list">
             <div class="empty-state">
-              <p>No friends yet. Add someone to start chatting! 👋</p>
+              <p data-i18n="friends.noFriendsYet">No friends yet. Add someone to start chatting! 👋</p>
             </div>
           </div>
         </div>
@@ -62,8 +68,8 @@
           <div id="no-friend-selected" class="no-selection">
             <div class="empty-state-large">
               <p style="font-size: 3rem; margin-bottom: 1rem;">💭</p>
-              <h2>Select a friend to chat</h2>
-              <p>Choose someone from your friends list to start a conversation</p>
+              <h2 data-i18n="friends.selectFriend">Select a friend to chat</h2>
+              <p data-i18n="friends.chooseFromList">Choose someone from your friends list to start a conversation</p>
             </div>
           </div>
 
@@ -73,7 +79,7 @@
                 <h2 id="conv-friend-name">Friend</h2>
                 <p id="conv-friend-status" class="friend-status">Online</p>
               </div>
-              <button class="btn btn-sm btn-secondary" id="block-friend-btn">🚫 Block</button>
+              <button class="btn btn-sm btn-secondary" id="block-friend-btn" data-i18n="friends.block">🚫 Block</button>
             </div>
 
             <div class="conversation-messages" id="conversation-messages">
@@ -85,6 +91,7 @@
                 id="friend-message-input"
                 class="message-input-friend"
                 placeholder="Type your message..."
+                data-i18n="friends.typeMessage"
                 rows="1"
               ></textarea>
               <button class="btn btn-primary send-btn-friend" id="send-friend-btn" title="Send">↑</button>
@@ -97,17 +104,17 @@
       <div id="add-friend-modal" class="modal" style="display: none;">
         <div class="modal-content">
           <div class="modal-header">
-            <h2>Add Friend</h2>
+            <h2 data-i18n="friends.addFriendModal">Add Friend</h2>
             <button class="close-modal" onclick="closeAddFriendModal()">✕</button>
           </div>
           <div class="modal-body">
-            <label>Enter friend's email:</label>
+            <label data-i18n="friends.enterFriendEmail">Enter friend's email:</label>
             <input type="email" id="friend-email-input" placeholder="friend@example.com" />
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">We'll send them a friend request</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem" data-i18n="friends.willSendRequest">We'll send them a friend request</p>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeAddFriendModal()">Cancel</button>
-            <button class="btn btn-primary" id="send-friend-request-btn">Send Request</button>
+            <button class="btn btn-secondary" onclick="closeAddFriendModal()" data-i18n="common.cancel">Cancel</button>
+            <button class="btn btn-primary" id="send-friend-request-btn" data-i18n="friends.sendRequest">Send Request</button>
           </div>
         </div>
       </div>
@@ -130,24 +137,9 @@
     }
 
     // Sample friends data (in real app, this would come from backend)
-    let friends = JSON.parse(localStorage.getItem('wt_friends')) || [
-      { id: 1, name: 'Alex Johnson', email: 'alex@example.com', status: 'online', avatar: 'A', currentDay: 15 },
-      { id: 2, name: 'Jordan Smith', email: 'jordan@example.com', status: 'away', avatar: 'J', currentDay: 42 },
-      { id: 3, name: 'Casey Brown', email: 'casey@example.com', status: 'offline', avatar: 'C', currentDay: 8 },
-    ];
+    let friends = JSON.parse(localStorage.getItem('wt_friends'));
 
-    let messages = JSON.parse(localStorage.getItem('wt_messages')) || {
-      1: [
-        { from: 1, text: 'Hey! How are you doing on your challenge?', time: '10:30 AM', sender: 'Alex' },
-        { from: user.id, text: 'Good! Day 5 going strong. You?', time: '10:35 AM', sender: 'You' },
-        { from: 1, text: 'Day 15 now! Getting easier everyday 💪', time: '10:36 AM', sender: 'Alex' },
-      ],
-      2: [
-        { from: 2, text: 'I just hit day 40!!! 🎉', time: '2:15 PM', sender: 'Jordan' },
-        { from: user.id, text: 'Wow congratulations! That\'s awesome!', time: '2:20 PM', sender: 'You' },
-      ],
-      3: []
-    };
+    let messages = JSON.parse(localStorage.getItem('wt_messages'));
 
     let selectedFriendId = null;
 

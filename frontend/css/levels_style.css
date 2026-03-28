@@ -260,6 +260,11 @@
     .modal-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; }
     .modal-card.exercises .mot-label { color: var(--accent); }
 
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
     @media (max-width: 768px) {
       .motivation-cards { grid-template-columns: 1fr; }
       .level-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
