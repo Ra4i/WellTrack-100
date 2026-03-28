@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Messages · WellTrack 100</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/messages_style.css" />
+  <script src="js/i18n.js"></script>
+</head>
+<body>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">W</div>
+        <div class="logo-text">WellTrack <small>100-Day Challenge</small></div>
+      </div>
+      <span class="nav-section-label">Main</span>
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+      <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Levels</span></a>
+      <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Progress</span></a>
+      <a class="nav-item active" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Messages</span></a>
+      <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Settings</span></a>
+      <div class="sidebar-bottom">
+        <div class="user-chip">
+          <div class="user-avatar user-avatar-init">A</div>
+          <span class="user-name user-display-name">Loading...</span>
+          <button class="logout-btn" title="Log out" onclick="logout()">⏏</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h1 data-i18n="messages.title">Messages & Chat</h1>
+        <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span></p>
+      </div>
+
+      <div class="messages-container">
+        <!-- Chat Area -->
+        <div class="chat-section">
+          <div class="chat-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 1.5rem;">🤖</span>
+              <div>
+                <h2 data-i18n="messages.chatbot">Wellness Chatbot</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Your personal wellness coach</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">
+              <div class="message-avatar">🤖</div>
+              <div class="message-content">
+                <p>Hi! I'm your wellness coach. I'm here to help you quit smoking and alcohol. Ask me anything about staying motivated, managing cravings, or building healthy habits! 💪</p>
+              </div>
+              <small class="message-time">Just now</small>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <textarea
+              id="message-input"
+              class="message-input"
+              placeholder="Ask me tips to quit smoking and drinking..."
+              data-i18n="messages.chatbotPlaceholder"
+              rows="3"
+            ></textarea>
+            <button class="btn btn-primary send-btn" id="send-btn" data-i18n="messages.send">Send</button>
+          </div>
+        </div>
+
+        <!-- Quick Tips Sidebar -->
+        <div class="tips-sidebar">
+          <h3 data-i18n="common.loading">Quick Tips</h3>
+          <div class="tips-list" id="tips-list">
+            <div class="tip-card">
+              <h4>💧 Stay Hydrated</h4>
+              <p>Drinking water reduces cravings and keeps you healthy. Aim for 8-10 glasses daily.</p>
+            </div>
+            <div class="tip-card">
+              <h4>🏃 Exercise</h4>
+              <p>Physical activity releases endorphins, your body's natural feel-good chemicals.</p>
+            </div>
+            <div class="tip-card">
+              <h4>😴 Sleep Well</h4>
+              <p>Good sleep reduces cravings. Aim for 7-9 hours per night for optimal recovery.</p>
+            </div>
+            <div class="tip-card">
+              <h4>🧘 Meditation</h4>
+              <p>Practice mindfulness to manage stress and urges. Even 5 minutes daily helps!</p>
+            </div>
+            <div class="tip-card">
+              <h4>👥 Find Support</h4>
+              <p>Share your journey with friends or family. Social support increases success rates.</p>
+            </div>
+            <div class="tip-card">
+              <h4>🎯 Track Progress</h4>
+              <p>Log your daily achievements in WellTrack to see how far you've come.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="toast-container"></div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Init page
+    if (!requireAuth()) { }
+
+    // Chatbot responses
+    const CHATBOT_RESPONSES = {
+      en: {
+        cravings: "Cravings typically last 3-5 minutes. Try these strategies: drink water, do deep breathing, exercise, or call a friend. Each craving you resist makes you stronger!",
+        motivation: "Remember why you started. Every day sober is a victory. You're building a new identity. The hardest part is behind you - keep going!",
+        exercise: "Physical activity is powerful! Even a 10-minute walk can reduce cravings. As your body gets stronger, your willpower follows.",
+        sleep: "Poor sleep increases cravings. Aim for consistent sleep schedule. Avoid screens 1 hour before bed. Your body heals during sleep!",
+        health: "Your lungs start healing in 20 minutes. After 1 month, lung function improves 30%. After 1 year, your heart disease risk is halved!",
+        stress: "Manage stress with exercise, meditation, or talking to someone. Alcohol and smoking don't solve problems - they create them.",
+        withdrawal: "Withdrawal symptoms peak in 3-4 days and fade by week 2. You're not weak - your brain is rewiring itself. This is temporary!",
+        default: "Great question! Remember: You're stronger than your cravings. Stay hydrated, move your body, and reach out for support. You've got this! 💪"
+      },
+      bg: {
+        cravings: "Желанията обикновено траят 3-5 минути. Опитай тези стратегии: пей вода, дълбоко дишай, тренирай, или позвони на приятел. Всяко желание, което приемеш, те прави по-силен!",
+        motivation: "Помни защо си започнал. Всеки ден е победа. Изграждаш нова самоличност. Най-трудната част е зад теб - продължи!",
+        exercise: "Физическата активност е мощна! Само 10-минутна разходка може да намали желанията. През време как тялото ти се укрепва, волята ти също.",
+        sleep: "Лошият сън увеличава желанията. Целма е последователен сън. Избягвай екрани час преди легло. Тялото ти се лекува през сън!",
+        health: "Белите дробове ти се исцеляват за 20 минути. След месец функцията на белите дробове се подобрява 30%. След година риска от болести на сърцето е половинен!",
+        stress: "Управлявай стреса с тренировка, медитация или разговор. Алкохолът и цигарите не решават проблемите - те ги създават.",
+        withdrawal: "Симптомите на отдръжане достигат връх на 3-4 дни и затихват към 2-та седмица. Не си слаб - мозъкът ти се преструктурира. Това е временно!",
+        default: "Чудесен въпрос! Помни: Ти си по-силен от желанията. Останься хидриран, движи се и потърси помощ. Справиш се! 💪"
+      }
+    };
+
+    const user = getCurrentUser();
+    if (user) {
+      document.querySelectorAll('.user-display-name').forEach(el => {
+        el.textContent = user.name || 'User';
+      });
+      document.querySelector('.user-avatar-init').textContent = (user.name || 'U').charAt(0).toUpperCase();
+    }
+
+    const messageInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    const chatMessages = document.getElementById('chat-messages');
+    const lang = getCurrentLanguage();
+
+    // Send message on button click or Enter+Shift
+    sendBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    function sendMessage() {
+      const content = messageInput.value.trim();
+      if (!content) return;
+
+      // Add user message
+      addMessage(content, 'user');
+      messageInput.value = '';
+
+      // Get chatbot response after a short delay
+      setTimeout(() => {
+        const response = getResponse(content.toLowerCase());
+        addMessage(response, 'bot');
+      }, 300);
+    }
+
+    function addMessage(text, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}-message`;
+
+      const avatar = document.createElement('div');
+      avatar.className = 'message-avatar';
+      avatar.textContent = type === 'user' ? '👤' : '🤖';
+
+      const content = document.createElement('div');
+      content.className = 'message-content';
+      content.innerHTML = `<p>${escapeHtml(text)}</p>`;
+
+      const time = document.createElement('small');
+      time.className = 'message-time';
+      time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      messageDiv.appendChild(avatar);
+      messageDiv.appendChild(content);
+      messageDiv.appendChild(time);
+
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getResponse(input) {
+      const responses = CHATBOT_RESPONSES[lang] || CHATBOT_RESPONSES.en;
+
+      if (input.includes('craving') || input.includes('желание')) return responses.cravings;
+      if (input.includes('motivation') || input.includes('мотив')) return responses.motivation;
+      if (input.includes('exercise') || input.includes('тренир')) return responses.exercise;
+      if (input.includes('sleep') || input.includes('сън')) return responses.sleep;
+      if (input.includes('health') || input.includes('здравл')) return responses.health;
+      if (input.includes('stress') || input.includes('стрес')) return responses.stress;
+      if (input.includes('withdraw') || input.includes('отдръжа')) return responses.withdrawal;
+
+      return responses.default;
+    }
+
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Apply translations on load
+    applyTranslations();
+  </script>
+</body>
+</html>

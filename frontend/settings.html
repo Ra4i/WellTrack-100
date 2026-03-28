@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings · WellTrack 100</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/i18n.js"></script>
+</head>
+<body>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">W</div>
+        <div class="logo-text">WellTrack <small>100-Day Challenge</small></div>
+      </div>
+      <span class="nav-section-label">Main</span>
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+      <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Levels</span></a>
+      <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Progress</span></a>
+      <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Messages</span></a>
+      <a class="nav-item active" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Settings</span></a>
+      <div class="sidebar-bottom">
+        <div class="user-chip">
+          <div class="user-avatar user-avatar-init">A</div>
+          <span class="user-name user-display-name">Loading...</span>
+          <button class="logout-btn" title="Log out" onclick="logout()">⏏</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h1 data-i18n="settings.title">Settings</h1>
+        <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span></p>
+      </div>
+
+      <div class="settings-grid">
+        <!-- Language Settings -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <h3 data-i18n="settings.language">Language</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;" data-i18n="settings.language">Choose your preferred language</p>
+          </div>
+          <div class="settings-options">
+            <label class="radio-option">
+              <input type="radio" name="language" value="en" id="lang-en" />
+              <span>English</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="language" value="bg" id="lang-bg" />
+              <span>Български (Bulgarian)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Theme Settings -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <h3 data-i18n="settings.theme">Theme</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Choose your visual theme</p>
+          </div>
+          <div class="settings-options">
+            <label class="radio-option">
+              <input type="radio" name="theme" value="light" id="theme-light" />
+              <span data-i18n="settings.light">Light</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="theme" value="dark" id="theme-dark" />
+              <span data-i18n="settings.dark">Dark</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Difficulty Level -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <h3 data-i18n="settings.difficulty">Difficulty Level</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Adjust exercise intensity</p>
+          </div>
+          <div class="settings-options">
+            <label class="radio-option">
+              <input type="radio" name="difficulty" value="easy" id="diff-easy" />
+              <span data-i18n="settings.easy">Easy</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="difficulty" value="normal" id="diff-normal" />
+              <span data-i18n="settings.normal">Normal</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="difficulty" value="hard" id="diff-hard" />
+              <span data-i18n="settings.hard">Hard</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <h3 data-i18n="settings.notifications">Enable Notifications</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Get reminders and updates</p>
+          </div>
+          <label class="toggle-option">
+            <input type="checkbox" id="toggle-notifications" />
+            <span class="toggle-slider"></span>
+            <span id="notif-status">Enabled</span>
+          </label>
+        </div>
+
+        <!-- Motivational Quotes -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <h3 data-i18n="settings.motivationalQuotes">Show Motivational Quotes</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Display inspiring messages</p>
+          </div>
+          <label class="toggle-option">
+            <input type="checkbox" id="toggle-quotes" />
+            <span class="toggle-slider"></span>
+            <span id="quotes-status">Enabled</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <button class="btn btn-primary" id="save-settings" data-i18n="settings.save">Save Settings</button>
+        <button class="btn btn-secondary" onclick="window.history.back()" data-i18n="common.back">Back</button>
+      </div>
+
+      <div id="toast-container"></div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Init page
+    if (!requireAuth()) { }
+
+    const settings = JSON.parse(localStorage.getItem('wt_user_settings')) || {
+      language: 'en',
+      theme: 'dark',
+      difficulty: 'normal',
+      notifications: true,
+      quotes: true
+    };
+
+    // Load current settings
+    document.getElementById(`lang-${settings.language}`).checked = true;
+    document.getElementById(`theme-${settings.theme}`).checked = true;
+    document.getElementById(`diff-${settings.difficulty}`).checked = true;
+    document.getElementById('toggle-notifications').checked = settings.notifications;
+    document.getElementById('toggle-quotes').checked = settings.quotes;
+
+    // Update status text
+    document.getElementById('notif-status').textContent = settings.notifications ? 'Enabled' : 'Disabled';
+    document.getElementById('quotes-status').textContent = settings.quotes ? 'Enabled' : 'Disabled';
+
+    // Toggle listeners
+    document.getElementById('toggle-notifications').addEventListener('change', (e) => {
+      document.getElementById('notif-status').textContent = e.target.checked ? 'Enabled' : 'Disabled';
+    });
+
+    document.getElementById('toggle-quotes').addEventListener('change', (e) => {
+      document.getElementById('quotes-status').textContent = e.target.checked ? 'Enabled' : 'Disabled';
+    });
+
+    // Save settings
+    document.getElementById('save-settings').addEventListener('click', () => {
+      const newSettings = {
+        language: document.querySelector('input[name="language"]:checked').value,
+        theme: document.querySelector('input[name="theme"]:checked').value,
+        difficulty: document.querySelector('input[name="difficulty"]:checked').value,
+        notifications: document.getElementById('toggle-notifications').checked,
+        quotes: document.getElementById('toggle-quotes').checked
+      };
+
+      localStorage.setItem('wt_user_settings', JSON.stringify(newSettings));
+
+      const oldLang = settings.language;
+      const newLang = newSettings.language;
+
+      showToast(t('settings.saved'), 'success');
+
+      // If language changed, reload page
+      if (oldLang !== newLang) {
+        setTimeout(() => setLanguage(newLang), 500);
+      }
+    });
+
+    // Load user display name
+    const user = getCurrentUser();
+    if (user) {
+      document.querySelectorAll('.user-display-name').forEach(el => {
+        el.textContent = user.name || 'User';
+      });
+      document.querySelector('.user-avatar-init').textContent = (user.name || 'U').charAt(0).toUpperCase();
+    }
+
+    // Apply translations on load
+    applyTranslations();
+  </script>
+</body>
+</html>

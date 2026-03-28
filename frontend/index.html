@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WellTrack 100 · Your 100-Day Wellness Challenge</title>
   <link rel="stylesheet" href="css/style.css" />
+  <script src="js/i18n.js"></script>
 </head>
 <body>
 
@@ -14,9 +15,12 @@
       WellTrack <span style="color:var(--accent);margin-left:4px">100</span>
     </div>
     <div class="nav-links">
-      <a href="login.html" id="nav-login">Login</a>
-      <a href="register.html" class="cta">Start Challenge →</a>
-      <a href="dashboard.html" id="nav-dashboard" class="hidden">Dashboard</a>
+      <div class="lang-switcher">
+        <button class="lang-btn" onclick="setLanguage('en')" title="English">EN</button>
+        <button class="lang-btn" onclick="setLanguage('bg')" title="Български">BG</button>
+      </div>
+      <a href="login.html" id="nav-login" data-i18n="nav.login">Login</a>
+      <a href="register.html" class="cta" data-i18n="nav.startChallenge">Start Challenge →</a>
     </div>
   </nav>
 
