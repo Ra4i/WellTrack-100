@@ -19,6 +19,7 @@
       <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⚡</span> Dashboard</a>
       <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> Levels</a>
       <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> Progress</a>
+      <a class="nav-item" href="friends.html"><span class="nav-icon">👥</span> Friends</a>
       <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> Messages</a>
       <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
       <div class="sidebar-bottom">
@@ -33,7 +34,11 @@
     <main class="main-content">
       <div class="page-header">
         <h1>Dashboard</h1>
-        <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span></p>
+        <p class="breadcrumb">
+          WellTrack 100 · <span class="user-display-name"></span>
+          &nbsp;·&nbsp;
+          <span id="difficulty-badge" style="font-weight:600;cursor:help;" title="Change in Settings">⚡ Normal</span>
+        </p>
       </div>
 
       <!-- Day Hero -->
@@ -44,13 +49,11 @@
           <p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.85rem">You are stronger than any craving 💪</p>
         </div>
         <div style="display:flex;gap:1.5rem;align-items:center">
-          <!-- Streak -->
           <div style="text-align:center">
             <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--warn);line-height:1" id="workout-streak">0</div>
             <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px">Day Streak</div>
             <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">resets if missed</div>
           </div>
-          <!-- Level -->
           <div style="text-align:center">
             <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent3);line-height:1" id="current-level">0</div>
             <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px">Level</div>
@@ -81,7 +84,7 @@
         </div>
       </div>
 
-      <!-- Cigarette Savings Section -->
+      <!-- Cigarette Savings -->
       <div class="savings-section">
         <h3>💰 Cigarette Savings <span class="badge">Every day counts</span></h3>
         <div class="savings-content">
@@ -148,7 +151,9 @@
         <div>
           <strong style="font-family:'Syne',sans-serif;font-size:0.95rem">Keep Your Streak Alive</strong>
           <p style="color:var(--text-muted);font-size:0.88rem;margin-top:0.3rem;line-height:1.6">
-            Your activity streak resets to zero if you miss a day — but your <strong>level progress never disappears</strong>. Miss a day? Catch up the next. Check your <a href="levels.html" style="color:var(--accent3)">Levels page</a> for today's motivation to quit smoking and alcohol.
+            Your activity streak resets to zero if you miss a day — but your <strong>level progress never disappears</strong>.
+            Check your <a href="levels.html" style="color:var(--accent3)">Levels page</a> for today's exercises
+            — they scale automatically based on your <a href="settings.html" style="color:var(--accent3)">difficulty setting</a>.
           </p>
         </div>
       </div>

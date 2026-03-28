@@ -1,6 +1,35 @@
 const API_BASE = 'http://localhost:5001/api';
 const USE_API = true;
 
+// ── Difficulty System ─────────────────────────────────────
+const DIFFICULTY_CONFIG = {
+  easy:   { label: '🌱 Easy',   repsMultiplier: 0.7, setsMultiplier: 0.8, color: '#16a34a',
+            description: 'Lighter sets, longer rest — great for beginners.' },
+  normal: { label: '⚡ Normal', repsMultiplier: 1.0, setsMultiplier: 1.0, color: '#ca8a04',
+            description: 'Standard 100-day program as designed.' },
+  hard:   { label: '🔥 Hard',   repsMultiplier: 1.3, setsMultiplier: 1.2, color: '#dc2626',
+            description: 'More sets, higher reps — for experienced athletes.' },
+};
+
+function getDifficulty() {
+  const s = JSON.parse(localStorage.getItem('wt_user_settings')) || {};
+  return DIFFICULTY_CONFIG[s.difficulty || 'normal'];
+}
+function getDifficultyName() {
+  const s = JSON.parse(localStorage.getItem('wt_user_settings')) || {};
+  return s.difficulty || 'normal';
+}
+
+// Scale a single exercise string based on difficulty multipliers
+function scaleExercise(exerciseStr, diff) {
+  if (diff.repsMultiplier === 1.0 && diff.setsMultiplier === 1.0) return exerciseStr;
+  // Match numbers in the string and scale them
+  return exerciseStr.replace(/\d+(\.\d+)?/g, (num) => {
+    const scaled = Math.round(parseFloat(num) * diff.repsMultiplier);
+    return scaled;
+  });
+}
+
 // ── 100 Levels with smoking & alcohol motivation ──────────
 const LEVELS = [
   { level: 1,  title: "First Step",         smoke: "Your lungs begin healing within 20 minutes of your last cigarette. Blood pressure is already dropping.", alcohol: "Your liver starts recovering. Celebrate with water — your body will thank you.", exercises: ["5 pushups", "10 squats", "30 second plank"] },
@@ -108,21 +137,13 @@ const LEVELS = [
 // ── Streak calculation ────────────────────────────────────
 function calculateStreak(entries) {
   if (!entries || !entries.length) return 0;
-  // Get unique days where workout was completed (prevents same-day duplicates from affecting streak)
   const uniqueDays = new Set(
-    entries
-      .filter(e => e.workoutCompleted)
-      .map(e => e.currentDay)
+    entries.filter(e => e.workoutCompleted).map(e => e.currentDay)
   );
-
   if (!uniqueDays.size) return 0;
-
-  const sorted = Array.from(uniqueDays).sort((a, b) => b - a); // descending
-
+  const sorted = Array.from(uniqueDays).sort((a, b) => b - a);
   const currentDay = getCurrentDay();
-  // Streak only continues if logged today - resets if missed a day
   if (sorted[0] !== currentDay) return 0;
-
   let streak = 1;
   for (let i = 1; i < sorted.length; i++) {
     if (sorted[i] === sorted[i - 1] - 1) streak++;
@@ -134,8 +155,6 @@ function calculateStreak(entries) {
 // ── Level calculation ─────────────────────────────────────
 function calculateCurrentLevel(entries) {
   if (!entries || !entries.length) return 0;
-  // Level = number of distinct days logged (completed)
-  // Can catch up: if you missed day 8, you can do it on day 9
   return Math.min(entries.length, 100);
 }
 
@@ -197,7 +216,7 @@ function loginUser(email, password) {
   return user ? { user } : { error: 'Invalid email or password.' };
 }
 
-// ── Exercise tracking (per-level tracking) ────────────────────────
+// ── Exercise tracking ─────────────────────────────────────
 function getCompletedLevels(userId) {
   try { return JSON.parse(localStorage.getItem(`wt_completed_levels_${userId}`)) || {}; } catch { return {}; }
 }
@@ -207,23 +226,85 @@ function getLevelKey(levelNumber) {
 }
 function saveLevelCompletion(userId, levelNumber) {
   const completions = getCompletedLevels(userId);
-  const key = getLevelKey(levelNumber);
-  completions[key] = true;
+  completions[getLevelKey(levelNumber)] = true;
   localStorage.setItem(`wt_completed_levels_${userId}`, JSON.stringify(completions));
 }
 function canCompleteLevelToday(userId, levelNumber) {
-  const completions = getCompletedLevels(userId);
-  const key = getLevelKey(levelNumber);
-  return !completions[key]; // Can complete if NOT already done today
+  return !getCompletedLevels(userId)[getLevelKey(levelNumber)];
 }
 function getLevelsCompletedToday(userId) {
   const completions = getCompletedLevels(userId);
   const today = new Date().toISOString().split('T')[0];
-  let count = 0;
-  for (const key in completions) {
-    if (key.startsWith(today)) count++;
+  return Object.keys(completions).filter(k => k.startsWith(today)).length;
+}
+
+// ── Friends / Requests (localStorage, per-email) ──────────
+function _friendsKey(email)   { return `wt_friends_${email}`; }
+function _inboxKey(email)     { return `wt_requests_in_${email}`; }
+function _outboxKey(email)    { return `wt_requests_out_${email}`; }
+function _messagesKey(email)  { return `wt_chat_${email}`; }
+
+function getFriends(email)    { try { return JSON.parse(localStorage.getItem(_friendsKey(email)))  || []; } catch { return []; } }
+function getInbox(email)      { try { return JSON.parse(localStorage.getItem(_inboxKey(email)))    || []; } catch { return []; } }
+function getOutbox(email)     { try { return JSON.parse(localStorage.getItem(_outboxKey(email)))   || []; } catch { return []; } }
+function getChats(email)      { try { return JSON.parse(localStorage.getItem(_messagesKey(email))) || {}; } catch { return {}; } }
+
+function saveFriends(email, data)  { localStorage.setItem(_friendsKey(email),   JSON.stringify(data)); }
+function saveInbox(email, data)    { localStorage.setItem(_inboxKey(email),     JSON.stringify(data)); }
+function saveOutbox(email, data)   { localStorage.setItem(_outboxKey(email),    JSON.stringify(data)); }
+function saveChats(email, data)    { localStorage.setItem(_messagesKey(email),  JSON.stringify(data)); }
+
+function sendFriendRequest(fromUser, toEmail) {
+  // Guard: already friends?
+  const myFriends = getFriends(fromUser.email);
+  if (myFriends.find(f => f.email === toEmail)) return { error: 'Already friends.' };
+
+  // Guard: already sent?
+  const outbox = getOutbox(fromUser.email);
+  if (outbox.find(r => r.toEmail === toEmail)) return { error: 'Request already sent.' };
+
+  // Guard: can't add yourself
+  if (toEmail === fromUser.email) return { error: "You can't add yourself." };
+
+  // Write to recipient's inbox
+  const inbox = getInbox(toEmail);
+  inbox.push({ fromEmail: fromUser.email, fromName: fromUser.name, sentAt: new Date().toISOString() });
+  saveInbox(toEmail, inbox);
+
+  // Record in sender's outbox
+  outbox.push({ toEmail, sentAt: new Date().toISOString() });
+  saveOutbox(fromUser.email, outbox);
+
+  return { ok: true };
+}
+
+function acceptFriendRequest(myEmail, myName, fromEmail, fromName) {
+  // Add each other as friends
+  const myFriends = getFriends(myEmail);
+  if (!myFriends.find(f => f.email === fromEmail)) {
+    myFriends.push({ email: fromEmail, name: fromName, status: 'offline', currentDay: 1 });
+    saveFriends(myEmail, myFriends);
   }
-  return count;
+  const theirFriends = getFriends(fromEmail);
+  if (!theirFriends.find(f => f.email === myEmail)) {
+    theirFriends.push({ email: myEmail, name: myName, status: 'offline', currentDay: 1 });
+    saveFriends(fromEmail, theirFriends);
+  }
+
+  // Remove from inbox
+  const inbox = getInbox(myEmail).filter(r => r.fromEmail !== fromEmail);
+  saveInbox(myEmail, inbox);
+
+  // Remove from their outbox
+  const outbox = getOutbox(fromEmail).filter(r => r.toEmail !== myEmail);
+  saveOutbox(fromEmail, outbox);
+}
+
+function declineFriendRequest(myEmail, fromEmail) {
+  const inbox = getInbox(myEmail).filter(r => r.fromEmail !== fromEmail);
+  saveInbox(myEmail, inbox);
+  const outbox = getOutbox(fromEmail).filter(r => r.toEmail !== myEmail);
+  saveOutbox(fromEmail, outbox);
 }
 
 // ── API ───────────────────────────────────────────────────
@@ -245,14 +326,11 @@ async function apiGet(endpoint) {
   return res.json();
 }
 
-
 // ── Home ──────────────────────────────────────────────────
 function initHome() {
   const user = getCurrentUser();
   const loginLink = document.getElementById('nav-login');
-  if (user) {
-    if (loginLink) { loginLink.textContent = 'Dashboard'; loginLink.href = 'dashboard.html'; }
-  }
+  if (user && loginLink) { loginLink.textContent = 'Dashboard'; loginLink.href = 'dashboard.html'; }
 }
 
 // ── Login ─────────────────────────────────────────────────
@@ -314,24 +392,16 @@ function initRegister() {
   });
 }
 
-// ── Savings Calculation ────────────────────────────
+// ── Savings ───────────────────────────────────────────────
 function updateSavingsDisplay(cigPrice) {
   const currentDay = getCurrentDay();
   const packCost = parseFloat(cigPrice) || 7.50;
-  const cigsPerPack = 20;
-
-  // Calculate total cigarettes avoided
-  const cigsAvoided = currentDay * cigsPerPack;
-
-  // Calculate money saved: (Cigarettes Avoided / 20) * Pack Price
-  const packsAvoided = cigsAvoided / cigsPerPack;
-  const totalSaved = packsAvoided * packCost;
-
+  const cigsAvoided = currentDay * 20;
+  const totalSaved = (cigsAvoided / 20) * packCost;
   const moneyEl = document.getElementById('money-saved');
-  const cigsEl = document.getElementById('cigs-avoided');
-
+  const cigsEl  = document.getElementById('cigs-avoided');
   if (moneyEl) moneyEl.textContent = `$${totalSaved.toFixed(2)}`;
-  if (cigsEl) cigsEl.textContent = cigsAvoided.toLocaleString();
+  if (cigsEl)  cigsEl.textContent  = cigsAvoided.toLocaleString();
 }
 
 // ── Dashboard ─────────────────────────────────────────────
@@ -346,30 +416,32 @@ function initDashboard() {
   document.getElementById('current-day').textContent = `Day ${currentDay}`;
   document.getElementById('days-remaining').textContent = `${100 - currentDay} days remaining`;
 
+  // Show difficulty badge on dashboard
+  const diff = getDifficulty();
+  const diffBadge = document.getElementById('difficulty-badge');
+  if (diffBadge) {
+    diffBadge.textContent = diff.label;
+    diffBadge.style.color = diff.color;
+    diffBadge.title = diff.description;
+  }
+
   const loadEntries = USE_API
     ? apiGet(`/progress?userId=${user.id}`)
     : Promise.resolve(getUserProgressLocal(user.id));
 
   loadEntries.then(entries => {
-    // Load today's entry into form
     const today = entries.find(e => Number(e.currentDay) === Number(currentDay));
     if (today) {
-      document.getElementById('water-input').value = today.waterIntake || 0;
-      document.getElementById('sleep-input').value = today.sleepHours || 0;
+      document.getElementById('water-input').value   = today.waterIntake || 0;
+      document.getElementById('sleep-input').value   = today.sleepHours || 0;
       document.getElementById('workout-input').checked = today.workoutCompleted || false;
       updateStatCards(today);
     }
-
-    // Update streak
     const streak = calculateStreak(entries);
     const streakEl = document.getElementById('workout-streak');
     if (streakEl) streakEl.textContent = streak;
-
-    // Update level
-    const level = calculateCurrentLevel(entries);
     const levelEl = document.getElementById('current-level');
-    if (levelEl) levelEl.textContent = level;
-
+    if (levelEl) levelEl.textContent = calculateCurrentLevel(entries);
   }).catch(err => console.error('Could not load entries:', err));
 
   const logForm = document.getElementById('log-form');
@@ -380,70 +452,47 @@ function initDashboard() {
     const entry = {
       userId: user.id,
       currentDay,
-      waterIntake: parseFloat(document.getElementById('water-input').value) || 0,
-      sleepHours: parseFloat(document.getElementById('sleep-input').value) || 0,
-      workoutCompleted: document.getElementById('workout-input').checked,
+      waterIntake:       parseFloat(document.getElementById('water-input').value) || 0,
+      sleepHours:        parseFloat(document.getElementById('sleep-input').value) || 0,
+      workoutCompleted:  document.getElementById('workout-input').checked,
       date: new Date().toISOString()
     };
-
     if (USE_API) {
       try {
         await apiPost('/progress/update', entry);
         showToast(`Day ${currentDay} saved!`);
         updateStatCards(entry);
-        // Refresh streak after save
         const entries = await apiGet(`/progress?userId=${user.id}`);
-        const streak = calculateStreak(entries);
         const streakEl = document.getElementById('workout-streak');
-        if (streakEl) streakEl.textContent = streak;
+        if (streakEl) streakEl.textContent = calculateStreak(entries);
         const levelEl = document.getElementById('current-level');
         if (levelEl) levelEl.textContent = calculateCurrentLevel(entries);
-        // Update savings display
-        const cigPrice = localStorage.getItem('wt_cig_price') || '7.50';
-        updateSavingsDisplay(cigPrice);
-      } catch (err) {
-        showToast('Failed to save: ' + err.message, 'error');
-      }
+        updateSavingsDisplay(localStorage.getItem('wt_cig_price') || '7.50');
+      } catch (err) { showToast('Failed to save: ' + err.message, 'error'); }
     } else {
       saveProgressLocal(entry);
       showToast(`Day ${currentDay} saved!`);
       updateStatCards(entry);
-      // Update savings display
-      const cigPrice = localStorage.getItem('wt_cig_price') || '7.50';
-      updateSavingsDisplay(cigPrice);
+      updateSavingsDisplay(localStorage.getItem('wt_cig_price') || '7.50');
     }
   });
 
-  // Initialize cigarette savings display
   const cigPriceInput = document.getElementById('cig-price');
   if (cigPriceInput) {
-    // Load saved price from localStorage or use default
     const savedPrice = localStorage.getItem('wt_cig_price') || '7.50';
     cigPriceInput.value = savedPrice;
-
-    // Initial calculation
     updateSavingsDisplay(savedPrice);
-
-    // Update when price changes
-    cigPriceInput.addEventListener('change', (e) => {
-      const newPrice = e.target.value;
-      localStorage.setItem('wt_cig_price', newPrice);
-      updateSavingsDisplay(newPrice);
-    });
-
-    // Update on input (real-time preview)
-    cigPriceInput.addEventListener('input', (e) => {
-      updateSavingsDisplay(e.target.value);
-    });
+    cigPriceInput.addEventListener('change', e => { localStorage.setItem('wt_cig_price', e.target.value); updateSavingsDisplay(e.target.value); });
+    cigPriceInput.addEventListener('input',  e => updateSavingsDisplay(e.target.value));
   }
 }
 
 function updateStatCards(entry) {
-  const waterVal = document.getElementById('water-stat');
-  const sleepVal = document.getElementById('sleep-stat');
+  const waterVal   = document.getElementById('water-stat');
+  const sleepVal   = document.getElementById('sleep-stat');
   const workoutVal = document.getElementById('workout-stat');
-  if (waterVal) waterVal.textContent = (entry.waterIntake || 0).toFixed(1);
-  if (sleepVal) sleepVal.textContent = (entry.sleepHours || 0).toFixed(1);
+  if (waterVal)   waterVal.textContent   = (entry.waterIntake || 0).toFixed(1);
+  if (sleepVal)   sleepVal.textContent   = (entry.sleepHours  || 0).toFixed(1);
   if (workoutVal) workoutVal.textContent = entry.workoutCompleted ? '✓' : '—';
 }
 
@@ -454,26 +503,23 @@ async function initProgress() {
   document.querySelectorAll('.user-display-name').forEach(el => el.textContent = user.name);
   document.querySelectorAll('.user-avatar-init').forEach(el => el.textContent = user.name.charAt(0).toUpperCase());
 
-  const currentDay = getCurrentDay();
-
   let history = [];
   try {
     history = USE_API ? await apiGet(`/progress?userId=${user.id}`) : getUserProgressLocal(user.id);
   } catch (err) { console.error('Could not load progress:', err); }
 
   const completedDays = history.length;
-  const workoutDays = history.filter(e => e.workoutCompleted).length;
-  const streak = calculateStreak(history);
-  const avgWater = completedDays ? (history.reduce((s, e) => s + (e.waterIntake || 0), 0) / completedDays).toFixed(1) : 0;
-  const avgSleep = completedDays ? (history.reduce((s, e) => s + (e.sleepHours || 0), 0) / completedDays).toFixed(1) : 0;
+  const workoutDays   = history.filter(e => e.workoutCompleted).length;
+  const streak        = calculateStreak(history);
+  const avgWater      = completedDays ? (history.reduce((s, e) => s + (e.waterIntake || 0), 0) / completedDays).toFixed(1) : 0;
+  const avgSleep      = completedDays ? (history.reduce((s, e) => s + (e.sleepHours  || 0), 0) / completedDays).toFixed(1) : 0;
 
   const el = id => document.getElementById(id);
-  if (el('prog-completed')) el('prog-completed').textContent = completedDays;
-  if (el('prog-workouts')) el('prog-workouts').textContent = workoutDays;
-  if (el('prog-streak')) el('prog-streak').textContent = streak;
-  if (el('prog-avg-water')) el('prog-avg-water').textContent = `${avgWater}L`;
-  if (el('prog-avg-sleep')) el('prog-avg-sleep').textContent = `${avgSleep}h`;
-
+  if (el('prog-completed'))  el('prog-completed').textContent  = completedDays;
+  if (el('prog-workouts'))   el('prog-workouts').textContent   = workoutDays;
+  if (el('prog-streak'))     el('prog-streak').textContent     = streak;
+  if (el('prog-avg-water'))  el('prog-avg-water').textContent  = `${avgWater}L`;
+  if (el('prog-avg-sleep'))  el('prog-avg-sleep').textContent  = `${avgSleep}h`;
   renderHistoryTable(history);
 }
 
@@ -502,68 +548,51 @@ async function initLevels() {
   document.querySelectorAll('.user-display-name').forEach(el => el.textContent = user.name);
   document.querySelectorAll('.user-avatar-init').forEach(el => el.textContent = user.name.charAt(0).toUpperCase());
 
+  // Show difficulty badge
+  const diff = getDifficulty();
+  const diffBadge = document.getElementById('difficulty-badge');
+  if (diffBadge) {
+    diffBadge.textContent = diff.label;
+    diffBadge.style.color = diff.color;
+    diffBadge.title = diff.description;
+  }
+
   let history = [];
   try {
     history = USE_API ? await apiGet(`/progress?userId=${user.id}`) : getUserProgressLocal(user.id);
   } catch (err) { console.error('Could not load levels:', err); }
 
   const completedLevel = calculateCurrentLevel(history);
-  const currentDay = getCurrentDay();
+  const currentDay     = getCurrentDay();
+  const nextLevel      = Math.min(completedLevel + 1, 100);
 
-  // Next level the user can complete today
-  const nextLevel = Math.min(completedLevel + 1, 100);
-
-  // Update header
-  const lvlEl = document.getElementById('level-number');
+  const lvlEl    = document.getElementById('level-number');
   const lvlTitle = document.getElementById('level-title');
-  const lvlBar = document.getElementById('level-bar-fill');
-  const lvlPct = document.getElementById('level-pct');
+  const lvlBar   = document.getElementById('level-bar-fill');
+  const lvlPct   = document.getElementById('level-pct');
 
-  if (lvlEl) lvlEl.textContent = completedLevel;
-  if (lvlTitle) lvlTitle.textContent = LEVELS[completedLevel]?.title || 'Complete!';
-  if (lvlBar) lvlBar.style.width = `${completedLevel}%`;
-  if (lvlPct) lvlPct.textContent = `${completedLevel}/100`;
+  if (lvlEl)    lvlEl.textContent          = completedLevel;
+  if (lvlTitle) lvlTitle.textContent       = LEVELS[completedLevel]?.title || 'Complete!';
+  if (lvlBar)   lvlBar.style.width         = `${completedLevel}%`;
+  if (lvlPct)   lvlPct.textContent         = `${completedLevel}/100`;
 
-  // Show motivation for current level
   renderMotivation(completedLevel > 0 ? completedLevel : 1);
-
-  // Render level grid
   renderLevelGrid(completedLevel, nextLevel, currentDay);
 }
 
 function completeLevel(levelNum) {
-  // Prevent event propagation to avoid showing modal
   event.stopPropagation();
-
   const user = getCurrentUser();
   if (!user) return;
-
   const currentDay = getCurrentDay();
-
-  // Can only complete levels up to and including the current day
-  // Cannot do levels beyond the current day
   if (levelNum > currentDay) {
-    showToast(`Level ${levelNum} is not yet available. You can do levels 1-${currentDay}.`, 'error');
+    showToast(`Level ${levelNum} is not yet available.`, 'error');
     return;
   }
-
-  // Create entry with this level as the day
-  const entry = {
-    userId: user.id,
-    currentDay: levelNum,
-    waterIntake: 0,
-    sleepHours: 0,
-    workoutCompleted: true,
-    date: new Date().toISOString()
-  };
-
+  const entry = { userId: user.id, currentDay: levelNum, waterIntake: 0, sleepHours: 0, workoutCompleted: true, date: new Date().toISOString() };
   if (USE_API) {
-    apiPost('/progress/update', entry)
-      .then(() => {
-        showToast(`Level ${levelNum} completed!`);
-        initLevels();
-      })
-      .catch(err => showToast('Failed to complete level: ' + err.message, 'error'));
+    apiPost('/progress/update', entry).then(() => { showToast(`Level ${levelNum} completed!`); initLevels(); })
+      .catch(err => showToast('Failed: ' + err.message, 'error'));
   } else {
     saveProgressLocal(entry);
     showToast(`Level ${levelNum} completed!`);
@@ -574,40 +603,34 @@ function completeLevel(levelNum) {
 function renderMotivation(levelNum) {
   const lvl = LEVELS[levelNum - 1];
   if (!lvl) return;
-
-  const smokeEl = document.getElementById('motivation-smoke');
+  const smokeEl   = document.getElementById('motivation-smoke');
   const alcoholEl = document.getElementById('motivation-alcohol');
-  const motTitle = document.getElementById('motivation-title');
-
-  if (motTitle) motTitle.textContent = `Level ${levelNum} — ${lvl.title}`;
-  if (smokeEl) smokeEl.textContent = lvl.smoke;
+  const motTitle  = document.getElementById('motivation-title');
+  if (motTitle)  motTitle.textContent  = `Level ${levelNum} — ${lvl.title}`;
+  if (smokeEl)   smokeEl.textContent   = lvl.smoke;
   if (alcoholEl) alcoholEl.textContent = lvl.alcohol;
 }
 
 function renderLevelGrid(completedLevel, nextLevel, currentDay) {
   const grid = document.getElementById('level-grid');
   if (!grid) return;
-
-  const user = getCurrentUser();
-  const canDoEx = user ? getLevelsCompletedToday(user.id) < 5 : false; // Allow up to 5 levels per day
+  const user   = getCurrentUser();
+  const canDoEx = user ? getLevelsCompletedToday(user.id) < 5 : false;
 
   grid.innerHTML = LEVELS.map(lvl => {
     let state = 'locked';
     if (lvl.level <= completedLevel) state = 'done';
     else if (lvl.level === nextLevel) state = 'current';
 
-    // Show complete button on the next incomplete level if it's available (up to and including current day)
     const completeBtn = lvl.level === nextLevel && lvl.level <= currentDay
       ? `<button class="level-complete-btn" onclick="completeLevel(${lvl.level})" title="Mark level as complete">✓ Complete</button>`
       : '';
-
-    // Show exercise indicator if exercises are available
-    const exerciseIndicator = canDoEx && lvl.level <= currentDay && lvl.exercises && lvl.exercises.length
-      ? `<div style="position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite;" title="Exercises available"></div>`
+    const exerciseIndicator = canDoEx && lvl.level <= currentDay && lvl.exercises?.length
+      ? `<div style="position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite;" title="Exercises available"></div>`
       : '';
 
     return `
-      <div class="level-card ${state}" onclick="showLevelDetail(${lvl.level})" title="${lvl.title}" style="position: relative;">
+      <div class="level-card ${state}" onclick="showLevelDetail(${lvl.level})" title="${lvl.title}" style="position:relative;">
         <div class="level-card-num">${lvl.level}</div>
         <div class="level-card-icon">${state === 'done' ? '✓' : state === 'current' ? '▶' : '🔒'}</div>
         <div class="level-card-title">${lvl.title}</div>
@@ -621,58 +644,60 @@ function renderLevelGrid(completedLevel, nextLevel, currentDay) {
 function showLevelDetail(levelNum) {
   const currentDay = getCurrentDay();
   const user = getCurrentUser();
-
-  // Prevent viewing levels beyond the current day
   if (levelNum > currentDay) {
-    showToast(`Level ${levelNum} is not yet available. You can view levels 1-${currentDay}.`, 'error');
+    showToast(`Level ${levelNum} is not yet available.`, 'error');
     return;
   }
-
   const lvl = LEVELS[levelNum - 1];
   if (!lvl) return;
 
-  const modal = document.getElementById('level-modal');
-  const modalTitle = document.getElementById('modal-title');
-  const modalSmoke = document.getElementById('modal-smoke');
+  const diff = getDifficulty(); // ← apply difficulty to exercises
+
+  const modal       = document.getElementById('level-modal');
+  const modalTitle  = document.getElementById('modal-title');
+  const modalSmoke  = document.getElementById('modal-smoke');
   const modalAlcohol = document.getElementById('modal-alcohol');
-  const modalLevel = document.getElementById('modal-level-num');
+  const modalLevel  = document.getElementById('modal-level-num');
   const modalExercises = document.getElementById('modal-exercises');
 
-  if (modalLevel) modalLevel.textContent = `Level ${levelNum}`;
-  if (modalTitle) modalTitle.textContent = lvl.title;
-  if (modalSmoke) modalSmoke.textContent = lvl.smoke;
+  if (modalLevel)   modalLevel.textContent   = `Level ${levelNum}`;
+  if (modalTitle)   modalTitle.textContent   = lvl.title;
+  if (modalSmoke)   modalSmoke.textContent   = lvl.smoke;
   if (modalAlcohol) modalAlcohol.textContent = lvl.alcohol;
 
-  // Display exercises with 24-hour timer
   if (modalExercises) {
-    if (lvl.exercises && lvl.exercises.length) {
+    if (lvl.exercises?.length) {
       const canDo = canCompleteLevelToday(user.id, levelNum);
-      const exerciseList = lvl.exercises.map(ex => `<li style="padding: 0.4rem 0; font-size: 0.9rem; color: var(--text-dim); line-height: 1.6;">✓ ${ex}</li>`).join('');
 
-      let timerText = '';
-      if (!canDo) {
-        timerText = `<div style="margin-top: 0.8rem; padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent-warn); border-radius: 4px; font-size: 0.85rem; color: var(--text-muted);">You already completed this level today! Come back tomorrow for more 🔄</div>`;
-      } else {
-        timerText = `<div style="margin-top: 0.8rem; padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 0.85rem; color: var(--accent);">✓ Exercises available - complete this level anytime!</div>`;
-      }
+      // Scale exercises by difficulty
+      const scaledExercises = lvl.exercises.map(ex => {
+        const scaled = scaleExercise(ex, diff);
+        const changed = scaled !== ex;
+        return `<li style="padding:0.4rem 0;font-size:0.9rem;color:var(--text-dim);line-height:1.6;">
+          ✓ ${scaled}${changed ? ` <span style="font-size:0.75rem;color:${diff.color};margin-left:4px;">(${diff.label})</span>` : ''}
+        </li>`;
+      }).join('');
 
-      modalExercises.innerHTML = exerciseList + timerText;
+      const statusBox = canDo
+        ? `<div style="margin-top:0.8rem;padding:0.8rem;background:var(--surface);border-left:3px solid var(--accent);border-radius:4px;font-size:0.85rem;color:var(--accent);">✓ Exercises available — complete anytime today!</div>`
+        : `<div style="margin-top:0.8rem;padding:0.8rem;background:var(--surface);border-left:3px solid var(--accent-warn);border-radius:4px;font-size:0.85rem;color:var(--text-muted);">Already completed today! Come back tomorrow 🔄</div>`;
 
-      // Add complete button if exercises are available
+      modalExercises.innerHTML = scaledExercises + statusBox;
+
       if (canDo && user) {
-        const completeBtn = document.createElement('button');
-        completeBtn.textContent = '✓ Mark Exercises Complete';
-        completeBtn.style.cssText = 'margin-top: 0.8rem; width: 100%; padding: 0.6rem; background: var(--accent); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;';
-        completeBtn.onclick = (e) => {
+        const btn = document.createElement('button');
+        btn.textContent = '✓ Mark Exercises Complete';
+        btn.style.cssText = 'margin-top:0.8rem;width:100%;padding:0.6rem;background:var(--accent);color:white;border:none;border-radius:4px;cursor:pointer;font-weight:500;';
+        btn.onclick = (e) => {
           e.stopPropagation();
           saveLevelCompletion(user.id, levelNum);
-          showToast('Exercises marked complete! 💪 Available again at 00:00');
+          showToast('Exercises done! 💪 Available again at midnight.');
           setTimeout(() => showLevelDetail(levelNum), 500);
         };
-        modalExercises.appendChild(completeBtn);
+        modalExercises.appendChild(btn);
       }
     } else {
-      modalExercises.innerHTML = '<li style="padding: 0.4rem 0; color: var(--text-muted);">No exercises assigned</li>';
+      modalExercises.innerHTML = '<li style="padding:0.4rem 0;color:var(--text-muted);">No exercises assigned</li>';
     }
   }
 
@@ -697,10 +722,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const page = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.logout-btn').forEach(btn => btn.addEventListener('click', logout));
   if (page === 'index.html' || page === '') initHome();
-  else if (page === 'login.html') initLogin();
-  else if (page === 'register.html') initRegister();
+  else if (page === 'login.html')     initLogin();
+  else if (page === 'register.html')  initRegister();
   else if (page === 'dashboard.html') initDashboard();
-  else if (page === 'progress.html') initProgress();
-  else if (page === 'levels.html') initLevels();
+  else if (page === 'progress.html')  initProgress();
+  else if (page === 'levels.html')    initLevels();
   setActiveNav();
 });

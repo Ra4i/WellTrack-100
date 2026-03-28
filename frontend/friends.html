@@ -7,6 +7,21 @@
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/friends_style.css" />
   <script src="js/i18n.js"></script>
+  <style>
+    .tabs { display:flex; gap:0.5rem; margin-bottom:1rem; border-bottom:1px solid var(--border,#333); }
+    .tab-btn { background:none; border:none; padding:0.5rem 1rem; cursor:pointer; color:var(--text-muted,#aaa); font-size:0.95rem; border-bottom:2px solid transparent; transition:all 0.2s; }
+    .tab-btn.active { color:var(--accent,#7c3aed); border-bottom-color:var(--accent,#7c3aed); font-weight:600; }
+    .tab-btn .req-badge { background:var(--accent,#7c3aed); color:#fff; border-radius:999px; padding:0 6px; font-size:0.75rem; margin-left:5px; display:none; }
+    .request-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem; border-radius:10px; background:var(--card-bg,#1e1e2e); margin-bottom:0.5rem; }
+    .request-item .req-info { flex:1; }
+    .request-item .req-info h4 { margin:0; font-size:0.95rem; }
+    .request-item .req-info p  { margin:0; font-size:0.8rem; color:var(--text-muted,#aaa); }
+    .req-actions { display:flex; gap:0.5rem; }
+    .btn-accept  { background:#16a34a; color:#fff; border:none; padding:0.3rem 0.75rem; border-radius:6px; cursor:pointer; font-size:0.85rem; }
+    .btn-accept:hover { background:#15803d; }
+    .btn-decline { background:#dc2626; color:#fff; border:none; padding:0.3rem 0.75rem; border-radius:6px; cursor:pointer; font-size:0.85rem; }
+    .btn-decline:hover { background:#b91c1c; }
+  </style>
 </head>
 <body>
 
@@ -39,54 +54,63 @@
       </div>
 
       <div class="friends-container">
-        <!-- Friends List -->
+        <!-- Left panel -->
         <div class="friends-list-section">
-          <div class="friends-list-header">
-            <h3>👥 Friends <span id="friend-count">(0)</span></h3>
-            <button class="btn btn-sm" id="add-friend-btn">+ Add</button>
+
+          <div class="tabs">
+            <button class="tab-btn active" id="tab-btn-friends"  onclick="switchTab('friends')">
+              👥 Friends
+            </button>
+            <button class="tab-btn" id="tab-btn-requests" onclick="switchTab('requests')">
+              📬 Requests <span class="req-badge" id="req-badge">0</span>
+            </button>
           </div>
 
-          <div class="friends-search">
-            <input type="text" id="friend-search" placeholder="Search friends..." class="search-input" />
-          </div>
-
-          <div class="friends-list" id="friends-list">
-            <div class="empty-state">
-              <p>No friends yet. Add someone to start chatting! 👋</p>
+          <!-- Friends tab -->
+          <div id="tab-friends">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+              <span style="color:var(--text-muted,#aaa);font-size:0.9rem;" id="friend-count">(0 friends)</span>
+              <button class="btn btn-sm" id="add-friend-btn">+ Add Friend</button>
+            </div>
+            <div class="friends-search">
+              <input type="text" id="friend-search" placeholder="Search friends..." class="search-input" />
+            </div>
+            <div class="friends-list" id="friends-list">
+              <div class="empty-state"><p>No friends yet. Add someone! 👋</p></div>
             </div>
           </div>
+
+          <!-- Requests tab -->
+          <div id="tab-requests" style="display:none;">
+            <p style="font-size:0.85rem;color:var(--text-muted,#aaa);margin-bottom:0.75rem;">Pending friend requests:</p>
+            <div id="requests-list">
+              <div class="empty-state"><p>No pending requests 🎉</p></div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Conversation Area -->
+        <!-- Chat panel -->
         <div class="conversation-section">
           <div id="no-friend-selected" class="no-selection">
             <div class="empty-state-large">
-              <p style="font-size: 3rem; margin-bottom: 1rem;">💭</p>
+              <p style="font-size:3rem;margin-bottom:1rem;">💭</p>
               <h2>Select a friend to chat</h2>
               <p>Choose someone from your friends list to start a conversation</p>
             </div>
           </div>
 
-          <div id="chat-area" class="chat-area" style="display: none;">
+          <div id="chat-area" class="chat-area" style="display:none;">
             <div class="conv-header">
               <div>
                 <h2 id="conv-friend-name">Friend</h2>
-                <p id="conv-friend-status" class="friend-status">Online</p>
+                <p id="conv-friend-status" class="friend-status">Offline</p>
               </div>
               <button class="btn btn-sm btn-secondary" id="block-friend-btn">🚫 Block</button>
             </div>
-
-            <div class="conversation-messages" id="conversation-messages">
-              <!-- Messages will be loaded here -->
-            </div>
-
+            <div class="conversation-messages" id="conversation-messages"></div>
             <div class="conversation-input">
-              <textarea
-                id="friend-message-input"
-                class="message-input-friend"
-                placeholder="Type your message..."
-                rows="1"
-              ></textarea>
+              <textarea id="friend-message-input" class="message-input-friend" placeholder="Type your message..." rows="1"></textarea>
               <button class="btn btn-primary send-btn-friend" id="send-friend-btn" title="Send">↑</button>
             </div>
           </div>
@@ -94,7 +118,7 @@
       </div>
 
       <!-- Add Friend Modal -->
-      <div id="add-friend-modal" class="modal" style="display: none;">
+      <div id="add-friend-modal" class="modal" style="display:none;">
         <div class="modal-content">
           <div class="modal-header">
             <h2>Add Friend</h2>
@@ -103,7 +127,9 @@
           <div class="modal-body">
             <label>Enter friend's email:</label>
             <input type="email" id="friend-email-input" placeholder="friend@example.com" />
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">We'll send them a friend request</p>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;">
+              They will see your request in their <strong>Requests</strong> tab and can accept or decline.
+            </p>
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeAddFriendModal()">Cancel</button>
@@ -118,216 +144,213 @@
 
   <script src="js/app.js"></script>
   <script>
-    // Init page
-    if (!requireAuth()) { }
+    if (!requireAuth()) {}
 
     const user = getCurrentUser();
     if (user) {
-      document.querySelectorAll('.user-display-name').forEach(el => {
-        el.textContent = user.name || 'User';
-      });
+      document.querySelectorAll('.user-display-name').forEach(el => el.textContent = user.name || 'User');
       document.querySelector('.user-avatar-init').textContent = (user.name || 'U').charAt(0).toUpperCase();
     }
 
-    // Sample friends data (in real app, this would come from backend)
-    let friends = JSON.parse(localStorage.getItem('wt_friends')) || [
-      { id: 1, name: 'Alex Johnson', email: 'alex@example.com', status: 'online', avatar: 'A', currentDay: 15 },
-      { id: 2, name: 'Jordan Smith', email: 'jordan@example.com', status: 'away', avatar: 'J', currentDay: 42 },
-      { id: 3, name: 'Casey Brown', email: 'casey@example.com', status: 'offline', avatar: 'C', currentDay: 8 },
-    ];
+    let selectedFriendEmail = null;
 
-    let messages = JSON.parse(localStorage.getItem('wt_messages')) || {
-      1: [
-        { from: 1, text: 'Hey! How are you doing on your challenge?', time: '10:30 AM', sender: 'Alex' },
-        { from: user.id, text: 'Good! Day 5 going strong. You?', time: '10:35 AM', sender: 'You' },
-        { from: 1, text: 'Day 15 now! Getting easier everyday 💪', time: '10:36 AM', sender: 'Alex' },
-      ],
-      2: [
-        { from: 2, text: 'I just hit day 40!!! 🎉', time: '2:15 PM', sender: 'Jordan' },
-        { from: user.id, text: 'Wow congratulations! That\'s awesome!', time: '2:20 PM', sender: 'You' },
-      ],
-      3: []
+    // ── Tab switching ─────────────────────────────────────
+    window.switchTab = function(tab) {
+      document.getElementById('tab-friends').style.display   = tab === 'friends'  ? 'block' : 'none';
+      document.getElementById('tab-requests').style.display  = tab === 'requests' ? 'block' : 'none';
+      document.getElementById('tab-btn-friends').classList.toggle('active',  tab === 'friends');
+      document.getElementById('tab-btn-requests').classList.toggle('active', tab === 'requests');
+      if (tab === 'requests') renderRequests();
     };
 
-    let selectedFriendId = null;
-
-    const friendsList = document.getElementById('friends-list');
-    const conversationArea = document.getElementById('chat-area');
-    const noFriendSelected = document.getElementById('no-friend-selected');
-    const friendSearchInput = document.getElementById('friend-search');
-    const addFriendBtn = document.getElementById('add-friend-btn');
-    const addFriendModal = document.getElementById('add-friend-modal');
-    const friendMessageInput = document.getElementById('friend-message-input');
-    const sendFriendBtn = document.getElementById('send-friend-btn');
-
-    // Render friends list
+    // ── Render friends list ───────────────────────────────
     function renderFriendsList(filter = '') {
-      const filteredFriends = friends.filter(f =>
+      const friends = getFriends(user.email);
+      const filtered = friends.filter(f =>
         f.name.toLowerCase().includes(filter.toLowerCase()) ||
         f.email.toLowerCase().includes(filter.toLowerCase())
       );
-
-      friendsList.innerHTML = filteredFriends.length === 0
-        ? '<div class="empty-state"><p>No friends found</p></div>'
-        : filteredFriends.map(friend => `
-          <div class="friend-item ${selectedFriendId === friend.id ? 'active' : ''}" onclick="selectFriend(${friend.id})">
-            <div class="friend-avatar ${friend.status}">
-              <span>${friend.avatar}</span>
+      const el = document.getElementById('friends-list');
+      el.innerHTML = filtered.length === 0
+        ? '<div class="empty-state"><p>No friends yet. Add someone! 👋</p></div>'
+        : filtered.map(f => `
+          <div class="friend-item ${selectedFriendEmail === f.email ? 'active' : ''}" onclick="selectFriend('${f.email}','${f.name}')">
+            <div class="friend-avatar offline">
+              <span>${(f.name || '?').charAt(0).toUpperCase()}</span>
               <span class="status-dot"></span>
             </div>
             <div class="friend-info">
-              <h4>${friend.name}</h4>
-              <p>Day ${friend.currentDay} · ${friend.status}</p>
+              <h4>${f.name}</h4>
+              <p>${f.email}</p>
             </div>
           </div>
         `).join('');
-
-      document.getElementById('friend-count').textContent = `(${filteredFriends.length})`;
+      document.getElementById('friend-count').textContent = `(${friends.length} friend${friends.length !== 1 ? 's' : ''})`;
     }
 
-    // Render conversation
-    function renderConversation(friendId) {
-      const friend = friends.find(f => f.id === friendId);
-      if (!friend) return;
+    // ── Render requests tab ───────────────────────────────
+    function renderRequests() {
+      const inbox = getInbox(user.email);
+      const el    = document.getElementById('requests-list');
+      const badge = document.getElementById('req-badge');
 
-      document.getElementById('conv-friend-name').textContent = friend.name;
-      document.getElementById('conv-friend-status').textContent = friend.status === 'online' ? '🟢 Online' : friend.status === 'away' ? '🟡 Away' : '⚫ Offline';
+      badge.style.display = inbox.length > 0 ? 'inline' : 'none';
+      badge.textContent   = inbox.length;
 
-      const convMessages = document.getElementById('conversation-messages');
-      const friendMessages = messages[friendId] || [];
+      if (inbox.length === 0) {
+        el.innerHTML = '<div class="empty-state"><p>No pending requests 🎉</p></div>';
+        return;
+      }
 
-      convMessages.innerHTML = friendMessages.length === 0
-        ? '<div class="empty-state" style="justify-content: center; padding: 3rem 1rem;"><p>No messages yet. Start the conversation!</p></div>'
-        : friendMessages.map(msg => `
-          <div class="conv-message ${msg.from === user.id ? 'from-me' : 'from-friend'}">
-            <div class="msg-avatar">${msg.sender.charAt(0)}</div>
-            <div class="msg-content">
-              <p>${msg.text}</p>
-              <small>${msg.time}</small>
-            </div>
+      el.innerHTML = inbox.map((r, i) => `
+        <div class="request-item">
+          <div class="friend-avatar offline">
+            <span>${(r.fromName || r.fromEmail).charAt(0).toUpperCase()}</span>
           </div>
-        `).join('');
-
-      convMessages.scrollTop = convMessages.scrollHeight;
+          <div class="req-info">
+            <h4>${r.fromName || r.fromEmail}</h4>
+            <p>${r.fromEmail}</p>
+          </div>
+          <div class="req-actions">
+            <button class="btn-accept"  onclick="handleAccept('${r.fromEmail}','${r.fromName}')">✓ Accept</button>
+            <button class="btn-decline" onclick="handleDecline('${r.fromEmail}')">✗ Decline</button>
+          </div>
+        </div>
+      `).join('');
     }
 
-    // Select friend
-    window.selectFriend = function(friendId) {
-      selectedFriendId = friendId;
-      conversationArea.style.display = 'flex';
-      noFriendSelected.style.display = 'none';
-      renderFriendsList(friendSearchInput.value);
-      renderConversation(friendId);
-      friendMessageInput.focus();
+    // ── Accept / Decline ──────────────────────────────────
+    window.handleAccept = function(fromEmail, fromName) {
+      acceptFriendRequest(user.email, user.name, fromEmail, fromName);
+      renderRequests();
+      renderFriendsList();
+      updateBadge();
+      showToast(`You are now friends with ${fromName}! 🎉`, 'success');
     };
 
-    // Send message
-    function sendFriendMessage() {
-      const msgText = friendMessageInput.value.trim();
-      if (!msgText || !selectedFriendId) return;
+    window.handleDecline = function(fromEmail) {
+      declineFriendRequest(user.email, fromEmail);
+      renderRequests();
+      updateBadge();
+      showToast('Request declined.', 'success');
+    };
 
-      if (!messages[selectedFriendId]) messages[selectedFriendId] = [];
-
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-      messages[selectedFriendId].push({
-        from: user.id,
-        text: msgText,
-        time: timeStr,
-        sender: 'You'
-      });
-
-      localStorage.setItem('wt_messages', JSON.stringify(messages));
-      friendMessageInput.value = '';
-      renderConversation(selectedFriendId);
-
-      // Simulate friend response after 1 second
-      setTimeout(() => {
-        const friend = friends.find(f => f.id === selectedFriendId);
-        if (friend) {
-          const responses = [
-            'That\'s awesome! 💪',
-            'Keep it up!',
-            'You got this! 🔥',
-            'Amazing progress 🎉',
-            'Stay strong!',
-            'I\'m so proud of you!',
-            'Let\'s crush this together!'
-          ];
-          const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-
-          messages[selectedFriendId].push({
-            from: friend.id,
-            text: randomResponse,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            sender: friend.name.split(' ')[0]
-          });
-
-          localStorage.setItem('wt_messages', JSON.stringify(messages));
-          renderConversation(selectedFriendId);
-        }
-      }, 1000);
+    function updateBadge() {
+      const inbox = getInbox(user.email);
+      const badge = document.getElementById('req-badge');
+      badge.style.display = inbox.length > 0 ? 'inline' : 'none';
+      badge.textContent   = inbox.length;
     }
 
-    sendFriendBtn.addEventListener('click', sendFriendMessage);
-    friendMessageInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendFriendMessage();
-      }
+    // ── Select friend & open chat ─────────────────────────
+    window.selectFriend = function(friendEmail, friendName) {
+      selectedFriendEmail = friendEmail;
+      document.getElementById('chat-area').style.display = 'flex';
+      document.getElementById('no-friend-selected').style.display = 'none';
+      document.getElementById('conv-friend-name').textContent   = friendName;
+      document.getElementById('conv-friend-status').textContent = '⚫ Offline';
+      renderFriendsList(document.getElementById('friend-search').value);
+      renderConversation();
+      document.getElementById('friend-message-input').focus();
+    };
+
+    // ── Render messages ───────────────────────────────────
+    function renderConversation() {
+      if (!selectedFriendEmail) return;
+      const chats    = getChats(user.email);
+      const threadId = [user.email, selectedFriendEmail].sort().join('__');
+      const msgs     = chats[threadId] || [];
+      const el       = document.getElementById('conversation-messages');
+
+      el.innerHTML = msgs.length === 0
+        ? '<div class="empty-state" style="justify-content:center;padding:3rem 1rem;"><p>No messages yet. Say hi! 👋</p></div>'
+        : msgs.map(m => `
+          <div class="conv-message ${m.fromEmail === user.email ? 'from-me' : 'from-friend'}">
+            <div class="msg-avatar">${(m.senderName || '?').charAt(0).toUpperCase()}</div>
+            <div class="msg-content">
+              <p>${m.text}</p>
+              <small>${m.time}</small>
+            </div>
+          </div>
+        `).join('');
+      el.scrollTop = el.scrollHeight;
+    }
+
+    // ── Send message ──────────────────────────────────────
+    function sendFriendMessage() {
+      const text = document.getElementById('friend-message-input').value.trim();
+      if (!text || !selectedFriendEmail) return;
+
+      const threadId = [user.email, selectedFriendEmail].sort().join('__');
+      const time     = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      const msg      = { fromEmail: user.email, senderName: user.name, text, time };
+
+      // Write to MY chat store
+      const myChats = getChats(user.email);
+      if (!myChats[threadId]) myChats[threadId] = [];
+      myChats[threadId].push(msg);
+      saveChats(user.email, myChats);
+
+      // Write to FRIEND's chat store (so they see it)
+      const theirChats = getChats(selectedFriendEmail);
+      if (!theirChats[threadId]) theirChats[threadId] = [];
+      theirChats[threadId].push(msg);
+      saveChats(selectedFriendEmail, theirChats);
+
+      document.getElementById('friend-message-input').value = '';
+      renderConversation();
+    }
+
+    document.getElementById('send-friend-btn').addEventListener('click', sendFriendMessage);
+    document.getElementById('friend-message-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendFriendMessage(); }
     });
 
-    // Friend search
-    friendSearchInput.addEventListener('input', (e) => {
-      renderFriendsList(e.target.value);
-    });
+    // ── Search ────────────────────────────────────────────
+    document.getElementById('friend-search').addEventListener('input', e => renderFriendsList(e.target.value));
 
-    // Add friend modal
-    addFriendBtn.addEventListener('click', () => {
-      addFriendModal.style.display = 'flex';
+    // ── Add friend modal ──────────────────────────────────
+    document.getElementById('add-friend-btn').addEventListener('click', () => {
+      document.getElementById('add-friend-modal').style.display = 'flex';
     });
 
     window.closeAddFriendModal = function() {
-      addFriendModal.style.display = 'none';
+      document.getElementById('add-friend-modal').style.display = 'none';
       document.getElementById('friend-email-input').value = '';
     };
 
     document.getElementById('send-friend-request-btn').addEventListener('click', () => {
-      const email = document.getElementById('friend-email-input').value.trim();
-      if (!email) {
-        showToast('Please enter an email address', 'error');
-        return;
-      }
+      const email = document.getElementById('friend-email-input').value.trim().toLowerCase();
+      if (!email) { showToast('Please enter an email address', 'error'); return; }
 
-      // In real app, this would send to backend
-      showToast(`Friend request sent to ${email}!`, 'success');
+      const result = sendFriendRequest(user, email);
+      if (result.error) { showToast(result.error, 'error'); return; }
+
+      showToast(`Friend request sent to ${email}! 📬`, 'success');
       closeAddFriendModal();
     });
 
-    // Block friend
+    // ── Block friend ──────────────────────────────────────
     document.getElementById('block-friend-btn').addEventListener('click', () => {
-      if (selectedFriendId && confirm('Are you sure you want to block this friend?')) {
-        friends = friends.filter(f => f.id !== selectedFriendId);
-        localStorage.setItem('wt_friends', JSON.stringify(friends));
-        selectedFriendId = null;
-        conversationArea.style.display = 'none';
-        noFriendSelected.style.display = 'flex';
-        renderFriendsList();
-        showToast('Friend blocked', 'success');
-      }
+      if (!selectedFriendEmail) return;
+      if (!confirm('Are you sure you want to block this friend?')) return;
+      const updated = getFriends(user.email).filter(f => f.email !== selectedFriendEmail);
+      saveFriends(user.email, updated);
+      selectedFriendEmail = null;
+      document.getElementById('chat-area').style.display = 'none';
+      document.getElementById('no-friend-selected').style.display = 'flex';
+      renderFriendsList();
+      showToast('Friend blocked', 'success');
     });
 
-    // Modal close on outside click
-    addFriendModal.addEventListener('click', (e) => {
-      if (e.target === addFriendModal) {
-        closeAddFriendModal();
-      }
+    // ── Close modal on backdrop click ─────────────────────
+    document.getElementById('add-friend-modal').addEventListener('click', e => {
+      if (e.target === document.getElementById('add-friend-modal')) closeAddFriendModal();
     });
 
-    // Initial render
+    // ── Init ──────────────────────────────────────────────
     renderFriendsList();
-
+    updateBadge();
     applyTranslations();
   </script>
 </body>
