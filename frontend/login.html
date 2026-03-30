@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login · WellTrack 100</title>
+  <title>Вход · WellTrack 100</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -15,34 +15,35 @@
         <span>WellTrack <em>100</em></span>
       </div>
 
-      <h1>Welcome back</h1>
-      <p class="subtitle">Continue your 100-day wellness journey.</p>
+      <h1 data-i18n="auth.loginTitle">Добре дошли</h1>
+      <p class="subtitle" data-i18n="auth.loginDescription">Продължи 100-дневното си уелнес пътешествие.</p>
 
       <div id="alert" class="alert"></div>
 
       <form id="login-form">
         <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="you@example.com" required />
+          <label for="email" data-i18n="auth.email">Имейл</label>
+          <input type="email" id="email" placeholder="you@example.com" data-i18n="auth.email" required />
         </div>
         <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" placeholder="••••••••" required />
+          <label for="password" data-i18n="auth.password">Парола</label>
+          <input type="password" id="password" placeholder="••••••••" data-i18n="auth.password" required />
         </div>
-        <button type="submit" class="btn-primary">Sign In</button>
+        <button type="submit" class="btn-primary" data-i18n="auth.login">Вход</button>
       </form>
 
       <div class="auth-footer">
-        Don't have an account?
-        <a href="register.html">Start your challenge →</a>
+        <span data-i18n="auth.noAccount">Нямаш акаунт?</span>
+        <a href="register.html" data-i18n="nav.startChallenge">Започни предизвикателството →</a>
       </div>
       <div class="auth-footer" style="margin-top:0.5rem">
-        <a href="index.html" style="color:var(--text-muted);font-size:0.82rem">← Back to home</a>
+        <a href="index.html" style="color:var(--text-muted);font-size:0.82rem"><span aria-hidden="true">←</span> <span data-i18n="common.back">Обратно</span></a>
       </div>
     </div>
   </div>
 
   <div id="toast-container" class="toast-container"></div>
+  <script src="js/i18n.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

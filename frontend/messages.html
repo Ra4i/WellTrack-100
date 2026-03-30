@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Messages · WellTrack 100</title>
+  <title>Съобщения · WellTrack 100</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/messages_style.css" />
   <script src="js/i18n.js"></script>
@@ -14,26 +14,26 @@
     <aside class="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">W</div>
-        <div class="logo-text">WellTrack <small>100-Day Challenge</small></div>
+        <div class="logo-text">WellTrack <small>100-дневно предизвикателство</small></div>
       </div>
-      <span class="nav-section-label">Main</span>
-      <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Dashboard</span></a>
-      <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Levels</span></a>
-      <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Progress</span></a>
-      <a class="nav-item active" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Messages</span></a>
-      <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Settings</span></a>
+      <span class="nav-section-label">Основно</span>
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
+      <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
+      <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
+      <a class="nav-item active" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
+      <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
       <div class="sidebar-bottom">
         <div class="user-chip">
           <div class="user-avatar user-avatar-init">A</div>
-          <span class="user-name user-display-name">Loading...</span>
-          <button class="logout-btn" title="Log out" onclick="logout()">⏏</button>
+          <span class="user-name user-display-name">Зареждане...</span>
+          <button class="logout-btn" title="Изход" onclick="logout()">⏏</button>
         </div>
       </div>
     </aside>
 
     <main class="main-content">
       <div class="page-header">
-        <h1 data-i18n="messages.title">Messages & Chat</h1>
+        <h1 data-i18n="messages.title">Съобщения и чат</h1>
         <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span></p>
       </div>
 
@@ -54,7 +54,7 @@
             <div class="message bot-message">
               <div class="message-avatar">🤖</div>
               <div class="message-content">
-                <p>Hi! I'm your wellness coach. I'm here to help you quit smoking and alcohol. Ask me anything about staying motivated, managing cravings, or building healthy habits! 💪</p>
+                <p>Здравей! Аз съм твоят уелнес треньор. Тук съм, за да ти помогна да се откажеш от цигарите и алкохола. Попитай ме за мотивация, управление на желанията или изграждане на здравословни навици! 💪</p>
               </div>
               <small class="message-time">Just now</small>
             </div>
@@ -64,41 +64,41 @@
             <textarea
               id="message-input"
               class="message-input"
-              placeholder="Ask me tips to quit smoking and drinking..."
+              placeholder="Попитай ме за съвети как да спреш цигарите и алкохола..."
               data-i18n="messages.chatbotPlaceholder"
               rows="1"
             ></textarea>
-            <button class="btn btn-primary send-btn" id="send-btn" title="Send">↑</button>
+            <button class="btn btn-primary send-btn" id="send-btn" title="Изпрати">↑</button>
           </div>
         </div>
 
         <!-- Quick Tips Sidebar -->
         <div class="tips-sidebar">
-          <h3 data-i18n="common.loading">Quick Tips</h3>
+          <h3 data-i18n="common.loading">Бързи съвети</h3>
           <div class="tips-list" id="tips-list">
             <div class="tip-card">
-              <h4>💧 Stay Hydrated</h4>
-              <p>Drinking water reduces cravings and keeps you healthy. Aim for 8-10 glasses daily.</p>
+              <h4>💧 Пий вода</h4>
+              <p>Пиенето на вода намалява желанията и те държи здрав. Цел: 8-10 чаши дневно.</p>
             </div>
             <div class="tip-card">
-              <h4>🏃 Exercise</h4>
-              <p>Physical activity releases endorphins, your body's natural feel-good chemicals.</p>
+              <h4>🏃 Тренирай</h4>
+              <p>Физическата активност освобождава ендорфини, естествените ти химикали за добро настроение.</p>
             </div>
             <div class="tip-card">
-              <h4>😴 Sleep Well</h4>
-              <p>Good sleep reduces cravings. Aim for 7-9 hours per night for optimal recovery.</p>
+              <h4>😴 Съни добре</h4>
+              <p>Добър сън намалява желанията. Стреми се към 7-9 часа на нощ за оптимално възстановяване.</p>
             </div>
             <div class="tip-card">
-              <h4>🧘 Meditation</h4>
-              <p>Practice mindfulness to manage stress and urges. Even 5 minutes daily helps!</p>
+              <h4>🧘 Медитирай</h4>
+              <p>Практикувай внимателност, за да управляваш стреса и импулсите. Дори 5 минути дневно помагат!</p>
             </div>
             <div class="tip-card">
-              <h4>👥 Find Support</h4>
-              <p>Share your journey with friends or family. Social support increases success rates.</p>
+              <h4>👥 Потърси подкрепа</h4>
+              <p>Сподели пътя си с приятели или семейство. Социалната подкрепа увеличава шансовете за успех.</p>
             </div>
             <div class="tip-card">
-              <h4>🎯 Track Progress</h4>
-              <p>Log your daily achievements in WellTrack to see how far you've come.</p>
+              <h4>🎯 Следи прогреса</h4>
+              <p>Записвай ежедневните си постижения в WellTrack, за да видиш далеч си стигнал.</p>
             </div>
           </div>
         </div>

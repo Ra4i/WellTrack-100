@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Progress · WellTrack 100</title>
+  <title>Прогрес · WellTrack 100</title>
   <link rel="stylesheet" href="css/style.css" />
+  <script src="js/i18n.js"></script>
 </head>
 <body>
 
@@ -12,28 +13,28 @@
     <aside class="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">W</div>
-        <div class="logo-text">WellTrack <small>100-Day Challenge</small></div>
+        <div class="logo-text">WellTrack <small>100-дневно предизвикателство</small></div>
       </div>
-      <span class="nav-section-label">Main</span>
-      <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> Dashboard</a>
-      <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> Levels</a>
-      <a class="nav-item active" href="progress.html"><span class="nav-icon">📈</span> Progress</a>
-      <a class="nav-item" href="friends.html"><span class="nav-icon">👥</span> Friends</a>
-      <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> Messages</a>
-      <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+      <span class="nav-section-label">Основно</span>
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
+      <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
+      <a class="nav-item active" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
+      <a class="nav-item" href="friends.html"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Приятели</span></a>
+      <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
+      <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
       <div class="sidebar-bottom">
         <div class="user-chip">
           <div class="user-avatar user-avatar-init">A</div>
-          <span class="user-name user-display-name">Loading...</span>
-          <button class="logout-btn" title="Log out">⏏</button>
+          <span class="user-name user-display-name">Зареждане...</span>
+          <button class="logout-btn" title="Изход">⏏</button>
         </div>
       </div>
     </aside>
 
     <main class="main-content">
       <div class="page-header">
-        <h1>Progress</h1>
-        <p class="breadcrumb">WellTrack 100 · <span>Your Recovery Journey</span></p>
+        <h1 data-i18n="nav.progress">Прогрес</h1>
+        <p class="breadcrumb">WellTrack 100 · <span>Твоето възстановяване</span></p>
       </div>
 
       <div class="progress-overview">
@@ -41,45 +42,45 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
           <div class="stat-card">
             <div class="stat-icon">📅</div>
-            <div class="stat-label">Days Logged</div>
+            <div class="stat-label">Записани дни</div>
             <div class="stat-value" id="prog-completed" style="color:var(--accent)">0</div>
-            <div class="stat-target">out of 100 days</div>
+            <div class="stat-target">от 100 дни</div>
           </div>
           <div class="stat-card workout">
             <div class="stat-icon">🔥</div>
-            <div class="stat-label">Current Streak</div>
+            <div class="stat-label">Текуща серия</div>
             <div class="stat-value" id="prog-streak" style="color:var(--warn)">0</div>
-            <div class="stat-target">resets if day missed</div>
+            <div class="stat-target">нулира се при пропуск</div>
           </div>
           <div class="stat-card water">
             <div class="stat-icon">💧</div>
-            <div class="stat-label">Avg. Water</div>
-            <div class="stat-value" id="prog-avg-water">0L</div>
-            <div class="stat-target">per logged day</div>
+            <div class="stat-label">Средно вода</div>
+            <div class="stat-value" id="prog-avg-water">0л</div>
+            <div class="stat-target">на записан ден</div>
           </div>
           <div class="stat-card sleep">
             <div class="stat-icon">😴</div>
-            <div class="stat-label">Avg. Sleep</div>
-            <div class="stat-value" id="prog-avg-sleep">0h</div>
-            <div class="stat-target">per logged day</div>
+            <div class="stat-label">Среден сън</div>
+            <div class="stat-value" id="prog-avg-sleep">0ч</div>
+            <div class="stat-target">на записан ден</div>
           </div>
         </div>
       </div>
 
       <div class="progress-history">
-        <h3>Daily Log History</h3>
+        <h3>История на записите</h3>
         <table class="history-table">
           <thead>
             <tr>
-              <th>Day</th>
-              <th>Water</th>
-              <th>Sleep</th>
-              <th>Activity</th>
-              <th>Date</th>
+              <th>Ден</th>
+              <th>Вода</th>
+              <th>Сън</th>
+              <th>Активност</th>
+              <th>Дата</th>
             </tr>
           </thead>
           <tbody id="history-tbody">
-            <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">Loading...</td></tr>
+            <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">Зареждане...</td></tr>
           </tbody>
         </table>
       </div>

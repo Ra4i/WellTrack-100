@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WellTrack 100 · Your 100-Day Wellness Challenge</title>
+  <title>WellTrack 100 · 100-дневно уелнес предизвикателство</title>
   <link rel="stylesheet" href="css/style.css" />
   <script src="js/i18n.js"></script>
 </head>
@@ -16,63 +16,63 @@
     </div>
     <div class="nav-links">
       <div class="lang-switcher">
-        <button class="lang-btn" onclick="setLanguage('en')" title="English">EN</button>
+        <button class="lang-btn" onclick="setLanguage('en')" title="Английски">EN</button>
         <button class="lang-btn" onclick="setLanguage('bg')" title="Български">BG</button>
       </div>
-      <a href="login.html" id="nav-login" data-i18n="nav.login">Login</a>
-      <a href="register.html" class="cta" data-i18n="nav.startChallenge">Start Challenge →</a>
+      <a href="login.html" id="nav-login" data-i18n="nav.login">Вход</a>
+      <a href="register.html" class="cta" data-i18n="nav.startChallenge">Започни предизвикателството →</a>
     </div>
   </nav>
 
   <section class="home-hero">
-    <div class="tagline">100 Days to Transform</div>
+    <div class="tagline" data-i18n="home.tagline">100 дни до промяна</div>
 
-    <h1>
-      Build habits.<br>
-      Track <span class="highlight">progress.</span><br>
-      Change your life.
+    <h1 data-i18n-html="home.title">
+      Създай навици.<br>
+      Следи <span class="highlight">прогреса</span>.<br>
+      Промени живота си.
     </h1>
 
-    <p>
-      WellTrack 100 is your personal wellness companion for the 100-day challenge.
-      Log water, workouts, and sleep — watch yourself transform day by day.
+    <p data-i18n="home.description">
+      WellTrack 100 е твоят личен уелнес спътник за 100-дневното предизвикателство.
+      Записвай вода, тренировки и сън — виж как се променяш ден след ден.
     </p>
 
     <div class="home-cta">
-      <a href="register.html" class="btn-home-primary">Start Your 100 Days</a>
-      <a href="login.html" class="btn-home-ghost">I have an account</a>
+      <a href="register.html" class="btn-home-primary" data-i18n="home.startButton">Започни своите 100 дни</a>
+      <a href="login.html" class="btn-home-ghost" data-i18n="home.loginButton">Имам акаунт</a>
     </div>
 
     <div class="features-grid">
       <div class="feature-chip">
         <div class="feat-icon">💧</div>
-        <h3>Hydration Tracking</h3>
-        <p>Log daily water intake and hit your hydration goals every single day.</p>
+        <h3 data-i18n="home.features.hydration">Проследяване на хидратация</h3>
+        <p data-i18n="home.featuresDesc.hydration">Записвай дневния прием на вода и изпълнявай целите си за хидратация всеки ден.</p>
       </div>
       <div class="feature-chip">
         <div class="feat-icon">🏋️</div>
-        <h3>Workout Logging</h3>
-        <p>Mark workout completions and build an unbreakable fitness streak.</p>
+        <h3 data-i18n="home.features.workout">Записване на тренировки</h3>
+        <p data-i18n="home.featuresDesc.workout">Отбелязвай завършените тренировки и изграждай непрекъсната серия за фитнес.</p>
       </div>
       <div class="feature-chip">
         <div class="feat-icon">😴</div>
-        <h3>Sleep Analysis</h3>
-        <p>Track sleep hours and discover the patterns that power peak performance.</p>
+        <h3 data-i18n="home.features.sleep">Анализ на сън</h3>
+        <p data-i18n="home.featuresDesc.sleep">Следи часовете сън и открий моделите, които ти дават максимална енергия.</p>
       </div>
       <div class="feature-chip">
         <div class="feat-icon">📈</div>
-        <h3>Progress Visualization</h3>
-        <p>Beautiful charts and rings show how far you've come on your journey.</p>
+        <h3 data-i18n="home.features.progress">Визуализиране на прогрес</h3>
+        <p data-i18n="home.featuresDesc.progress">Красиви графики и кръгове показват колко далеч си стигнал.</p>
       </div>
       <div class="feature-chip">
         <div class="feat-icon">🎯</div>
-        <h3>100-Day Dashboard</h3>
-        <p>See exactly where you are in your challenge with real-time progress rings.</p>
+        <h3 data-i18n="home.features.dashboard">100-дневно табло</h3>
+        <p data-i18n="home.featuresDesc.dashboard">Виж точно къде си в предизвикателството с реално време прогрес кръгове.</p>
       </div>
       <div class="feature-chip">
         <div class="feat-icon">🚀</div>
-        <h3>Cross-Platform</h3>
-        <p>Built to expand to desktop (Electron) and mobile (Capacitor) apps.</p>
+        <h3 data-i18n="home.features.crossPlatform">Крос-платформено</h3>
+        <p data-i18n="home.featuresDesc.crossPlatform">Създадено да се разшири до десктоп и мобилни приложения.</p>
       </div>
     </div>
   </section>

@@ -413,8 +413,8 @@ function initDashboard() {
   document.querySelectorAll('.user-avatar-init').forEach(el => el.textContent = user.name.charAt(0).toUpperCase());
 
   const currentDay = getCurrentDay();
-  document.getElementById('current-day').textContent = `Day ${currentDay}`;
-  document.getElementById('days-remaining').textContent = `${100 - currentDay} days remaining`;
+  document.getElementById('current-day').textContent = `${t('common.day')} ${currentDay}`;
+  document.getElementById('days-remaining').textContent = t('dashboard.daysRemaining', 100 - currentDay);
 
   // Show difficulty badge on dashboard
   const diff = getDifficulty();
@@ -460,7 +460,7 @@ function initDashboard() {
     if (USE_API) {
       try {
         await apiPost('/progress/update', entry);
-        showToast(`Day ${currentDay} saved!`);
+        showToast(t('dashboard.daySaved', currentDay));
         updateStatCards(entry);
         const entries = await apiGet(`/progress?userId=${user.id}`);
         const streakEl = document.getElementById('workout-streak');
@@ -468,10 +468,10 @@ function initDashboard() {
         const levelEl = document.getElementById('current-level');
         if (levelEl) levelEl.textContent = calculateCurrentLevel(entries);
         updateSavingsDisplay(localStorage.getItem('wt_cig_price') || '7.50');
-      } catch (err) { showToast('Failed to save: ' + err.message, 'error'); }
+      } catch (err) { showToast(t('dashboard.failedSave', err.message), 'error'); }
     } else {
       saveProgressLocal(entry);
-      showToast(`Day ${currentDay} saved!`);
+      showToast(t('dashboard.daySaved', currentDay));
       updateStatCards(entry);
       updateSavingsDisplay(localStorage.getItem('wt_cig_price') || '7.50');
     }
@@ -586,16 +586,16 @@ function completeLevel(levelNum) {
   if (!user) return;
   const currentDay = getCurrentDay();
   if (levelNum > currentDay) {
-    showToast(`Level ${levelNum} is not yet available.`, 'error');
+    showToast(t('dashboard.levelNotAvailable', levelNum), 'error');
     return;
   }
   const entry = { userId: user.id, currentDay: levelNum, waterIntake: 0, sleepHours: 0, workoutCompleted: true, date: new Date().toISOString() };
   if (USE_API) {
-    apiPost('/progress/update', entry).then(() => { showToast(`Level ${levelNum} completed!`); initLevels(); })
-      .catch(err => showToast('Failed: ' + err.message, 'error'));
+    apiPost('/progress/update', entry).then(() => { showToast(t('dashboard.levelCompleted', levelNum)); initLevels(); })
+      .catch(err => showToast(t('dashboard.failed', err.message), 'error'));
   } else {
     saveProgressLocal(entry);
-    showToast(`Level ${levelNum} completed!`);
+    showToast(t('dashboard.levelCompleted', levelNum));
     initLevels();
   }
 }
@@ -645,7 +645,7 @@ function showLevelDetail(levelNum) {
   const currentDay = getCurrentDay();
   const user = getCurrentUser();
   if (levelNum > currentDay) {
-    showToast(`Level ${levelNum} is not yet available.`, 'error');
+    showToast(t('dashboard.levelNotAvailable', levelNum), 'error');
     return;
   }
   const lvl = LEVELS[levelNum - 1];
@@ -691,7 +691,7 @@ function showLevelDetail(levelNum) {
         btn.onclick = (e) => {
           e.stopPropagation();
           saveLevelCompletion(user.id, levelNum);
-          showToast('Exercises done! 💪 Available again at midnight.');
+          showToast(t('dashboard.exercisesDone')); 
           setTimeout(() => showLevelDetail(levelNum), 500);
         };
         modalExercises.appendChild(btn);

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Levels · WellTrack 100</title>
+  <title>Нива · WellTrack 100</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/levels_style.css" />
+  <script src="js/i18n.js"></script>
 </head>
 <body>
 
@@ -13,28 +14,28 @@
     <aside class="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">W</div>
-        <div class="logo-text">WellTrack <small>100-Day Challenge</small></div>
+        <div class="logo-text">WellTrack <small>100-дневно предизвикателство</small></div>
       </div>
-      <span class="nav-section-label">Main</span>
-      <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> Dashboard</a>
-      <a class="nav-item active" href="levels.html"><span class="nav-icon">🏆</span> Levels</a>
-      <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> Progress</a>
-      <a class="nav-item" href="friends.html"><span class="nav-icon">👥</span> Friends</a>
-      <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> Messages</a>
-      <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+      <span class="nav-section-label">Основно</span>
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
+      <a class="nav-item active" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
+      <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
+      <a class="nav-item" href="friends.html"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Приятели</span></a>
+      <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
+      <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
       <div class="sidebar-bottom">
         <div class="user-chip">
           <div class="user-avatar user-avatar-init">A</div>
-          <span class="user-name user-display-name">Loading...</span>
-          <button class="logout-btn" title="Log out">⏏</button>
+          <span class="user-name user-display-name">Зареждане...</span>
+          <button class="logout-btn" title="Изход">⏏</button>
         </div>
       </div>
     </aside>
 
     <main class="main-content">
       <div class="page-header">
-        <h1>Levels</h1>
-        <p class="breadcrumb">WellTrack 100 · Your Recovery Journey</p>
+        <h1 data-i18n="levels.title">Нива</h1>
+        <p class="breadcrumb">WellTrack 100 · Твоето възстановяване</p>
       </div>
 
       <!-- Level Hero -->
@@ -42,15 +43,15 @@
         <div class="level-hero-top">
           <div>
             <div class="level-number-big">
-              <span style="font-size:1rem;color:var(--text-muted);font-weight:500">Level</span>
+              <span style="font-size:1rem;color:var(--text-muted);font-weight:500">Ниво</span>
               <span id="level-number">0</span>
             </div>
-            <div class="level-title-big" id="level-title">Keep going!</div>
-            <div class="level-pct" id="level-pct">0/100 levels complete</div>
+            <div class="level-title-big" id="level-title">Продължавай!</div>
+            <div class="level-pct" id="level-pct">0/100 нива завършени</div>
           </div>
           <div style="text-align:right">
-            <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem">Catch-up rule</div>
-            <div style="font-size:0.88rem;color:var(--text-dim);max-width:180px;line-height:1.5">Miss a day? Complete the level the next day — you never lose progress.</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem">Правило за наваксване</div>
+            <div style="font-size:0.88rem;color:var(--text-dim);max-width:180px;line-height:1.5">Пропуснеш ли ден? Завърши нивото на следващия ден — никога не губиш прогрес.</div>
           </div>
         </div>
         <div class="level-progress-track">
@@ -60,22 +61,22 @@
 
       <!-- Today's Motivation -->
       <div class="motivation-section">
-        <h3>🌟 <span id="motivation-title">Today's Motivation</span></h3>
+        <h3>🌟 <span id="motivation-title">Днешна мотивация</span></h3>
         <div class="motivation-cards">
           <div class="motivation-card smoke">
-            <div class="mot-label">🚬 Quit Smoking</div>
-            <p id="motivation-smoke">Log your first day to unlock your motivation.</p>
+            <div class="mot-label">🚬 Откажи цигарите</div>
+            <p id="motivation-smoke">Запиши първия си ден, за да отключиш мотивацията.</p>
           </div>
           <div class="motivation-card alcohol">
-            <div class="mot-label">🍺 Quit Alcohol</div>
-            <p id="motivation-alcohol">Log your first day to unlock your motivation.</p>
+            <div class="mot-label">🍺 Откажи алкохола</div>
+            <p id="motivation-alcohol">Запиши първия си ден, за да отключиш мотивацията.</p>
           </div>
         </div>
       </div>
 
       <!-- Level Grid -->
       <div class="level-grid-section">
-        <h3>🗺️ All 100 Levels <span style="color:var(--text-muted);font-weight:400;font-size:0.85rem;margin-left:8px">Click any level to read its message</span></h3>
+        <h3>🗺️ Всички 100 нива <span style="color:var(--text-muted);font-weight:400;font-size:0.85rem;margin-left:8px">Кликни ниво, за да прочетеш съобщението</span></h3>
         <div class="level-grid" id="level-grid"></div>
       </div>
     </main>
@@ -85,21 +86,21 @@
   <div class="level-modal-overlay" id="level-modal" onclick="if(event.target===this)closeLevelModal()">
     <div class="level-modal">
       <div class="modal-header">
-        <span class="modal-level-badge" id="modal-level-num">Level 1</span>
+        <span class="modal-level-badge" id="modal-level-num">Ниво 1</span>
         <button class="modal-close" onclick="closeLevelModal()">✕</button>
       </div>
-      <div class="modal-title" id="modal-title">Level Title</div>
+      <div class="modal-title" id="modal-title">Заглавие на ниво</div>
       <div class="modal-cards">
         <div class="modal-card exercises">
-          <div class="mot-label">💪 Today's Exercises</div>
+          <div class="mot-label">💪 Днешни упражнения</div>
           <ul id="modal-exercises" style="list-style: none; padding: 0; margin: 0;"></ul>
         </div>
         <div class="modal-card smoke">
-          <div class="mot-label">🚬 Quit Smoking</div>
+          <div class="mot-label">🚬 Откажи цигарите</div>
           <p id="modal-smoke"></p>
         </div>
         <div class="modal-card alcohol">
-          <div class="mot-label">🍺 Quit Alcohol</div>
+          <div class="mot-label">🍺 Откажи алкохола</div>
           <p id="modal-alcohol"></p>
         </div>
       </div>

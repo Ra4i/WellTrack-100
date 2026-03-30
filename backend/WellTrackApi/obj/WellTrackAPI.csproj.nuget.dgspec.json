@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WellTrackApi\\WellTrackAPI.csproj": {}
+    "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WEllTrackApi\\WellTrackAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WellTrackApi\\WellTrackAPI.csproj": {
+    "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WEllTrackApi\\WellTrackAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WellTrackApi\\WellTrackAPI.csproj",
+        "projectUniqueName": "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WEllTrackApi\\WellTrackAPI.csproj",
         "projectName": "WellTrackAPI",
-        "projectPath": "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WellTrackApi\\WellTrackAPI.csproj",
+        "projectPath": "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WEllTrackApi\\WellTrackAPI.csproj",
         "packagesPath": "C:\\Users\\dttod\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WellTrackApi\\obj\\",
+        "outputPath": "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WEllTrackApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
