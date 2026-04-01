@@ -113,27 +113,257 @@
     // Init page
     if (!requireAuth()) { }
 
-    // Chatbot responses
-    const CHATBOT_RESPONSES = {
+    // ────── Topic Keywords Detection ──────
+    const TOPIC_KEYWORDS = {
       en: {
-        cravings: "Cravings typically last 3-5 minutes. Try these strategies: drink water, do deep breathing, exercise, or call a friend. Each craving you resist makes you stronger!",
-        motivation: "Remember why you started. Every day sober is a victory. You're building a new identity. The hardest part is behind you - keep going!",
-        exercise: "Physical activity is powerful! Even a 10-minute walk can reduce cravings. As your body gets stronger, your willpower follows.",
-        sleep: "Poor sleep increases cravings. Aim for consistent sleep schedule. Avoid screens 1 hour before bed. Your body heals during sleep!",
-        health: "Your lungs start healing in 20 minutes. After 1 month, lung function improves 30%. After 1 year, your heart disease risk is halved!",
-        stress: "Manage stress with exercise, meditation, or talking to someone. Alcohol and smoking don't solve problems - they create them.",
-        withdrawal: "Withdrawal symptoms peak in 3-4 days and fade by week 2. You're not weak - your brain is rewiring itself. This is temporary!",
-        default: "Great question! Remember: You're stronger than your cravings. Stay hydrated, move your body, and reach out for support. You've got this! 💪"
+        smoking_quit: ['quit smoking', 'stop smoking', 'quit cigarettes', 'stop cigarettes', 'smoke free', 'smokefree', 'no smoking', 'nicotine', 'cigarette', 'butt', 'cigar', 'tobacco'],
+        alcohol_quit: ['quit alcohol', 'stop drinking', 'sobriety', 'sober', 'no alcohol', 'alcoholic', 'drunk', 'hangover', 'beer', 'wine', 'vodka', 'whiskey'],
+        fitness: ['exercise', 'workout', 'gym', 'run', 'running', 'strength', 'cardio', 'training', 'sport', 'yoga', 'walk', 'hiking', 'lift', 'stretch', 'fitness'],
+        nutrition: ['water', 'drink', 'diet', 'food', 'eat', 'nutrition', 'meal', 'healthy food', 'snack', 'sugar', 'appetite', 'hunger'],
+        sleep: ['sleep', 'rest', 'bed', 'bedtime', 'insomnia', 'tired', 'fatigue', 'nap', 'dream', 'screen'],
+        stress: ['stress', 'anxiety', 'anger', 'meditation', 'mindfulness', 'relaxed', 'calm', 'breathing', 'panic', 'worry', 'scared'],
+        health: ['health', 'lung', 'heart', 'disease', 'benefit', 'healing', 'recover', 'physical', 'body', 'wellness'],
+        motivation: ['motivation', 'inspire', 'support', 'goal', 'challenge', 'confident', 'strength', 'victory', 'success', 'proud'],
+        cravings: ['craving', 'urge', 'tempt', 'trigger', 'weakness', 'resist', 'control', 'impulse'],
+        withdrawal: ['withdrawal', 'symptom', 'mood', 'irritable', 'concentrate', 'focus', 'difficult'],
+        habits: ['habit', 'routine', 'pattern', 'behavior', 'discipline', 'consistency', 'daily', 'every day'],
+        social_support: ['friend', 'family', 'support', 'alone', 'lonely', 'community', 'group', 'share'],
+        relapse: ['relapse', 'slip', 'fail', 'mistake', 'back to', 'smoking again', 'drinking again'],
+        general: ['help', 'advice', 'tip', 'how', 'what', 'why', 'when', 'where', 'thanks', 'thank']
       },
       bg: {
-        cravings: "Желанията обикновено траят 3-5 минути. Опитай тези стратегии: пей вода, дълбоко дишай, тренирай, или позвони на приятел. Всяко желание, което приемеш, те прави по-силен!",
-        motivation: "Помни защо си започнал. Всеки ден е победа. Изграждаш нова самоличност. Най-трудната част е зад теб - продължи!",
-        exercise: "Физическата активност е мощна! Само 10-минутна разходка може да намали желанията. През време как тялото ти се укрепва, волята ти също.",
-        sleep: "Лошият сън увеличава желанията. Целма е последователен сън. Избягвай екрани час преди легло. Тялото ти се лекува през сън!",
-        health: "Белите дробове ти се исцеляват за 20 минути. След месец функцията на белите дробове се подобрява 30%. След година риска от болести на сърцето е половинен!",
-        stress: "Управлявай стреса с тренировка, медитация или разговор. Алкохолът и цигарите не решават проблемите - те ги създават.",
-        withdrawal: "Симптомите на отдръжане достигат връх на 3-4 дни и затихват към 2-та седмица. Не си слаб - мозъкът ти се преструктурира. Това е временно!",
-        default: "Чудесен въпрос! Помни: Ти си по-силен от желанията. Останься хидриран, движи се и потърси помощ. Справиш се! 💪"
+        smoking_quit: ['престани от цигари', 'спри цигари', 'без цигари', 'никотин', 'цигара', 'цигари', 'пушиш', 'пушене', 'тютюн'],
+        alcohol_quit: ['престани от алкохол', 'спри алкохол', 'без алкохол', 'пиене', 'пиян', 'похмелие', 'бира', 'вино', 'водка'],
+        fitness: ['тренировка', 'упражнение', 'фитнес', 'спорт', 'бягане', 'яга', 'силови', 'кардио', 'разтягане', 'прогулка', 'поход'],
+        nutrition: ['вода', 'пиене', 'диета', 'храна', 'ядене', 'хранене', 'прием', 'здравословна храна', 'закуска', 'захар'],
+        sleep: ['сън', 'почивка', 'леглото', 'сънища', 'безсъние', 'уморен', 'изморен', 'екран'],
+        stress: ['стрес', 'тревога', 'гняв', 'медитация', 'внимателност', 'спокойствие', 'дишане', 'паника', 'безпокойство'],
+        health: ['здраве', 'бели дробове', 'сърце', 'болест', 'ползи', 'лечение', 'възстановяване', 'тяло', 'благосъстояние'],
+        motivation: ['мотивация', 'вдъхновение', 'подкрепа', 'цел', 'предизвикателство', 'увереност', 'победа', 'успех'],
+        cravings: ['желание', 'желаеш', 'съблазн', 'триггер', 'слабост', 'съпротива', 'контрол', 'импулс'],
+        withdrawal: ['отдръжане', 'симптом', 'настроение', 'раздразнител', 'концентрация', 'фокус'],
+        habits: ['навик', 'рутина', 'модел', 'поведение', 'дисциплина', 'последователност', 'всеки ден'],
+        social_support: ['приятел', 'семейство', 'подкрепа', 'самотен', 'общност', 'група', 'сподели'],
+        relapse: ['рецидив', 'провал', 'грешка', 'обратно', 'отново пушене', 'отново пиене'],
+        general: ['помощ', 'съвет', 'как', 'какво', 'защо', 'кога', 'къде', 'благодаря']
+      }
+    };
+
+    // ────── Comprehensive Chatbot Responses ──────
+    const CHATBOT_RESPONSES = {
+      en: {
+        smoking_quit: [
+          "Quitting smoking is one of the best decisions you can make. It takes about 21 days to break a habit. You've got this!",
+          "Your body will thank you for quitting smoking. Within 20 minutes, your heart rate starts to normalize. Keep pushing!",
+          "Smoking cessation is tough but doable. Use these tricks: keep your hands busy, chew gum, drink water, and stay active.",
+          "Every cigarette you don't smoke is a victory. Your lungs are already starting to heal. Stay strong!",
+          "Replace smoking with healthier habits. Try a walk, drink water, or do breathing exercises. You're rewiring your brain!"
+        ],
+        alcohol_quit: [
+          "Quitting alcohol is one of the best things you can do for your health. Your liver regenerates quickly - believe in the process!",
+          "Staying sober gets easier each day. The first week is hardest, but your mental clarity will improve dramatically.",
+          "Alcohol-free life opens doors to better relationships, health, and success. You're on the right path!",
+          "When the urge to drink hits, call a friend, exercise, or practice breathing. These urges typically pass in 15-20 minutes.",
+          "Your body is healing with every sober day. Sleep improves, skin clears, and your mood stabilizes. Incredible changes ahead!"
+        ],
+        fitness: [
+          "Even a 10-minute walk crushes cravings and boosts your mood. Exercise releases endorphins - nature's antidepressants!",
+          "Start small with fitness. A 20-minute walk, 10 push-ups, or yoga is perfect. Build your routine gradually.",
+          "Exercise is your secret weapon against cravings. When urges hit, do 30 jumping jacks or take a walk. Movement saves lives!",
+          "You don't need a gym to stay fit. Use your body weight: push-ups, squats, lunges. YouTube has amazing free workouts!",
+          "Consistency beats perfection in fitness. A 15-minute daily walk is better than occasional intense workouts. Build momentum!"
+        ],
+        nutrition: [
+          "Drink water constantly! It reduces cravings, boosts energy, and cleanses your body. Aim for 8-10 glasses daily.",
+          "Proper nutrition supports your quit journey. Eat protein, whole grains, and fresh fruits. Avoid refined sugars that spike cravings.",
+          "Hydration is crucial for managing cravings. When tempted, drink a full glass of water and wait 10 minutes. Usually the urge passes!",
+          "Snack smart: almonds, berries, yogurt, and vegetables are your friends. They're satisfying and support your wellness goals.",
+          "Feed your body well - it's an investment in your recovery. Balanced meals stabilize mood and reduce withdrawal symptoms."
+        ],
+        sleep: [
+          "Quality sleep is essential for your recovery journey. Aim for 7-9 hours and consistent bedtime. Your body heals during sleep!",
+          "Poor sleep increases cravings significantly. Avoid screens 1 hour before bed, keep your room cool, and try deep breathing.",
+          "Better sleep means better willpower tomorrow. Sleep deprivation weakens resistance, so prioritize rest tonight!",
+          "Establish a sleep routine: same bedtime, no screens, light reading or meditation. Your brain will thank you!",
+          "If insomnia hits, do light exercise earlier in the day and avoid caffeine after 2 PM. Quality rest fuels your journey."
+        ],
+        stress: [
+          "Stress is a major trigger for relapse. Combat it with exercise, meditation, deep breathing, or talking to someone you trust.",
+          "Meditation doesn't require an app or years of practice. Start with 5 minutes of deep breathing - it works immediately!",
+          "When stressed, pause and do box breathing: inhale 4 counts, hold 4, exhale 4, hold 4. Repeat 5 times. Feel the calm.",
+          "Remember: alcohol and smoking don't solve stress - they create more problems. Healthy habits are your solution.",
+          "Talk about your stress with friends or family. Bottling it up leads to relapse. Connection is healing."
+        ],
+        health: [
+          "Your lungs start healing within 20 minutes of quitting. After 1 month, lung function improves by 30%. Amazing progress!",
+          "After 1 year of being smoke-free, your heart disease risk drops by 50%. In 10 years, it equals a non-smoker's risk!",
+          "Your sense of smell and taste improve within weeks of quitting. Food will taste amazing again!",
+          "Quitting alcohol reduces cancer risk, improves liver function, and strengthens your immune system. Health wins are coming!",
+          "Every day without smoking/alcohol reduces blood pressure and improves circulation. Your whole body is rebuilding itself!"
+        ],
+        motivation: [
+          "You're stronger than your cravings. Every time you resist, you prove it. You're building an unstoppable version of yourself!",
+          "Remember why you started. Is it health? Family? Self-respect? Hold that reason close on tough days.",
+          "Every single day sober is a victory. Don't just count days - celebrate the fact that you're building a new identity!",
+          "You're part of a community of warriors fighting for their health. You're not alone. Millions have succeeded - so will you!",
+          "Progress isn't always visible on the scale or mirror, but it's happening inside. Your organs are healing, your mind is clearing - keep going!"
+        ],
+        cravings: [
+          "Cravings are temporary - they typically last 3-5 minutes. Ride the wave: drink water, breathe deeply, exercise, or call a friend!",
+          "Cravings are your brain's way of seeking dopamine, not a sign of weakness. Each craving you resist rewires your brain for success.",
+          "When cravings hit hard, remember: they WILL pass. Distract yourself with push-ups, cold water on your face, or a walk.",
+          "Identify your triggers: stress, certain places, specific people. Once you know them, you can plan ahead and avoid setbacks.",
+          "The intensity of cravings decreases over time. The first week is hardest, but by week 3-4, they become manageable. You're almost there!"
+        ],
+        withdrawal: [
+          "Withdrawal symptoms peak in 3-4 days and fade by week 2. You're not weak - your brain is literally rewiring itself. This is temporary!",
+          "Mood swings, irritability, and difficulty concentrating are normal. Your neurotransmitters are rebalancing. This is a sign of healing!",
+          "Exercise, sunlight, and good nutrition speed up withdrawal recovery. Move your body, go outside, eat well - your brain will thank you.",
+          "If withdrawal feels overwhelming, breathe. It's intense but brief. Tell yourself: 'This is temporary. I'm winning.'",
+          "Withdrawal usually peaks within the first 72 hours, then improves daily. You've survived 72 hours before - you can do it again!"
+        ],
+        habits: [
+          "21-100 days to build a new habit. You're investing in becoming a healthier version of yourself. Consistency is everything!",
+          "Small wins build momentum. Start with one healthy habit: morning walks, water before bed, 10 push-ups. Chain them together!",
+          "Track your habits visually - mark each successful day on a calendar. Seeing the chain grow is incredibly motivating!",
+          "Make healthy habits so easy they're impossible to skip. Put workout clothes by your bed, water on your nightstand. Remove friction.",
+          "Your brain craves patterns. You quit smoking - that freed up a routine spot. Fill it with exercise, meditation, or a hobby."
+        ],
+        social_support: [
+          "Share your journey with trusted friends and family. Their belief in you matters more than you know.",
+          "Find a support community - online or in-person. Knowing others are fighting the same battle is incredibly powerful.",
+          "Tell people around you about your goals. Accountability increases success rates dramatically. Don't hide your journey!",
+          "When lonely, reach out instead of relapsing. Call a friend, go to a community event, or join a fitness class. Connection heals.",
+          "Surround yourself with people who support your goals. Distance yourself from enablers. You deserve people who lift you up!"
+        ],
+        relapse: [
+          "If you slip, don't give up. One cigarette or drink doesn't erase your progress. Get right back on track - you've already proven you can do this!",
+          "Relapse is part of recovery for many people. What matters is your response. Analyze the trigger, make a plan, and try again immediately.",
+          "Shame doesn't help - action does. If you slip, crush that craving by exercising immediately. Your next choice is what counts.",
+          "Tell someone if you slip. Don't let shame grow and pull you deeper. You're human. Get support and restart right now.",
+          "Every relapse is a learning opportunity. What triggered it? How can you handle it differently next time? Adjust and move forward stronger!"
+        ],
+        general_wellness: [
+          "Your wellness journey is unique. What works for someone else might not work for you. Experiment and find YOUR path to success!",
+          "Small consistent actions beat occasional big efforts. Do something healthy every single day - that's how permanent change happens.",
+          "Celebrate every milestone: 3 days, 7 days, 30 days, 100 days. You earned it. Be proud of yourself!",
+          "Invest in yourself. You're worth the effort. In 6 months, you'll thank today's version of you for not giving up.",
+          "Wellness isn't about perfection - it's about progress. Some days are harder than others, and that's okay. Keep going!"
+        ],
+        offTopic: [
+          "I'm specifically designed to help with smoking/alcohol cessation, fitness, and wellness. Your question seems outside this scope. How can I help with your wellness journey?",
+          "That's an interesting question, but I focus on helping you quit smoking, reduce alcohol, and build fitness habits. Is there something about your wellness I can help with?",
+          "I don't have expertise in that area, but I'm here to support your smoking, alcohol, and fitness journey. What's on your mind about your wellness goals?",
+          "Let's keep our chat focused on your wellness path - quitting smoking/alcohol and building healthy habits. What can I help you with regarding that?",
+          "That topic is outside my area of focus. I'm here to be your wellness coach for smoking/alcohol cessation and fitness. How can I support you today?"
+        ]
+      },
+      bg: {
+        smoking_quit: [
+          "Престанването от цигари е едно от най-добрите решения, които можеш да вземеш. Отнема около 21 дни да се прекъсне една навика. Справиш се!",
+          "Тялото ти ще ти благодари за престанването на цигарите. След 20 минути сърцебиенето ти се нормализира. Продължи!",
+          "Престанването е трудно, но възможно. Използвай тези трикове: заемай ръцете си, жвачка, пей вода, остани активен.",
+          "Всяка цигара, която не пушиш, е победа. Белите дробове са започнали да се заздравяват. Остани силен!",
+          "Замени цигарите със здравословни навики. Опитай разходка, пей вода или дълбоко дишай. Преструктурираш мозъка си!"
+        ],
+        alcohol_quit: [
+          "Престанването от алкохол е едно от най-добрите нещо за здравето ти. Черният дроб се регенерира бързо - вярвай в процеса!",
+          "Животът без алкохол е все по-лесен всеки ден. Първата седмица е най-трудна, но умствената ясност ти се подобрява драматично.",
+          "Живот без алкохол отваря врати към по-добри отношения, здраве и успех. На правилния си пътеш!",
+          "Когато тежелята да пиеш е силна, позвони на приятел, потренирай се или практикувай дишане. Тези желания обикновено отминават в 15-20 минути.",
+          "Тялото ти се заздравява всеки ден без алкохол. Сънят се подобрява, кожата се очиства, настроението се стабилизира. Невероятни промени предстоят!"
+        ],
+        fitness: [
+          "Дори 10-минутна разходка ощетява желанията и повишава настроението. Упражнението высвобождава ендорфини - естествени антидепресанти!",
+          "Начни малко с фитнес. 20-минутна разходка, 10 отруба или йога е перфектно. Построй рутина постепенно.",
+          "Упражнението е твоето секретно оръжие срещу желанията. Когато дойде желанието, направи 30 скока или разходка. Движението спасява живота!",
+          "Не нуждаеш се от фитнес зала, за да останеш в форма. Използвай тежестта на тялото: отруба, приседания, наклони. YouTube има невероятни безплатни тренировки!",
+          "Последователността надвива съвършенството в фитнеса. 15-минутна ежедневна разходка е по-добра от редки интензивни тренировки. Построй темпото!"
+        ],
+        nutrition: [
+          "Пей вода непрекъснато! Намалява желанията, повишава енергията и очиства тялото. Целма е 8-10 чаши дневно.",
+          "Правилната хранене подкрепя твоята борба. Ядене протеин, пълнозърнести зърна и свежи плодове. Избягвай рафинирани захари.",
+          "Хидратацията е решаваща за управление на желанията. Когато си в искушение, пий пълна чаша вода и чакай 10 минути. Обикновено желанието отминава!",
+          "Здравословни закуски: бадеми, боровинки, йогурт и зеленчуци. Те са задоволителни и подкрепят целите ти.",
+          "Храни тялото си добре - това е инвестиция в възстановяването ти. Балансирани приемане стабилизира настроението и намалява симптомите."
+        ],
+        sleep: [
+          "Качественият сън е съществен за путя ти. Целма е 7-9 часа и последователно време. Тялото ти се лекува през сън!",
+          "Лошият сън значително увеличава желанията. Избягвай екрани час преди легло, поддържай стаята хладна и опитай дълбоко дишане.",
+          "По-добър сън означава по-добра воля утре. Депривация от сън отслабва съпротивата, затова приоритизирай почивката вечер!",
+          "Установи режим на сън: същото време за легло, без екрани, лесно четене или медитация. Мозъкът ти ще ти благодари!",
+          "Ако безсъние удари, направи светла тренировка по-рано през деня и избягвай кофеина след 14:00. Качественият отпочивък подхранва път си."
+        ],
+        stress: [
+          "Стресът е основен триггер за рецидив. Борей се с упражнения, медитация, дълбоко дишане или разговор с някой, на когото вярваш.",
+          "Медитацията не требва приложение или години опит. Начни с 5 минути дълбоко дишане - работи веднага!",
+          "Когато си стресиран, спри се и направи дихание в кутия: вдишай 4 отброя, задържи 4, издишай 4, задържи 4. Повтори 5 пъти. Почувствай спокойствието.",
+          "Помни: алкохолът и цигарите не решават стреса - създават повече проблеми. Здравословните навики са твоята решение.",
+          "Говори за стреса си с приятели или семейство. Задържането го внътре води до рецидив. Свързаност е лечение."
+        ],
+        health: [
+          "Белите дробове ти се начало да се заздравяват в рамките на 20 минути на престанък. След месец функцията се подобрява 30%. Невероятен прогрес!",
+          "След година без цигари риска от болеста на сърцето намалява с 50%. За 10 години е равен на на-пушача!",
+          "Чувството ти на парах и вкус се подобрява в рамките на седмици на престанък. Храната ще има невероятен вкус отново!",
+          "Престанването от алкохол намалява риска от рак, подобрява функцията на черния дроб и укрепва имунната система. Победи идват!",
+          "Всеки ден без цигари/алкохол намалява кръвното налягане и подобрява циркулацията. Цялото тяло ти се преобразува!"
+        ],
+        motivation: [
+          "Ти си по-силен от желанията. Всеки път, когато съпротивляваш, го доказваш. Построяваш невеустойма версия на себе си!",
+          "Помни защо си започнал. За здраве? За семейство? За самоуважение? Държи това причина близо в трудни дни.",
+          "Всеки ден без цигари/алкохол е победа. Не просто събирай дни - празднувай факта, че построяваш нова самоличност!",
+          "Ти си част от общност на войници, които се борят за здравето си. Не си самотен. Милиони са успели - ще успееш и ти!",
+          "Прогресът не винаги е видим на везната или в огледалото, но се случва. Органите ти се заздравяват, умът ти се проясня - продължи!"
+        ],
+        cravings: [
+          "Желанията са временни - обикновено траят 3-5 минути. Надвий вълната: пей вода, дълбоко дишай, потренирай се или позвони на приятел!",
+          "Желанията са начин на мозъка да търси допамин, не знак за слабост. Всяко желание, което приемеш, преструктурира мозъка для успех.",
+          "Когато желанията са силни, помни: ще отминат. Отсегли се с отруба, ледена вода в лицето или разходка.",
+          "Идентифицирай триггерите: стрес, определени места, определени хора. След като ги знаеш, можеш планирай напред и избегни неудачи.",
+          "Интензивността на желанията намалява с течение на времето. Първата седмица е най-трудна, но към 3-4 седмица, те са управляеми. Почти си там!"
+        ],
+        withdrawal: [
+          "Симптомите на отдръжане достигат връх на 3-4 дни и затихват към 2-та седмица. Не си слаб - мозъкът ти буквално се преструктурира. Това е временно!",
+          "Смени в настроението, раздразнителност и трудност да се концентрираш са нормални. Невротрансмитерите ти се преравновесяват. Това е знак на лечение!",
+          "Упражнението, слънцето и добрата хранене ускоряват възстановяването. Движи се, излез на слънце, ядене добре - мозъкът ти ще благодари.",
+          "Ако отдръжането е непосилно, дишай. Интензивно е, но кратко. Кажи си: 'Това е временно. Побеждавам.'",
+          "Отдръжането обикновено достига връх в първите 72 часа, след което се подобрява ежедневно. Преживял си 72 часа преди - можеш отново!"
+        ],
+        habits: [
+          "21-100 дни за построяване на нова навика. Инвестираш в да станеш по-здравословна версия на себе си. Последователността е всичко!",
+          "Малки победи надграждат темпо. Начни с една здравословна навика: утринни разходки, вода преди легло, 10 отруба. Затвори ги вместе!",
+          "Следи навиките си визуално - маркирай всеки успешен ден на където. Виждането на растящата верига е невероятно мотивиращо!",
+          "Направи здравословни навики толкова лесни, че е невъзможно да ги отпуснеш. Постави спортни дрехи близо до легло, вода на нощното шкафче. Премахни трудност.",
+          "Мозъкът ти жадува шарди. Престана от цигари - това освободи място в рутина ти. Напълни го с упражнение, медитация или хобе."
+        ],
+        social_support: [
+          "Сподели пътя си с доверени приятели и семейство. Верата им в теб е по-важна, отколкото си наслукуваш.",
+          "Намери поддържаща общност - онлайн или лично. На знанието, че други се борят със същото, е невероятно мощно.",
+          "Кажи на хората около теб за целите си. Отговорността драматично увеличава шансовете за успех. Не скривай пътя си!",
+          "Когато си самотен, потърси помощ вместо да се върнеш. Позвони на приятел, отиди на събитие, запиши се в фитнес клас. Свързаност лекува.",
+          "Обкръжи се с хора, които поддържат целите ти. Дистанцирай се от тези, които насърчават лошите навики. Заслужаваш хора, които те вдигат!"
+        ],
+        relapse: [
+          "Ако поскатнеш, не се отказвай. Една цигара или напиток не изтрива прогреса ти. Върни се веднага - вече доказа, че можеш!",
+          "Рецидивът е част от възстановяването за мнозина. Важноес отговорът му. Анализирай триггера, направи план, опитай отново веднага.",
+          "Срамът не помага - действието прави. Ако поскатнеш, потренирай се веднага. Следващата решение е което има значение.",
+          "Кажи на някого, ако поскатнеш. Не позволявай срамът да расте и да те вкарва по-дълбоко. Ти си човек. Потърси подкрепа и начни отново!",
+          "Всеки рецидив е учебна възможност. Какво го е предизвикало? Как можеш да го обработиш по-различно следния път? Адаптирай и напредък по-силен!"
+        ],
+        general_wellness: [
+          "Путя ти за благосъстояние е уникален. Това, което работи за другиц, може да не работи за теб. Експериментирай и намери ТВОЯ пътеща към успех!",
+          "Малки последователни действия надвиват редки големи усилия. Направи нещо здравословно всеки ден - така стават постоянни промени!",
+          "Прославите всяка прекъсна точка: 3 дни, 7 дни, 30 дни, 100 дни. Заслужи си го. Бъди горд на себе си!",
+          "Инвестирай в себе си. Ти си стойност. За 6 месеца ще благодариш на днешната версия на себе си, че не си се отказал.",
+          "Благосъстоянието не е около съвършенство - това е около прогрес. Някои дни са по-трудни от други, и това е добре. Продължи!"
+        ],
+        offTopic: [
+          "Съм специално проектиран, че да помогна със престанување на цигаре/алкохола, фитнес и благосъстояние. Твоят въпрос изглеждаче е извън обхвата. Как мога да помогна за твоята благосъстояние?",
+          "Интересно е питане, но се фокусирам на престанување на цигари, намаляване на алкохола и построяване на фитнес навики. Нещо ли свързано с благосъстояние може да помогна?",
+          "Нямам опит в това поле, но съм тук, че да поддърже твоята борба със цигари, алкохол и фитнес навики. Какво има на ум по отношение на целите ти за благосъстояние?",
+          "Оставаме фокусирани в чата си за благосъстояние пътя - престанување на цигари/алкохола и построяване на здравословни навики. Как мога да теподдърже?",
+          "Темата е извън сферата на моята специалност. Съм тук, че да бъда твоят wellness треньор за престанување и фитнес. Как теча помогна днес?"
+        ]
       }
     };
 
@@ -198,18 +428,67 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    // ────── Enhanced Functions ──────
+    function detectTopic(input) {
+      const keywords = TOPIC_KEYWORDS[lang] || TOPIC_KEYWORDS.en;
+      const inputLower = input.toLowerCase();
+      const scores = {};
+
+      // Score each topic based on keyword matches
+      for (const [topic, keywordList] of Object.entries(keywords)) {
+        scores[topic] = keywordList.filter(kw => inputLower.includes(kw.toLowerCase())).length;
+      }
+
+      // Get the topic with the highest score
+      const maxScore = Math.max(...Object.values(scores));
+
+      // If no keywords match, it's likely off-topic
+      if (maxScore === 0) {
+        return 'offTopic';
+      }
+
+      // Return the topic with highest score
+      return Object.keys(scores).find(topic => scores[topic] === maxScore);
+    }
+
+    function getRandomResponse(responses) {
+      if (Array.isArray(responses)) {
+        return responses[Math.floor(Math.random() * responses.length)];
+      }
+      return responses;
+    }
+
+    function personalizeResponse(topic, response) {
+      const userName = user?.name || 'friend';
+      const currentLang = lang; // Use the lang variable already defined
+
+      // Add user's name at the beginning for certain topics
+      if (['smoking_quit', 'alcohol_quit', 'motivation', 'relapse'].includes(topic)) {
+        if (currentLang === 'bg') {
+          return `Привет ${userName}, ${response.charAt(0).toLowerCase() + response.slice(1)}`;
+        } else {
+          return `Hi ${userName}, ${response.charAt(0).toLowerCase() + response.slice(1)}`;
+        }
+      }
+
+      return response;
+    }
+
     function getResponse(input) {
       const responses = CHATBOT_RESPONSES[lang] || CHATBOT_RESPONSES.en;
+      const topic = detectTopic(input);
 
-      if (input.includes('craving') || input.includes('желание')) return responses.cravings;
-      if (input.includes('motivation') || input.includes('мотив')) return responses.motivation;
-      if (input.includes('exercise') || input.includes('тренир')) return responses.exercise;
-      if (input.includes('sleep') || input.includes('сън')) return responses.sleep;
-      if (input.includes('health') || input.includes('здравл')) return responses.health;
-      if (input.includes('stress') || input.includes('стрес')) return responses.stress;
-      if (input.includes('withdraw') || input.includes('отдръжа')) return responses.withdrawal;
+      if (topic === 'offTopic') {
+        const offTopicResponses = responses.offTopic;
+        return getRandomResponse(offTopicResponses);
+      }
 
-      return responses.default;
+      // Get the response array for the detected topic
+      const topicResponses = responses[topic] || responses.general_wellness;
+      const response = getRandomResponse(topicResponses);
+
+      // Personalize the response
+      return personalizeResponse(topic, response);
     }
 
     function escapeHtml(text) {
