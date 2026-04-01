@@ -99,4 +99,73 @@ namespace WellTrackAPI.Models
         public bool EnableNotifications { get; set; } = true;
         public bool ShowMotivationalQuotes { get; set; } = true;
     }
+
+    public class Friend
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public int UserId { get; set; }
+
+        [Required]
+        public int FriendUserId { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Navigation
+        public User? User { get; set; }
+        public User? FriendUser { get; set; }
+    }
+
+    public class FriendRequest
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public int FromUserId { get; set; }
+
+        [Required]
+        public int ToUserId { get; set; }
+
+        public DateTime SentAt { get; set; } = DateTime.UtcNow;
+
+        // Navigation
+        public User? FromUser { get; set; }
+        public User? ToUser { get; set; }
+    }
+
+    public class FriendDto
+    {
+        public int Id { get; set; }
+        public int FriendUserId { get; set; }
+        public string FriendName { get; set; } = string.Empty;
+        public string FriendEmail { get; set; } = string.Empty;
+        public DateTime ConnectedSince { get; set; }
+    }
+
+    public class FriendRequestDto
+    {
+        public int Id { get; set; }
+        public int FromUserId { get; set; }
+        public string FromName { get; set; } = string.Empty;
+        public string FromEmail { get; set; } = string.Empty;
+        public DateTime SentAt { get; set; }
+    }
+
+    public class SendMessageDto
+    {
+        [Required] public int SenderId { get; set; }
+        [Required] public int ReceiverId { get; set; }
+        [Required, MaxLength(2000)] public string Content { get; set; } = string.Empty;
+    }
+
+    public class ConversationMessageDto
+    {
+        public int Id { get; set; }
+        public int SenderId { get; set; }
+        public int ReceiverId { get; set; }
+        public string SenderName { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+    }
 }

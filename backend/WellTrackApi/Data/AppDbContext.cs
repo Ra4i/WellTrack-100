@@ -11,6 +11,8 @@ namespace WellTrackAPI.Data
         public DbSet<Progress> Progress => Set<Progress>();
         public DbSet<UserSettings> UserSettings => Set<UserSettings>();
         public DbSet<Message> Messages => Set<Message>();
+        public DbSet<Friend> Friends => Set<Friend>();
+        public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,6 +48,34 @@ namespace WellTrackAPI.Data
                 .WithMany()
                 .HasForeignKey(m => m.ReceiverId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Friends: User has many friendships (one direction)
+            modelBuilder.Entity<Friend>()
+                .HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Friend references another User
+            modelBuilder.Entity<Friend>()
+                .HasOne(f => f.FriendUser)
+                .WithMany()
+                .HasForeignKey(f => f.FriendUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // FriendRequest: FromUser sends request
+            modelBuilder.Entity<FriendRequest>()
+                .HasOne(fr => fr.FromUser)
+                .WithMany()
+                .HasForeignKey(fr => fr.FromUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // FriendRequest: ToUser receives request
+            modelBuilder.Entity<FriendRequest>()
+                .HasOne(fr => fr.ToUser)
+                .WithMany()
+                .HasForeignKey(fr => fr.ToUserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -1,6 +1,12 @@
 const API_BASE = 'http://localhost:5001/api';
 const USE_API = true;
 
+// ── Utility Functions ──────────────────────────────────────
+function escapeHtml(text) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
 // ── Difficulty System ─────────────────────────────────────
 const DIFFICULTY_CONFIG = {
   easy:   { label: '🌱 Easy',   repsMultiplier: 0.7, setsMultiplier: 0.8, color: '#16a34a',
@@ -185,6 +191,132 @@ function declineFriendRequest(myEmail, fromEmail) {
   saveInbox(myEmail, inbox);
   const outbox = getOutbox(fromEmail).filter(r => r.toEmail !== myEmail);
   saveOutbox(fromEmail, outbox);
+}
+
+// ── Friends / Messaging API Functions (NEW) ────
+async function getFriendsFromAPI(userId) {
+  if (!USE_API) return getFriends(getCurrentUser().email); // fallback
+  try {
+    const friends = await apiGet(`/friends/list?userId=${userId}`);
+    // Convert to old format for compatibility
+    return friends.map(f => ({
+      email: f.friendEmail,
+      name: f.friendName,
+      id: f.friendUserId
+    }));
+  } catch (err) {
+    console.error('Failed to load friends:', err);
+    return [];
+  }
+}
+
+async function getPendingRequestsFromAPI(userId) {
+  if (!USE_API) return getInbox(getCurrentUser().email); // fallback
+  try {
+    const requests = await apiGet(`/friends/requests?userId=${userId}`);
+    return requests.map(r => ({
+      fromEmail: r.fromEmail,
+      fromName: r.fromName,
+      fromUserId: r.fromUserId,
+      sentAt: r.sentAt
+    }));
+  } catch (err) {
+    console.error('Failed to load requests:', err);
+    return [];
+  }
+}
+
+async function sendFriendRequestViaAPI(fromUserId, toUserEmail) {
+  if (!USE_API) return sendFriendRequest({ id: fromUserId, email: getCurrentUser().email }, toUserEmail); // fallback
+  try {
+    await apiPost('/friends/request', {
+      fromUserId,
+      toUserEmail: toUserEmail.toLowerCase()
+    });
+    return { ok: true };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+async function acceptFriendRequestViaAPI(fromUserId, toUserId) {
+  if (!USE_API) {
+    const fromUser = await apiGet(`/users/${fromUserId}`).catch(() => null);
+    const toUser = getCurrentUser();
+    acceptFriendRequest(toUser.email, toUser.name, fromUser?.email || '', fromUser?.name || '');
+    return { ok: true };
+  }
+  try {
+    await apiPost('/friends/accept', {
+      fromUserId,
+      toUserId
+    });
+    return { ok: true };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+async function declineFriendRequestViaAPI(fromUserId, toUserId) {
+  if (!USE_API) {
+    declineFriendRequest(getCurrentUser().email, '');
+    return { ok: true };
+  }
+  try {
+    await apiPost('/friends/decline', {
+      fromUserId,
+      toUserId
+    });
+    return { ok: true };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+async function getConversationFromAPI(userId, friendId, page = 0, limit = 50) {
+  if (!USE_API) {
+    // fallback to localStorage
+    const user = getCurrentUser();
+    const chats = getChats(user.email);
+    const threadId = [user.email, ''].sort().join('__'); // simplified for fallback
+    return chats[threadId] || [];
+  }
+  try {
+    const response = await apiGet(`/messages/thread?userId=${userId}&friendId=${friendId}&page=${page}&limit=${limit}`);
+    return response.messages || [];
+  } catch (err) {
+    console.error('Failed to load conversation:', err);
+    return [];
+  }
+}
+
+async function sendMessageViaAPI(senderId, receiverId, content) {
+  if (!USE_API) {
+    // fallback to localStorage
+    return { ok: true };
+  }
+  try {
+    const response = await apiPost('/messages/send', {
+      senderId,
+      receiverId,
+      content
+    });
+    return response;
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+async function deleteMessageViaAPI(messageId, userId) {
+  if (!USE_API) return { ok: true }; // fallback
+  try {
+    await fetch(`${API_BASE}/messages/${messageId}?userId=${userId}`, {
+      method: 'DELETE'
+    });
+    return { ok: true };
+  } catch (err) {
+    return { error: err.message };
+  }
 }
 
 // ── API ───────────────────────────────────────────────────

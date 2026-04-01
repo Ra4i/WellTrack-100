@@ -50,7 +50,79 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Create new database with all tables (if not exists)
     db.Database.EnsureCreated();
+
+    // Execute raw migrations for any missing tables
+    try
+    {
+        var conn = db.Database.GetDbConnection();
+        conn.Open();
+        var cmd = conn.CreateCommand();
+
+        // Check and create Messages table if missing
+        cmd.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name='Messages'";
+        var result = cmd.ExecuteScalar();
+        if (result == null)
+        {
+            cmd.CommandText = @"
+                CREATE TABLE Messages (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    SenderId INTEGER NOT NULL,
+                    ReceiverId INTEGER,
+                    Content TEXT NOT NULL,
+                    BotResponse TEXT,
+                    CreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY(SenderId) REFERENCES Users(Id) ON DELETE CASCADE,
+                    FOREIGN KEY(ReceiverId) REFERENCES Users(Id) ON DELETE SET NULL
+                )
+            ";
+            cmd.ExecuteNonQuery();
+        }
+
+        // Check and create Friends table if missing
+        cmd.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name='Friends'";
+        result = cmd.ExecuteScalar();
+        if (result == null)
+        {
+            cmd.CommandText = @"
+                CREATE TABLE Friends (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    UserId INTEGER NOT NULL,
+                    FriendUserId INTEGER NOT NULL,
+                    CreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY(UserId) REFERENCES Users(Id) ON DELETE CASCADE,
+                    FOREIGN KEY(FriendUserId) REFERENCES Users(Id) ON DELETE CASCADE
+                )
+            ";
+            cmd.ExecuteNonQuery();
+        }
+
+        // Check and create FriendRequests table if missing
+        cmd.CommandText = "SELECT name FROM sqlite_master WHERE type='table' AND name='FriendRequests'";
+        result = cmd.ExecuteScalar();
+        if (result == null)
+        {
+            cmd.CommandText = @"
+                CREATE TABLE FriendRequests (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    FromUserId INTEGER NOT NULL,
+                    ToUserId INTEGER NOT NULL,
+                    SentAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY(FromUserId) REFERENCES Users(Id) ON DELETE CASCADE,
+                    FOREIGN KEY(ToUserId) REFERENCES Users(Id) ON DELETE CASCADE
+                )
+            ";
+            cmd.ExecuteNonQuery();
+        }
+
+        conn.Close();
+    }
+    catch (Exception ex)
+    {
+        System.Console.WriteLine($"Migration warning: {ex.Message}");
+    }
 }
 
 app.Run();
