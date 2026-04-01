@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "X/Z0x+dUKTI=",
+  "dgSpecHash": "f52wJa4vxOM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WEllTrackApi\\WellTrackAPI.csproj",
+  "projectFilePath": "C:\\Users\\dttod\\OneDrive\\Документи\\GitHub\\WellTrack-100\\backend\\WellTrackApi\\WellTrackAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dttod\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\dttod\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
