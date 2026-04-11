@@ -7,6 +7,24 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, m => map[m]);
 }
 
+// ── Theme Management ── Applied ASAP to prevent flash ──────
+function applyTheme() {
+  try {
+    const settings = JSON.parse(localStorage.getItem('wt_user_settings') || '{}');
+    const theme = settings.theme || 'dark';
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  } catch {
+    document.documentElement.removeAttribute('data-theme');
+  }
+}
+
+// Apply theme immediately on load
+applyTheme();
+
 // ── Difficulty System ─────────────────────────────────────
 const DIFFICULTY_CONFIG = {
   easy:   { label: '🌱 Easy',   repsMultiplier: 0.7, setsMultiplier: 0.8, color: '#16a34a',
@@ -18,15 +36,14 @@ const DIFFICULTY_CONFIG = {
 };
 
 function getDifficulty() {
-  const s = JSON.parse(localStorage.getItem('wt_user_settings')) || {};
+  const s = JSON.parse(localStorage.getItem('wt_user_settings') || '{}');
   return DIFFICULTY_CONFIG[s.difficulty || 'normal'];
 }
 function getDifficultyName() {
-  const s = JSON.parse(localStorage.getItem('wt_user_settings')) || {};
+  const s = JSON.parse(localStorage.getItem('wt_user_settings') || '{}');
   return s.difficulty || 'normal';
 }
 
-// Scale a single exercise string based on difficulty multipliers
 function scaleExercise(exerciseStr, diff) {
   if (diff.repsMultiplier === 1.0 && diff.setsMultiplier === 1.0) return exerciseStr;
   return exerciseStr.replace(/\d+(\.\d+)?/g, (num) => {
@@ -193,12 +210,11 @@ function declineFriendRequest(myEmail, fromEmail) {
   saveOutbox(fromEmail, outbox);
 }
 
-// ── Friends / Messaging API Functions (NEW) ────
+// ── Friends / Messaging API Functions ─────────────────────
 async function getFriendsFromAPI(userId) {
-  if (!USE_API) return getFriends(getCurrentUser().email); // fallback
+  if (!USE_API) return getFriends(getCurrentUser().email);
   try {
     const friends = await apiGet(`/friends/list?userId=${userId}`);
-    // Convert to old format for compatibility
     return friends.map(f => ({
       email: f.friendEmail,
       name: f.friendName,
@@ -211,7 +227,7 @@ async function getFriendsFromAPI(userId) {
 }
 
 async function getPendingRequestsFromAPI(userId) {
-  if (!USE_API) return getInbox(getCurrentUser().email); // fallback
+  if (!USE_API) return getInbox(getCurrentUser().email);
   try {
     const requests = await apiGet(`/friends/requests?userId=${userId}`);
     return requests.map(r => ({
@@ -227,12 +243,9 @@ async function getPendingRequestsFromAPI(userId) {
 }
 
 async function sendFriendRequestViaAPI(fromUserId, toUserEmail) {
-  if (!USE_API) return sendFriendRequest({ id: fromUserId, email: getCurrentUser().email }, toUserEmail); // fallback
+  if (!USE_API) return sendFriendRequest({ id: fromUserId, email: getCurrentUser().email }, toUserEmail);
   try {
-    await apiPost('/friends/request', {
-      fromUserId,
-      toUserEmail: toUserEmail.toLowerCase()
-    });
+    await apiPost('/friends/request', { fromUserId, toUserEmail: toUserEmail.toLowerCase() });
     return { ok: true };
   } catch (err) {
     return { error: err.message };
@@ -247,10 +260,7 @@ async function acceptFriendRequestViaAPI(fromUserId, toUserId) {
     return { ok: true };
   }
   try {
-    await apiPost('/friends/accept', {
-      fromUserId,
-      toUserId
-    });
+    await apiPost('/friends/accept', { fromUserId, toUserId });
     return { ok: true };
   } catch (err) {
     return { error: err.message };
@@ -263,10 +273,7 @@ async function declineFriendRequestViaAPI(fromUserId, toUserId) {
     return { ok: true };
   }
   try {
-    await apiPost('/friends/decline', {
-      fromUserId,
-      toUserId
-    });
+    await apiPost('/friends/decline', { fromUserId, toUserId });
     return { ok: true };
   } catch (err) {
     return { error: err.message };
@@ -275,10 +282,9 @@ async function declineFriendRequestViaAPI(fromUserId, toUserId) {
 
 async function getConversationFromAPI(userId, friendId, page = 0, limit = 50) {
   if (!USE_API) {
-    // fallback to localStorage
     const user = getCurrentUser();
     const chats = getChats(user.email);
-    const threadId = [user.email, ''].sort().join('__'); // simplified for fallback
+    const threadId = [user.email, ''].sort().join('__');
     return chats[threadId] || [];
   }
   try {
@@ -291,16 +297,9 @@ async function getConversationFromAPI(userId, friendId, page = 0, limit = 50) {
 }
 
 async function sendMessageViaAPI(senderId, receiverId, content) {
-  if (!USE_API) {
-    // fallback to localStorage
-    return { ok: true };
-  }
+  if (!USE_API) return { ok: true };
   try {
-    const response = await apiPost('/messages/send', {
-      senderId,
-      receiverId,
-      content
-    });
+    const response = await apiPost('/messages/send', { senderId, receiverId, content });
     return response;
   } catch (err) {
     return { error: err.message };
@@ -308,11 +307,9 @@ async function sendMessageViaAPI(senderId, receiverId, content) {
 }
 
 async function deleteMessageViaAPI(messageId, userId) {
-  if (!USE_API) return { ok: true }; // fallback
+  if (!USE_API) return { ok: true };
   try {
-    await fetch(`${API_BASE}/messages/${messageId}?userId=${userId}`, {
-      method: 'DELETE'
-    });
+    await fetch(`${API_BASE}/messages/${messageId}?userId=${userId}`, { method: 'DELETE' });
     return { ok: true };
   } catch (err) {
     return { error: err.message };
@@ -425,8 +422,10 @@ function initDashboard() {
   document.querySelectorAll('.user-avatar-init').forEach(el => el.textContent = user.name.charAt(0).toUpperCase());
 
   const currentDay = getCurrentDay();
-  document.getElementById('current-day').textContent = `${t('common.day')} ${currentDay}`;
-  document.getElementById('days-remaining').textContent = t('dashboard.daysRemaining', 100 - currentDay);
+  const dayEl = document.getElementById('current-day');
+  const remEl = document.getElementById('days-remaining');
+  if (dayEl) dayEl.textContent = `${t('common.day')} ${currentDay}`;
+  if (remEl) remEl.textContent = t('dashboard.daysRemaining', 100 - currentDay);
 
   const diff = getDifficulty();
   const diffBadge = document.getElementById('difficulty-badge');
@@ -463,9 +462,9 @@ function initDashboard() {
     const entry = {
       userId: user.id,
       currentDay,
-      waterIntake:       parseFloat(document.getElementById('water-input').value) || 0,
-      sleepHours:        parseFloat(document.getElementById('sleep-input').value) || 0,
-      workoutCompleted:  document.getElementById('workout-input').checked,
+      waterIntake:      parseFloat(document.getElementById('water-input').value) || 0,
+      sleepHours:       parseFloat(document.getElementById('sleep-input').value) || 0,
+      workoutCompleted: document.getElementById('workout-input').checked,
       date: new Date().toISOString()
     };
     if (USE_API) {
@@ -662,7 +661,6 @@ function showLevelDetail(levelNum) {
   if (!lvl) return;
 
   const diff = getDifficulty();
-
   const modal          = document.getElementById('level-modal');
   const modalTitle     = document.getElementById('modal-title');
   const modalSmoke     = document.getElementById('modal-smoke');
@@ -696,7 +694,7 @@ function showLevelDetail(levelNum) {
       if (canDo && user) {
         const btn = document.createElement('button');
         btn.textContent = `✓ ${t('levels.complete')}`;
-        btn.style.cssText = 'margin-top:0.8rem;width:100%;padding:0.6rem;background:var(--accent);color:white;border:none;border-radius:4px;cursor:pointer;font-weight:500;';
+        btn.style.cssText = 'margin-top:0.8rem;width:100%;padding:0.6rem;background:var(--accent);color:#0a0a0f;border:none;border-radius:4px;cursor:pointer;font-weight:500;font-family:Syne,sans-serif;';
         btn.onclick = (e) => {
           e.stopPropagation();
           saveLevelCompletion(user.id, levelNum);
@@ -728,6 +726,7 @@ function setActiveNav() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  applyTheme();
   const page = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.logout-btn').forEach(btn => btn.addEventListener('click', logout));
   if (page === 'index.html' || page === '') initHome();

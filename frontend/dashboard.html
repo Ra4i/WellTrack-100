@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Табло · WellTrack 100</title>
+  <script>
+    // Prevent theme flash
+    try { var s=JSON.parse(localStorage.getItem('wt_user_settings')||'{}'); if(s.theme==='light') document.documentElement.setAttribute('data-theme','light'); } catch(e){}
+  </script>
   <link rel="stylesheet" href="css/style.css" />
   <script src="js/i18n.js"></script>
 </head>
@@ -19,6 +23,7 @@
       <a class="nav-item active" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
       <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
       <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
+      <a class="nav-item" href="journal.html"><span class="nav-icon">📓</span> <span>Журнал</span></a>
       <a class="nav-item" href="friends.html"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Приятели</span></a>
       <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
       <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
@@ -45,18 +50,18 @@
       <div class="day-hero">
         <div class="day-info">
           <h2 id="current-day">Ден 1</h2>
-          <p id="days-remaining">Остават 99 дни до края на предизвикателството</p>
+          <p id="days-remaining">Остават 99 дни</p>
           <p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.85rem" data-i18n="dashboard.youAreStronger">Ти си по-силен от всяко желание 💪</p>
         </div>
-        <div style="display:flex;gap:1.5rem;align-items:center">
+        <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;justify-content:center;">
           <div style="text-align:center">
             <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--warn);line-height:1" id="workout-streak">0</div>
-            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px">Серия</div>
-            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">нулира се при пропуск</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px" data-i18n="dashboard.dayStreak">Серия</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px" data-i18n="dashboard.resetsIfMissed">нулира се при пропуск</div>
           </div>
           <div style="text-align:center">
             <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent3);line-height:1" id="current-level">0</div>
-            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px">Ниво</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px" data-i18n="dashboard.level">Ниво</div>
             <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">наваксването е допустимо</div>
           </div>
         </div>
@@ -66,19 +71,19 @@
       <div class="stats-grid">
         <div class="stat-card water">
           <div class="stat-icon">💧</div>
-          <div class="stat-label">Вода днес</div>
+          <div class="stat-label" data-i18n="dashboard.waterIntake">Вода днес</div>
           <div class="stat-value" id="water-stat">0.0</div>
           <div class="stat-target">Цел: 2.5 л / ден</div>
         </div>
         <div class="stat-card workout">
           <div class="stat-icon">🏃</div>
-          <div class="stat-label">Активност</div>
+          <div class="stat-label" data-i18n="dashboard.workoutCompleted">Активност</div>
           <div class="stat-value" id="workout-stat">—</div>
-          <div class="stat-target">Серията се нулира при пропуск</div>
+          <div class="stat-target" data-i18n="dashboard.resetsIfMissed">Серията се нулира при пропуск</div>
         </div>
         <div class="stat-card sleep">
           <div class="stat-icon">😴</div>
-          <div class="stat-label">Сън снощи</div>
+          <div class="stat-label" data-i18n="dashboard.sleepTrack">Сън снощи</div>
           <div class="stat-value" id="sleep-stat">0.0</div>
           <div class="stat-target">Цел: 7–9 ч / нощ</div>
         </div>
@@ -86,24 +91,24 @@
 
       <!-- Cigarette Savings -->
       <div class="savings-section">
-        <h3><span data-i18n="dashboard.cigsSaved">💰 Спестени пари от цигари</span> <span class="badge" data-i18n="dashboard.everyDayCounts">Всеки ден има значение</span></h3>
+        <h3><span data-i18n="dashboard.moneySaved">💰 Спестени пари</span> <span class="badge" data-i18n="dashboard.everyDayCounts">Всеки ден има значение</span></h3>
         <div class="savings-content">
           <div class="savings-card">
             <div class="savings-icon">💵</div>
             <div class="savings-info">
-              <div class="savings-label">Спестени пари</div>
+              <div class="savings-label" data-i18n="dashboard.moneySaved">Спестени пари</div>
               <div class="savings-value" id="money-saved">$0.00</div>
             </div>
           </div>
           <div class="savings-card">
             <div class="savings-icon">🚬</div>
             <div class="savings-info">
-              <div class="savings-label">Избягнати цигари</div>
+              <div class="savings-label" data-i18n="dashboard.cigsSaved">Избегнати цигари</div>
               <div class="savings-value" id="cigs-avoided">0</div>
             </div>
           </div>
           <div class="savings-price-input">
-            <label for="cig-price">Цена на цигари в твоя град</label>
+            <label for="cig-price" data-i18n="dashboard.packPrice">Цена на цигари в твоя град</label>
             <div class="price-input-group">
               <span class="currency">$</span>
               <input type="number" id="cig-price" min="1" max="30" step="0.50" placeholder="7.50" value="7.50" />
@@ -115,27 +120,27 @@
 
       <!-- Log Form -->
       <div class="log-section">
-        <h3 data-i18n-html="dashboard.logProgressTitle">Запиши днешния си прогрес <span class="badge">Ден <span id="log-day-badge">1</span></span></h3>
+        <h3><span data-i18n="dashboard.everyDayCounts">Запиши днешния си прогрес</span> <span class="badge">Ден <span id="log-day-badge">1</span></span></h3>
         <form id="log-form" class="log-form">
           <div class="input-group">
-            <label for="water-input">Прием на вода</label>
+            <label for="water-input" data-i18n="dashboard.waterIntake">Прием на вода</label>
             <div class="input-with-unit">
               <input type="number" id="water-input" min="0" max="10" step="0.1" placeholder="2.5" />
-              <span class="unit">л</span>
+              <span class="unit" data-i18n="dashboard.liters">л</span>
             </div>
           </div>
           <div class="input-group">
-            <label for="sleep-input">Часове сън</label>
+            <label for="sleep-input" data-i18n="dashboard.sleepTrack">Часове сън</label>
             <div class="input-with-unit">
               <input type="number" id="sleep-input" min="0" max="24" step="0.5" placeholder="8.0" />
-              <span class="unit">ч</span>
+              <span class="unit" data-i18n="dashboard.hours">ч</span>
             </div>
           </div>
           <div class="input-group">
-            <label>Извършена активност</label>
+            <label data-i18n="dashboard.workoutCompleted">Извършена активност</label>
             <label class="checkbox-group">
               <input type="checkbox" id="workout-input" />
-              <span>Завърших днешната активност</span>
+              <span data-i18n="dashboard.workoutCompleted">Завърших днешната активност</span>
             </label>
           </div>
           <div class="input-group">
@@ -152,8 +157,6 @@
           <strong style="font-family:'Syne',sans-serif;font-size:0.95rem" data-i18n="dashboard.keepStreak">Запази серията си</strong>
           <p style="color:var(--text-muted);font-size:0.88rem;margin-top:0.3rem;line-height:1.6" data-i18n-html="dashboard.quickTipHtml">
             Серията ти се нулира, ако пропуснеш ден — но твоят <strong>прогрес на ниво не изчезва</strong>.
-            Виж <a href="levels.html" style="color:var(--accent3)">страницата Нива</a> за днешните упражнения
-            — те се адаптират автоматично според <a href="settings.html" style="color:var(--accent3)">настройката за трудност</a>.
           </p>
         </div>
       </div>
@@ -162,11 +165,11 @@
 
   <div id="toast-container" class="toast-container"></div>
   <script src="js/app.js"></script>
-  <script>src = "js/i18n.js"</script>
+  <script src="js/sidebar.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
-        const user = JSON.parse(localStorage.getItem('wt_user'));
+        const user = JSON.parse(localStorage.getItem('wt_user') || 'null');
         if (!user) return;
         const startDate = new Date(user.startDate || Date.now());
         const day = Math.min(Math.max(Math.floor((new Date() - startDate) / 86400000) + 1, 1), 100);

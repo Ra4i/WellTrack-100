@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Настройки · WellTrack 100</title>
+  <script>
+    try { var s=JSON.parse(localStorage.getItem('wt_user_settings')||'{}'); if(s.theme==='light') document.documentElement.setAttribute('data-theme','light'); } catch(e){}
+  </script>
   <link rel="stylesheet" href="css/style.css" />
   <script src="js/i18n.js"></script>
 </head>
@@ -19,6 +22,8 @@
       <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
       <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
       <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
+      <a class="nav-item" href="journal.html"><span class="nav-icon">📓</span> <span>Журнал</span></a>
+      <a class="nav-item" href="friends.html"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Приятели</span></a>
       <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
       <a class="nav-item active" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
       <div class="sidebar-bottom">
@@ -37,16 +42,16 @@
       </div>
 
       <div class="settings-grid">
-        <!-- Language Settings -->
+        <!-- Language -->
         <div class="settings-card">
           <div class="settings-header">
             <h3 data-i18n="settings.language">Език</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;" data-i18n="settings.language">Избери предпочитан език</p>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">Избери предпочитан език</p>
           </div>
           <div class="settings-options">
             <label class="radio-option">
               <input type="radio" name="language" value="en" id="lang-en" />
-              <span>Английски</span>
+              <span>English</span>
             </label>
             <label class="radio-option">
               <input type="radio" name="language" value="bg" id="lang-bg" />
@@ -55,11 +60,11 @@
           </div>
         </div>
 
-        <!-- Theme Settings -->
+        <!-- Theme -->
         <div class="settings-card">
           <div class="settings-header">
             <h3 data-i18n="settings.theme">Тема</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Избери визуална тема</p>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">Избери визуална тема</p>
           </div>
           <div class="settings-options">
             <label class="radio-option">
@@ -73,132 +78,134 @@
           </div>
         </div>
 
-        <!-- Difficulty Level -->
+        <!-- Difficulty -->
         <div class="settings-card">
           <div class="settings-header">
             <h3 data-i18n="settings.difficulty">Ниво на трудност</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Настрой интензивността на упражненията</p>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">Настрой интензивността на упражненията</p>
           </div>
           <div class="settings-options">
             <label class="radio-option">
               <input type="radio" name="difficulty" value="easy" id="diff-easy" />
-              <span data-i18n="settings.easy">Лесно</span>
+              <span data-i18n="settings.easy">🌱 Лесно</span>
             </label>
             <label class="radio-option">
               <input type="radio" name="difficulty" value="normal" id="diff-normal" />
-              <span data-i18n="settings.normal">Нормално</span>
+              <span data-i18n="settings.normal">⚡ Нормално</span>
             </label>
             <label class="radio-option">
               <input type="radio" name="difficulty" value="hard" id="diff-hard" />
-              <span data-i18n="settings.hard">Трудно</span>
+              <span data-i18n="settings.hard">🔥 Трудно</span>
             </label>
           </div>
         </div>
 
-        <!-- Notifications -->
+        <!-- Notifications — custom toggle, no visible checkbox -->
         <div class="settings-card">
           <div class="settings-header">
-            <h3 data-i18n="settings.notifications">Включи известия</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Получавай напомняния и актуализации</p>
+            <h3 data-i18n="settings.notifications">Известия</h3>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">Получавай напомняния и актуализации</p>
           </div>
-          <label class="toggle-option">
+          <label class="toggle-option" for="toggle-notifications">
             <input type="checkbox" id="toggle-notifications" />
             <span class="toggle-slider"></span>
             <span id="notif-status">Включено</span>
           </label>
         </div>
 
-        <!-- Motivational Quotes -->
+        <!-- Motivational Quotes — custom toggle -->
         <div class="settings-card">
           <div class="settings-header">
-            <h3 data-i18n="settings.motivationalQuotes">Показвай мотивиращи цитати</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Показвай вдъхновяващи съобщения</p>
+            <h3 data-i18n="settings.motivationalQuotes">Мотивиращи цитати</h3>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">Показвай вдъхновяващи съобщения</p>
           </div>
-          <label class="toggle-option">
+          <label class="toggle-option" for="toggle-quotes">
             <input type="checkbox" id="toggle-quotes" />
             <span class="toggle-slider"></span>
-          <span id="quotes-status">Включено</span>
+            <span id="quotes-status">Включено</span>
           </label>
         </div>
       </div>
 
       <!-- Save Button -->
-      <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+      <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
         <button class="btn btn-primary" id="save-settings" data-i18n="settings.save">Запази настройките</button>
         <button class="btn btn-secondary" onclick="window.history.back()" data-i18n="common.back">Обратно</button>
       </div>
 
-      <div id="toast-container"></div>
+      <div id="toast-container" class="toast-container"></div>
     </main>
   </div>
 
   <script src="js/app.js"></script>
+  <script src="js/sidebar.js"></script>
   <script>
-    // Init page
-    if (!requireAuth()) { }
+    if (!requireAuth()) {}
 
-    const storedSettings = JSON.parse(localStorage.getItem('wt_user_settings')) || {};
+    const storedSettings = JSON.parse(localStorage.getItem('wt_user_settings') || '{}');
     const settings = {
-      language: storedSettings.language || getCurrentLanguage() || 'bg',
-      theme: storedSettings.theme || 'dark',
-      difficulty: storedSettings.difficulty || 'normal',
+      language:      storedSettings.language      || getCurrentLanguage() || 'bg',
+      theme:         storedSettings.theme         || 'dark',
+      difficulty:    storedSettings.difficulty    || 'normal',
       notifications: typeof storedSettings.notifications === 'boolean' ? storedSettings.notifications : true,
-      quotes: typeof storedSettings.quotes === 'boolean' ? storedSettings.quotes : true
+      quotes:        typeof storedSettings.quotes === 'boolean'        ? storedSettings.quotes        : true
     };
 
-    // Load current settings
-    document.getElementById(`lang-${settings.language}`).checked = true;
-    document.getElementById(`theme-${settings.theme}`).checked = true;
-    document.getElementById(`diff-${settings.difficulty}`).checked = true;
-    document.getElementById('toggle-notifications').checked = settings.notifications;
-    document.getElementById('toggle-quotes').checked = settings.quotes;
+    // Load saved settings
+    document.getElementById(`lang-${settings.language}`).checked    = true;
+    document.getElementById(`theme-${settings.theme}`).checked      = true;
+    document.getElementById(`diff-${settings.difficulty}`).checked  = true;
+    document.getElementById('toggle-notifications').checked          = settings.notifications;
+    document.getElementById('toggle-quotes').checked                 = settings.quotes;
 
-    // Update status text
-    document.getElementById('notif-status').textContent = settings.notifications ? 'Включено' : 'Изключено';
-    document.getElementById('quotes-status').textContent = settings.quotes ? 'Включено' : 'Изключено';
+    // Status labels
+    function updateStatus(id, checked) {
+      const lang = getCurrentLanguage();
+      document.getElementById(id).textContent = checked
+        ? (lang === 'bg' ? 'Включено' : 'Enabled')
+        : (lang === 'bg' ? 'Изключено' : 'Disabled');
+    }
 
-    // Toggle listeners
-    document.getElementById('toggle-notifications').addEventListener('change', (e) => {
-      document.getElementById('notif-status').textContent = e.target.checked ? 'Включено' : 'Изключено';
-    });
+    updateStatus('notif-status',  settings.notifications);
+    updateStatus('quotes-status', settings.quotes);
 
-    document.getElementById('toggle-quotes').addEventListener('change', (e) => {
-      document.getElementById('quotes-status').textContent = e.target.checked ? 'Включено' : 'Изключено';
-    });
+    document.getElementById('toggle-notifications').addEventListener('change', e => updateStatus('notif-status',  e.target.checked));
+    document.getElementById('toggle-quotes').addEventListener('change',        e => updateStatus('quotes-status', e.target.checked));
 
-    // Save settings
+    // Save
     document.getElementById('save-settings').addEventListener('click', () => {
       const newSettings = {
-        language: document.querySelector('input[name="language"]:checked').value,
-        theme: document.querySelector('input[name="theme"]:checked').value,
-        difficulty: document.querySelector('input[name="difficulty"]:checked').value,
+        language:      document.querySelector('input[name="language"]:checked').value,
+        theme:         document.querySelector('input[name="theme"]:checked').value,
+        difficulty:    document.querySelector('input[name="difficulty"]:checked').value,
         notifications: document.getElementById('toggle-notifications').checked,
-        quotes: document.getElementById('toggle-quotes').checked
+        quotes:        document.getElementById('toggle-quotes').checked
       };
 
       localStorage.setItem('wt_user_settings', JSON.stringify(newSettings));
 
-      const oldLang = settings.language;
-      const newLang = newSettings.language;
+      // Apply theme immediately across the page
+      if (newSettings.theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
 
+      const oldLang = settings.language;
       showToast(t('settings.saved'), 'success');
 
-      // If language changed, reload page
-      if (oldLang !== newLang) {
-        setTimeout(() => setLanguage(newLang), 500);
+      if (oldLang !== newSettings.language) {
+        setTimeout(() => setLanguage(newSettings.language), 500);
       }
     });
 
-    // Load user display name
+    // Load user display
     const user = getCurrentUser();
     if (user) {
-      document.querySelectorAll('.user-display-name').forEach(el => {
-        el.textContent = user.name || 'User';
-      });
+      document.querySelectorAll('.user-display-name').forEach(el => el.textContent = user.name || 'User');
       document.querySelector('.user-avatar-init').textContent = (user.name || 'U').charAt(0).toUpperCase();
     }
 
-    // Apply translations on load
     applyTranslations();
   </script>
 </body>

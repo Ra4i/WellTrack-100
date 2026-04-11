@@ -4,24 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Приятели · WellTrack 100</title>
+  <script>
+    try { var s=JSON.parse(localStorage.getItem('wt_user_settings')||'{}'); if(s.theme==='light') document.documentElement.setAttribute('data-theme','light'); } catch(e){}
+  </script>
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/friends_style.css" />
   <script src="js/i18n.js"></script>
-  <style>
-    .tabs { display:flex; gap:0.5rem; margin-bottom:1rem; border-bottom:1px solid var(--border,#333); }
-    .tab-btn { background:none; border:none; padding:0.5rem 1rem; cursor:pointer; color:var(--text-muted,#aaa); font-size:0.95rem; border-bottom:2px solid transparent; transition:all 0.2s; }
-    .tab-btn.active { color:var(--accent,#7c3aed); border-bottom-color:var(--accent,#7c3aed); font-weight:600; }
-    .tab-btn .req-badge { background:var(--accent,#7c3aed); color:#fff; border-radius:999px; padding:0 6px; font-size:0.75rem; margin-left:5px; display:none; }
-    .request-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem; border-radius:10px; background:var(--card-bg,#1e1e2e); margin-bottom:0.5rem; }
-    .request-item .req-info { flex:1; }
-    .request-item .req-info h4 { margin:0; font-size:0.95rem; }
-    .request-item .req-info p  { margin:0; font-size:0.8rem; color:var(--text-muted,#aaa); }
-    .req-actions { display:flex; gap:0.5rem; }
-    .btn-accept  { background:#16a34a; color:#fff; border:none; padding:0.3rem 0.75rem; border-radius:6px; cursor:pointer; font-size:0.85rem; }
-    .btn-accept:hover  { background:#15803d; }
-    .btn-decline { background:#dc2626; color:#fff; border:none; padding:0.3rem 0.75rem; border-radius:6px; cursor:pointer; font-size:0.85rem; }
-    .btn-decline:hover { background:#b91c1c; }
-  </style>
 </head>
 <body>
 
@@ -35,7 +22,8 @@
       <a class="nav-item" href="dashboard.html"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
       <a class="nav-item" href="levels.html"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
       <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
-      <a class="nav-item active" href="friends.html"><span class="nav-icon">👥</span> <span>Приятели</span></a>
+      <a class="nav-item" href="journal.html"><span class="nav-icon">📓</span> <span>Журнал</span></a>
+      <a class="nav-item active" href="friends.html"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Приятели</span></a>
       <a class="nav-item" href="messages.html"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
       <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
       <div class="sidebar-bottom">
@@ -49,42 +37,41 @@
 
     <main class="main-content">
       <div class="page-header">
-        <h1>Приятели и съобщения</h1>
+        <h1 data-i18n="friends.title">Приятели и съобщения</h1>
         <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span></p>
       </div>
 
       <div class="friends-container">
-
         <!-- Left panel -->
         <div class="friends-list-section">
           <div class="tabs">
             <button class="tab-btn active" id="tab-btn-friends" onclick="switchTab('friends')">
-              👥 Приятели
+              👥 <span data-i18n="friends.tabFriends">Приятели</span>
             </button>
             <button class="tab-btn" id="tab-btn-requests" onclick="switchTab('requests')">
-              📬 Заявки <span class="req-badge" id="req-badge">0</span>
+              📬 <span data-i18n="friends.tabRequests">Заявки</span> <span class="req-badge" id="req-badge">0</span>
             </button>
           </div>
 
           <!-- Friends tab -->
           <div id="tab-friends">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-              <span style="color:var(--text-muted,#aaa);font-size:0.9rem;" id="friend-count">(0 приятели)</span>
-              <button class="btn btn-sm" id="add-friend-btn">+ Добави приятел</button>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin:0.5rem 1rem;">
+              <span style="color:var(--text-muted);font-size:0.9rem;" id="friend-count">(0 приятели)</span>
+              <button class="btn btn-sm" id="add-friend-btn"> <span data-i18n="friends.addFriend">Добави</span></button>
             </div>
             <div class="friends-search">
-              <input type="text" id="friend-search" placeholder="Търси приятели..." class="search-input" />
+              <input type="text" id="friend-search" placeholder="Търси приятели..." class="search-input" data-i18n="friends.searchPlaceholder" />
             </div>
             <div class="friends-list" id="friends-list">
-              <div class="empty-state"><p>Все още нямаш приятели. Добави някого! 👋</p></div>
+              <div style="padding:1.5rem;text-align:center;color:var(--text-muted);" data-i18n="friends.emptyState">Все още нямаш приятели. Добави някого! 👋</div>
             </div>
           </div>
 
           <!-- Requests tab -->
-          <div id="tab-requests" style="display:none;">
-            <p style="font-size:0.85rem;color:var(--text-muted,#aaa);margin-bottom:0.75rem;">Очакващи заявки за приятелство:</p>
+          <div id="tab-requests" style="display:none;padding:1rem;">
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem;" data-i18n="friends.pendingRequests">Очакващи заявки за приятелство:</p>
             <div id="requests-list">
-              <div class="empty-state"><p>Няма чакащи заявки 🎉</p></div>
+              <div style="padding:1rem;text-align:center;color:var(--text-muted);" data-i18n="friends.noRequests">Няма чакащи заявки 🎉</div>
             </div>
           </div>
         </div>
@@ -94,18 +81,18 @@
           <div id="no-friend-selected" class="no-selection">
             <div class="empty-state-large">
               <p style="font-size:3rem;margin-bottom:1rem;">💭</p>
-              <h2>Избери приятел за чат</h2>
-              <p>Избери някого от своя списък с приятели, за да започнеш разговор</p>
+              <h2 data-i18n="friends.selectFriendTitle">Избери приятел за чат</h2>
+              <p data-i18n="friends.selectFriendDescription">Избери някого от своя списък с приятели, за да започнеш разговор</p>
             </div>
           </div>
 
           <div id="chat-area" class="chat-area" style="display:none;">
             <div class="conv-header">
               <div>
-                <h2 id="conv-friend-name">Приятел</h2>
-                <p id="conv-friend-status" class="friend-status">Офлайн</p>
+                <h2 id="conv-friend-name" data-i18n="friends.friend">Приятел</h2>
+                <p id="conv-friend-status" class="friend-status" data-i18n="friends.offline">Офлайн</p>
               </div>
-              <button class="btn btn-sm btn-secondary" id="block-friend-btn">🚫 Блокирай</button>
+              <button class="btn btn-sm btn-secondary" id="block-friend-btn" data-i18n="friends.block">🚫 Блокирай</button>
             </div>
             <div class="conversation-messages" id="conversation-messages"></div>
             <div class="conversation-input">
@@ -127,21 +114,22 @@
             <label>Въведи email на приятел:</label>
             <input type="email" id="friend-email-input" placeholder="email@пример.com" />
             <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0.5rem;">
-              Те ще видят заявката ти в раздела <strong>Заявки</strong> и могат да я приемат или отхвърлят.
+              Те ще видят заявката ти в раздела <strong>Заявки</strong>.
             </p>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeAddFriendModal()">Отказ</button>
+            <button class="btn btn-secondary" onclick="closeAddFriendModal()" data-i18n="common.cancel">Отказ</button>
             <button class="btn btn-primary" id="send-friend-request-btn">Изпрати заявка</button>
           </div>
         </div>
       </div>
 
-      <div id="toast-container"></div>
+      <div id="toast-container" class="toast-container"></div>
     </main>
   </div>
 
   <script src="js/app.js"></script>
+  <script src="js/sidebar.js"></script>
   <script>
     if (!requireAuth()) {}
 
@@ -154,7 +142,6 @@
     let selectedFriendEmail = null;
     let selectedFriendId    = null;
 
-    // ── Tab switching ─────────────────────────────────────
     window.switchTab = function(tab) {
       document.getElementById('tab-friends').style.display  = tab === 'friends'  ? 'block' : 'none';
       document.getElementById('tab-requests').style.display = tab === 'requests' ? 'block' : 'none';
@@ -163,8 +150,6 @@
       if (tab === 'requests') renderRequests();
     };
 
-    // ── Render friends list ───────────────────────────────
-    // FIX: never touches the chat panel — only updates the left list
     async function renderFriendsList(filter = '') {
       const friends  = await getFriendsFromAPI(user.id);
       const filtered = friends.filter(f =>
@@ -174,7 +159,7 @@
 
       const el = document.getElementById('friends-list');
       el.innerHTML = filtered.length === 0
-        ? '<div class="empty-state"><p>Все още нямаш приятели. Добави някого! 👋</p></div>'
+        ? `<div style="padding:1.5rem;text-align:center;color:var(--text-muted);">${t('friends.emptyState')}</div>`
         : filtered.map(f => `
             <div class="friend-item ${selectedFriendId === f.id ? 'active' : ''}"
                  onclick="selectFriend('${escapeAttr(f.email)}','${escapeAttr(f.name)}',${f.id})">
@@ -189,11 +174,13 @@
             </div>
           `).join('');
 
-      document.getElementById('friend-count').textContent =
-        `(${friends.length} приятел${friends.length !== 1 ? 'и' : ''})`;
+      const lang = getCurrentLanguage();
+      const word = lang === 'bg'
+        ? (friends.length === 1 ? 'приятел' : 'приятели')
+        : (friends.length === 1 ? 'friend' : 'friends');
+      document.getElementById('friend-count').textContent = `(${friends.length} ${word})`;
     }
 
-    // ── Render requests tab ───────────────────────────────
     async function renderRequests() {
       const requests = await getPendingRequestsFromAPI(user.id);
       const el       = document.getElementById('requests-list');
@@ -203,7 +190,7 @@
       badge.textContent   = requests.length;
 
       el.innerHTML = requests.length === 0
-        ? '<div class="empty-state"><p>Няма чакащи заявки 🎉</p></div>'
+        ? `<div style="padding:1rem;text-align:center;color:var(--text-muted);">${t('friends.noRequests')}</div>`
         : requests.map(r => `
             <div class="request-item">
               <div class="friend-avatar offline">
@@ -214,14 +201,13 @@
                 <p>${escapeHtml(r.fromEmail)}</p>
               </div>
               <div class="req-actions">
-                <button class="btn-accept"  onclick="handleAccept(${r.fromUserId},'${escapeAttr(r.fromName)}')">✓ Приеми</button>
-                <button class="btn-decline" onclick="handleDecline(${r.fromUserId})">✗ Откажи</button>
+                <button class="btn-accept"  onclick="handleAccept(${r.fromUserId},'${escapeAttr(r.fromName)}')">✓</button>
+                <button class="btn-decline" onclick="handleDecline(${r.fromUserId})">${t('friends.decline')}</button>
               </div>
             </div>
           `).join('');
     }
 
-    // ── Badge update ──────────────────────────────────────
     async function updateBadge() {
       const requests = await getPendingRequestsFromAPI(user.id);
       const badge    = document.getElementById('req-badge');
@@ -229,52 +215,47 @@
       badge.textContent   = requests.length;
     }
 
-    // ── Accept / Decline ──────────────────────────────────
     window.handleAccept = async function(fromUserId, fromName) {
       await acceptFriendRequestViaAPI(fromUserId, user.id);
       await renderRequests();
-      await renderFriendsList();   // safe — chat panel is untouched
+      await renderFriendsList();
       await updateBadge();
-      showToast(`Вече сте приятели с ${fromName}! 🎉`, 'success');
+      showToast(`${t('common.success')}! 🎉`, 'success');
     };
 
     window.handleDecline = async function(fromUserId) {
       await declineFriendRequestViaAPI(fromUserId, user.id);
       await renderRequests();
       await updateBadge();
-      showToast('Заявката беше отхвърлена.', 'success');
+      showToast(t('common.success'), 'success');
     };
 
-    // ── Select friend & open chat ─────────────────────────
-    // FIX: compare as same type (both numbers); guard added
     window.selectFriend = async function(friendEmail, friendName, friendId) {
       friendId = Number(friendId);
-      if (selectedFriendId === friendId) return;   // already open — do nothing
+      if (selectedFriendId === friendId) return;
 
       selectedFriendEmail = friendEmail;
       selectedFriendId    = friendId;
 
-      document.getElementById('chat-area').style.display        = 'flex';
+      document.getElementById('chat-area').style.display          = 'flex';
       document.getElementById('no-friend-selected').style.display = 'none';
-      document.getElementById('conv-friend-name').textContent   = friendName;
-      document.getElementById('conv-friend-status').textContent = '⚫ Офлайн';
+      document.getElementById('conv-friend-name').textContent     = friendName;
+      document.getElementById('conv-friend-status').textContent   = '⚫ ' + t('friends.offline');
 
-      // Highlight active friend in list without full re-render
       document.querySelectorAll('.friend-item').forEach(el => el.classList.remove('active'));
-      event && event.currentTarget && event.currentTarget.classList.add('active');
+      if (event && event.currentTarget) event.currentTarget.classList.add('active');
 
       await renderConversation();
       document.getElementById('friend-message-input').focus();
     };
 
-    // ── Render messages ───────────────────────────────────
     async function renderConversation() {
       if (!selectedFriendId) return;
       try {
         const messages = await getConversationFromAPI(user.id, selectedFriendId, 0, 50);
         const el = document.getElementById('conversation-messages');
         el.innerHTML = messages.length === 0
-          ? '<div class="empty-state" style="justify-content:center;padding:3rem 1rem;"><p>Все още няма съобщения. Кажи здрасти! 👋</p></div>'
+          ? `<div style="padding:3rem 1rem;text-align:center;color:var(--text-muted);">👋</div>`
           : messages.map(m => `
               <div class="conv-message ${m.senderId === user.id ? 'from-me' : 'from-friend'}">
                 <div class="msg-avatar">${(m.senderName || '?').charAt(0).toUpperCase()}</div>
@@ -285,23 +266,17 @@
               </div>
             `).join('');
         el.scrollTop = el.scrollHeight;
-      } catch (err) {
-        console.error('renderConversation failed:', err);
-      }
+      } catch (err) { console.error('renderConversation failed:', err); }
     }
 
-    // ── Send message ──────────────────────────────────────
-    // FIX: async/await + do NOT call renderFriendsList after send (that was closing the chat)
     async function sendFriendMessage() {
       const input = document.getElementById('friend-message-input');
       const text  = input.value.trim();
       if (!text || !selectedFriendId) return;
-
-      input.disabled = true;   // prevent double-send
+      input.disabled = true;
       try {
         await sendMessageViaAPI(user.id, selectedFriendId, text);
         input.value = '';
-        input.style.height = '';   // reset textarea height if auto-grown
         await renderConversation();
       } catch (err) {
         showToast('Грешка: ' + err.message, 'error');
@@ -313,19 +288,12 @@
 
     document.getElementById('send-friend-btn').addEventListener('click', sendFriendMessage);
 
-    // FIX: prevent default on Enter so the page never "submits"
     document.getElementById('friend-message-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        e.stopPropagation();
-        sendFriendMessage();
-      }
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendFriendMessage(); }
     });
 
-    // ── Search ────────────────────────────────────────────
     document.getElementById('friend-search').addEventListener('input', e => renderFriendsList(e.target.value));
 
-    // ── Add friend modal ──────────────────────────────────
     document.getElementById('add-friend-btn').addEventListener('click', () => {
       document.getElementById('add-friend-modal').style.display = 'flex';
     });
@@ -338,50 +306,33 @@
     document.getElementById('send-friend-request-btn').addEventListener('click', async () => {
       const email = document.getElementById('friend-email-input').value.trim().toLowerCase();
       if (!email) { showToast('Моля, въведете имейл адрес', 'error'); return; }
-
       const result = await sendFriendRequestViaAPI(user.id, email);
       if (result.error) { showToast(result.error, 'error'); return; }
-
-      showToast(`Заявката за приятелство е изпратена до ${email}! 📬`, 'success');
+      showToast(`Заявката е изпратена до ${email}! 📬`, 'success');
       closeAddFriendModal();
     });
 
-    // ── Block friend ──────────────────────────────────────
     document.getElementById('block-friend-btn').addEventListener('click', async () => {
       if (!selectedFriendId) return;
-      if (!confirm('Сигурни ли сте, че искате да блокирате този приятел?')) return;
-      try {
-        await blockFriendViaAPI(user.id, selectedFriendId);   // call your block endpoint
-      } catch (_) { /* endpoint may not exist yet — fall through */ }
-
+      const lang = getCurrentLanguage();
+      const msg = lang === 'bg' ? 'Сигурни ли сте, че искате да блокирате този приятел?' : 'Are you sure you want to block this friend?';
+      if (!confirm(msg)) return;
       selectedFriendEmail = null;
       selectedFriendId    = null;
       document.getElementById('chat-area').style.display          = 'none';
       document.getElementById('no-friend-selected').style.display = 'flex';
       await renderFriendsList();
-      showToast('Приятелят беше блокиран.', 'success');
+      showToast(lang === 'bg' ? 'Приятелят беше блокиран.' : 'Friend blocked.', 'success');
     });
 
-    // ── Close modal on backdrop click ─────────────────────
     document.getElementById('add-friend-modal').addEventListener('click', e => {
       if (e.target === document.getElementById('add-friend-modal')) closeAddFriendModal();
     });
 
-    // ── Helpers ───────────────────────────────────────────
-    // escapeHtml should already be in app.js; defined here as fallback
-    if (typeof escapeHtml === 'undefined') {
-      window.escapeHtml = function(str) {
-        return String(str)
-          .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-          .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      };
-    }
-    // Escape values placed inside HTML attribute quotes
     function escapeAttr(str) {
       return String(str || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
     }
 
-    // ── Init ──────────────────────────────────────────────
     renderFriendsList();
     updateBadge();
     applyTranslations();
