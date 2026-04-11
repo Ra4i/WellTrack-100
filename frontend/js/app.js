@@ -1,31 +1,26 @@
 const API_BASE = 'http://localhost:5001/api';
 const USE_API = true;
 
-// ── Utility Functions ──────────────────────────────────────
+// ── Utility ───────────────────────────────────────────────
 function escapeHtml(text) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
   return text.replace(/[&<>"']/g, m => map[m]);
 }
 
-// ── Theme Management ── Applied ASAP to prevent flash ──────
+// ── Theme ─────────────────────────────────────────────────
 function applyTheme() {
   try {
     const settings = JSON.parse(localStorage.getItem('wt_user_settings') || '{}');
     const theme = settings.theme || 'dark';
-    if (theme === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
+    if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    else document.documentElement.removeAttribute('data-theme');
   } catch {
     document.documentElement.removeAttribute('data-theme');
   }
 }
-
-// Apply theme immediately on load
 applyTheme();
 
-// ── Difficulty System ─────────────────────────────────────
+// ── Difficulty ────────────────────────────────────────────
 const DIFFICULTY_CONFIG = {
   easy:   { label: '🌱 Easy',   repsMultiplier: 0.7, setsMultiplier: 0.8, color: '#16a34a',
             description: 'Lighter sets, longer rest — great for beginners.' },
@@ -98,6 +93,7 @@ function requireAuth() {
   return true;
 }
 
+// ── Day logic ─────────────────────────────────────────────
 function getCurrentDay() {
   const user = getCurrentUser();
   if (!user) return 1;
@@ -106,19 +102,22 @@ function getCurrentDay() {
   return Math.min(Math.max(Math.floor(diffMs / 86400000) + 1, 1), 100);
 }
 
-// ── localStorage fallbacks ────────────────────────────────
+// ── Progress (LOCAL) ──────────────────────────────────────
 function getAllProgress() {
   try { return JSON.parse(localStorage.getItem('wt_progress')) || []; } catch { return []; }
 }
+
 function saveProgressLocal(entry) {
   const all = getAllProgress();
   const i = all.findIndex(e => e.userId === entry.userId && e.currentDay === entry.currentDay);
   if (i >= 0) all[i] = entry; else all.push(entry);
   localStorage.setItem('wt_progress', JSON.stringify(all));
 }
+
 function getUserProgressLocal(userId) {
   return getAllProgress().filter(e => e.userId === userId).sort((a, b) => a.currentDay - b.currentDay);
 }
+
 function getUsers() {
   try { return JSON.parse(localStorage.getItem('wt_users')) || []; } catch { return []; }
 }
@@ -587,6 +586,9 @@ async function initLevels() {
 
   renderMotivation(completedLevel > 0 ? completedLevel : 1);
   renderLevelGrid(completedLevel, nextLevel, currentDay);
+
+  // Store completedLevel globally for use in showLevelDetail
+  window.completedLevel = completedLevel;
 }
 
 function completeLevel(levelNum) {
@@ -631,9 +633,6 @@ function renderLevelGrid(completedLevel, nextLevel, currentDay) {
     if (lvl.level <= completedLevel) state = 'done';
     else if (lvl.level === nextLevel) state = 'current';
 
-    const completeBtn = lvl.level === nextLevel && lvl.level <= currentDay
-      ? `<button class="level-complete-btn" onclick="completeLevel(${lvl.level})" title="${t('levels.complete')}">✓ ${t('levels.complete')}</button>`
-      : '';
     const exerciseIndicator = canDoEx && lvl.level <= currentDay && lvl.exercises?.length
       ? `<div style="position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite;" title="${t('levels.exercises')}"></div>`
       : '';
@@ -643,7 +642,6 @@ function renderLevelGrid(completedLevel, nextLevel, currentDay) {
         <div class="level-card-num">${lvl.level}</div>
         <div class="level-card-icon">${state === 'done' ? '✓' : state === 'current' ? '▶' : '🔒'}</div>
         <div class="level-card-title">${lvl.title}</div>
-        ${completeBtn}
         ${exerciseIndicator}
       </div>
     `;
@@ -673,6 +671,8 @@ function showLevelDetail(levelNum) {
   if (modalSmoke)   modalSmoke.textContent   = lvl.smoke;
   if (modalAlcohol) modalAlcohol.textContent = lvl.alcohol;
 
+  const isLevelCompleted = levelNum <= window.completedLevel;
+
   if (modalExercises) {
     if (lvl.exercises?.length) {
       const canDo = canCompleteLevelToday(user.id, levelNum);
@@ -685,13 +685,15 @@ function showLevelDetail(levelNum) {
         </li>`;
       }).join('');
 
-      const statusBox = canDo
+      const statusBox = isLevelCompleted
+        ? `<div style="margin-top:0.8rem;padding:0.8rem;background:var(--surface);border-left:3px solid var(--accent-warn);border-radius:4px;font-size:0.85rem;color:var(--text-muted);">${t('levels.completed')}! ${t('levels.resetIn')} 🔄</div>`
+        : canDo
         ? `<div style="margin-top:0.8rem;padding:0.8rem;background:var(--surface);border-left:3px solid var(--accent);border-radius:4px;font-size:0.85rem;color:var(--accent);">✓ ${t('levels.exercises')} — ${t('levels.complete')}!</div>`
         : `<div style="margin-top:0.8rem;padding:0.8rem;background:var(--surface);border-left:3px solid var(--accent-warn);border-radius:4px;font-size:0.85rem;color:var(--text-muted);">${t('levels.completed')}! ${t('levels.resetIn')} 🔄</div>`;
 
       modalExercises.innerHTML = scaledExercises + statusBox;
 
-      if (canDo && user) {
+      if (!isLevelCompleted && canDo && user) {
         const btn = document.createElement('button');
         btn.textContent = `✓ ${t('levels.complete')}`;
         btn.style.cssText = 'margin-top:0.8rem;width:100%;padding:0.6rem;background:var(--accent);color:#0a0a0f;border:none;border-radius:4px;cursor:pointer;font-weight:500;font-family:Syne,sans-serif;';
@@ -706,6 +708,24 @@ function showLevelDetail(levelNum) {
     } else {
       modalExercises.innerHTML = `<li style="padding:0.4rem 0;color:var(--text-muted);">No exercises assigned</li>`;
     }
+  }
+
+  // Add complete level button if level is unlocked and not already completed
+  if (levelNum <= currentDay && levelNum > window.completedLevel && modalExercises) {
+    // Remove any existing complete button first
+    const existingBtn = document.querySelector('.level-complete-main-btn');
+    if (existingBtn) existingBtn.remove();
+
+    const completeLevelBtn = document.createElement('button');
+    completeLevelBtn.className = 'level-complete-main-btn';
+    completeLevelBtn.textContent = `▶ Complete & Next Level`;
+    completeLevelBtn.style.cssText = 'width:100%;padding:0.8rem;background:var(--accent);color:#0a0a0f;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:1rem;font-family:Syne,sans-serif;margin-top:1rem;';
+    completeLevelBtn.onclick = (e) => {
+      e.stopPropagation();
+      completeLevel(levelNum);
+      closeLevelModal();
+    };
+    modalExercises.parentElement.appendChild(completeLevelBtn);
   }
 
   if (modal) modal.classList.add('show');
