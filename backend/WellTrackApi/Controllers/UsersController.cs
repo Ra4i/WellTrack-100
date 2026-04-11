@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QRCoder;
 using WellTrackAPI.Data;
 using WellTrackAPI.Models;
+using System.IO;
+using Microsoft.AspNetCore.Mvc;
+
 
 namespace WellTrackAPI.Controllers
 {
@@ -79,5 +83,36 @@ namespace WellTrackAPI.Controllers
             Email = u.Email,
             StartDate = u.StartDate
         };
+        
+        [HttpPost("generate-age-qr/{id}/{age}")]
+        public IActionResult GenerateAgeQr([FromRoute] int id, [FromRoute] int age)
+        {
+            try
+            {
+                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "qrcodes");
+
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+
+                // Включваме възрастта в името, за да е уникално за всяка промяна
+                string fileName = $"user_{id}_age_{age}.png";
+                string filePath = Path.Combine(folderPath, fileName);
+
+                using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+                using (QRCodeData qrCodeData = qrGenerator.CreateQrCode($"Age: {age}", QRCodeGenerator.ECCLevel.Q))
+                using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
+                {
+                    byte[] qrCodeBytes = qrCode.GetGraphic(20);
+                    System.IO.File.WriteAllBytes(filePath, qrCodeBytes);
+                }
+
+                // Връщаме URL пътя
+                return Ok(new { url = $"/qrcodes/{fileName}" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Грешка: {ex.Message}" });
+            }
+        }
     }
 }

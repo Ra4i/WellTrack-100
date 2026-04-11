@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WellTrackAPI.Data;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,8 +43,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
+
 app.UseCors("FrontendPolicy");
 app.UseAuthorization();
 app.MapControllers();
+
 
 app.Run();

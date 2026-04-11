@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>WellTrack QR</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f4; }
+        .card { background: white; padding: 30px; border-radius: 12px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        #qrImage { display: none; margin-top: 20px; border: 2px solid #333; }
+        #status { margin-top: 15px; font-weight: bold; color: #28a745; }
+        input { padding: 10px; width: 60px; border-radius: 5px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Генериране на QR</h2>
+    <input type="number" id="ageInput" value="25">
+    <button type="button" id="btn">Генерирай</button>
+    <br>
+    <img id="qrImage" width="200" height="200">
+    <p id="status"></p>
+</div>
+
+<script>
+    document.getElementById('btn').onclick = async () => {
+        const age = document.getElementById('ageInput').value;
+        const status = document.getElementById('status');
+        const img = document.getElementById('qrImage');
+        
+        // Използвай порта, на който работи твоят бекенд (5001 за HTTPS / 5000 за HTTP)
+        const baseUrl = "http://localhost:5001"; 
+
+        status.innerText = "Генериране...";
+
+        try {
+            const response = await fetch(`${baseUrl}/api/users/generate-age-qr/1/${age}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Вземаме URL от бекенда и добавяме timestamp (?t=...), 
+                // за да сме сигурни, че браузърът ще покаже новата снимка веднага
+                const finalUrl = baseUrl + data.url + "?t=" + new Date().getTime();
+                
+                img.src = finalUrl;
+                img.style.display = "inline-block"; // Картинката се показва и "стои"
+                status.innerText = "QR кодът е готов!";
+            } else {
+                status.innerText = "Грешка при комуникация с API.";
+            }
+        } catch (error) {
+            console.error(error);
+            status.innerText = "Няма връзка с бекенда.";
+        }
+    };
+</script>
+
+</body>
+</html>

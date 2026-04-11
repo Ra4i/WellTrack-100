@@ -278,3 +278,10 @@ C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrac
 C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrackApi\obj\Debug\net10.0\WellTrackAPI.pdb
 C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrackApi\obj\Debug\net10.0\WellTrackAPI.genruntimeconfig.cache
 C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrackApi\obj\Debug\net10.0\ref\WellTrackAPI.dll
+C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrackApi\bin\Debug\net10.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrackApi\bin\Debug\net10.0\QRCoder.dll
+C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrackApi\bin\Debug\net10.0\System.Drawing.Common.dll
+C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrackApi\bin\Debug\net10.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrackApi\bin\Debug\net10.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrackApi\bin\Debug\net10.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+C:\Users\dttod\OneDrive\Документи\GitHub\WellTrack-100\backend\WellTrackApi\bin\Debug\net10.0\WellTrackAPI.staticwebassets.runtime.json
