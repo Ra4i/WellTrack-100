@@ -75,6 +75,11 @@
   <script src="js/app.js"></script>
   <script src="js/sidebar.js"></script>
   <script>
+    const user = getCurrentUser();
+
+  document.querySelectorAll('.user-display-name').forEach(el => el.textContent = user.name);
+  document.querySelectorAll('.user-avatar-init').forEach(el => el.textContent = user.name.charAt(0).toUpperCase());
+
     document.getElementById('btn').onclick = async () => {
       const age     = document.getElementById('ageInput').value;
       const status  = document.getElementById('status');
@@ -87,7 +92,7 @@
       result.style.display = 'none';
 
       try {
-        const response = await fetch(`${baseUrl}/api/users/generate-age-qr/1/${age}`, {
+        const response = await fetch(`${baseUrl}/api/users/generate-age-qr/${user.id}/${age}`, {
           method: 'POST'
         });
 
