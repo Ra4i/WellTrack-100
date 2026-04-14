@@ -1,0 +1,352 @@
+/* ================================================================
+   navbar.css — Sidebar navigation styles
+   Include AFTER style.css on every app page.
+   ================================================================ */
+
+/* ── Z-index scale (must not conflict) ──────────────────────────
+   overlay  : 400  (below sidebar)
+   sidebar  : 450  (above overlay)
+   toggle   : 500  (above both, always visible)
+   ---------------------------------------------------------------- */
+
+/* ================================================================
+   SIDEBAR — Desktop sticky
+   ================================================================ */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  z-index: 450;
+  /* Transition is always present so open/close animates on mobile */
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.28s ease;
+  flex-shrink: 0;
+  will-change: transform;
+}
+
+/* ================================================================
+   OVERLAY — sits BELOW sidebar
+   ================================================================ */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 400;           /* below sidebar (450) */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.28s ease, visibility 0.28s ease;
+}
+
+.sidebar-overlay.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ================================================================
+   TOGGLE BUTTON — always above everything
+   ================================================================ */
+.sidebar-toggle {
+  /* Hidden on desktop, shown on mobile via media query */
+  display: none;
+  position: fixed;
+  top: 0.875rem;
+  left: 0.875rem;
+  z-index: 500;           /* always on top */
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+  /* Styling */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  /* Remove default button styles */
+  padding: 0;
+  outline: none;
+}
+
+.sidebar-toggle:hover {
+  background: var(--surface2);
+  border-color: rgba(125, 249, 196, 0.3);
+}
+
+.sidebar-toggle:active {
+  transform: scale(0.93);
+}
+
+.sidebar-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ================================================================
+   NAV ITEMS
+   ================================================================ */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease,
+              color 0.15s ease,
+              border-color 0.15s ease,
+              transform 0.15s ease;
+  margin-bottom: 2px;
+  touch-action: manipulation;
+  border: 1px solid transparent;
+  min-height: 44px;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  /* Prevent text jumping during translate */
+  backface-visibility: hidden;
+}
+
+.nav-item:hover {
+  background: var(--surface2);
+  color: var(--accent);
+  border-color: rgba(125, 249, 196, 0.15);
+  transform: translateX(3px);
+}
+
+.nav-item.active {
+  background: rgba(125, 249, 196, 0.1);
+  color: var(--accent);
+  border-color: rgba(125, 249, 196, 0.2);
+  font-weight: 600;
+}
+
+.nav-item .nav-icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   SIDEBAR INTERNAL ELEMENTS
+   ================================================================ */
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logo-mark {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  color: #0a0a0f;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.logo-text small {
+  display: block;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nav-section-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 1.5rem 0 0.6rem 0.5rem;
+  flex-shrink: 0;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--accent2), var(--accent3));
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.user-name {
+  font-size: 0.88rem;
+  font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 6px;
+  border-radius: 6px;
+  transition: color 0.2s;
+  touch-action: manipulation;
+  line-height: 1;
+}
+
+.logout-btn:hover { color: var(--danger); }
+
+/* ================================================================
+   APP LAYOUT — Desktop
+   ================================================================ */
+.app-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width, 260px) 1fr;
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ================================================================
+   RESPONSIVE — Mobile (≤ 768px)
+   ================================================================ */
+@media (max-width: 768px) {
+
+  /* Grid collapses to single column */
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Sidebar becomes a fixed off-canvas drawer */
+  .sidebar {
+    position: fixed !important;
+    inset: 0 auto 0 0;          /* full height on the left */
+    width: min(260px, 80vw);
+    transform: translateX(-100%);
+    box-shadow: none;           /* no shadow when hidden */
+  }
+
+  /* Open state */
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Show the hamburger on mobile */
+  .sidebar-toggle {
+    display: flex;
+  }
+
+  /* Push content down to clear the toggle button */
+  .main-content {
+    padding-top: 4.5rem !important;
+  }
+
+  /* Tighter nav items on small screens */
+  .nav-item {
+    padding: 0.6rem 0.65rem;
+    font-size: 0.88rem;
+  }
+
+  /* Tighter logo on small screens */
+  .sidebar-logo {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* ================================================================
+   RESPONSIVE — Very small phones (≤ 380px)
+   ================================================================ */
+@media (max-width: 380px) {
+  .sidebar {
+    width: 100vw;   /* full width on tiny screens */
+  }
+
+  .sidebar-toggle {
+    top: 0.75rem;
+    left: 0.75rem;
+  }
+}
+
+/* ================================================================
+   LIGHT THEME ADJUSTMENTS
+   ================================================================ */
+:root[data-theme="light"] .sidebar {
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .sidebar.open {
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.15);
+}
+
+:root[data-theme="light"] .sidebar-toggle {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] .sidebar-overlay {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+}
+
+:root[data-theme="light"] .nav-item:hover {
+  border-color: rgba(0, 200, 150, 0.2);
+}

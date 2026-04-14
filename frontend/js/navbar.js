@@ -1,15 +1,24 @@
 /* ================================================================
-   navbar.js — Clean, simple mobile navbar with slide animation
+   navbar.js — Mobile sidebar with smooth slide animation
+   
+   FIXES vs previous version:
+   - Overlay z-index is now BELOW sidebar (400 vs 450) — clicks
+     inside the open sidebar are no longer blocked by the overlay
+   - Removed duplicate close triggers (overlay click + document
+     click were both firing, causing flicker / double-close)
+   - Added body scroll-lock while sidebar is open on mobile
+   - Escape key closes sidebar
+   - Resize to desktop auto-closes sidebar
    ================================================================ */
 
 (function () {
   'use strict';
 
-  // Apply theme immediately
-  function applyTheme() {
+  /* ── Apply saved theme immediately to prevent flash ── */
+  (function applyTheme() {
     try {
-      const settings = JSON.parse(localStorage.getItem('wt_user_settings') || '{}');
-      if (settings.theme === 'light') {
+      const s = JSON.parse(localStorage.getItem('wt_user_settings') || '{}');
+      if (s.theme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
       } else {
         document.documentElement.removeAttribute('data-theme');
@@ -17,15 +26,13 @@
     } catch (e) {
       document.documentElement.removeAttribute('data-theme');
     }
-  }
-
-  applyTheme();
+  })();
 
   document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.querySelector('.sidebar');
     if (!sidebar) return;
 
-    // Get or create toggle button
+    /* ── Get or inject toggle button ── */
     let toggleBtn = document.querySelector('.sidebar-toggle');
     if (!toggleBtn) {
       toggleBtn = document.createElement('button');
@@ -36,86 +43,99 @@
       document.body.insertBefore(toggleBtn, document.body.firstChild);
     }
 
-    // Get or create overlay
+    /* ── Get or inject overlay ──
+       The overlay must be a SIBLING of .sidebar in the DOM,
+       NOT inside it, so it covers the main content only.      */
     let overlay = document.querySelector('.sidebar-overlay');
     if (!overlay) {
       overlay = document.createElement('div');
       overlay.className = 'sidebar-overlay';
-      document.body.appendChild(overlay);
+      /* Insert after sidebar so DOM order matches stacking */
+      sidebar.insertAdjacentElement('afterend', overlay);
     }
 
-    // ── Functions ──
-    const open = () => {
+    /* ================================================================
+       State helpers
+       ================================================================ */
+    let isOpen = false;
+
+    function openSidebar() {
+      if (isOpen) return;
+      isOpen = true;
       sidebar.classList.add('open');
       overlay.classList.add('show');
       toggleBtn.setAttribute('aria-expanded', 'true');
       toggleBtn.innerHTML = '✕';
-    };
+      /* Lock body scroll on mobile so background doesn't scroll */
+      if (window.innerWidth <= 768) {
+        document.body.style.overflow = 'hidden';
+      }
+    }
 
-    const close = () => {
+    function closeSidebar() {
+      if (!isOpen) return;
+      isOpen = false;
       sidebar.classList.remove('open');
       overlay.classList.remove('show');
       toggleBtn.setAttribute('aria-expanded', 'false');
       toggleBtn.innerHTML = '☰';
-    };
+      document.body.style.overflow = '';
+    }
 
-    const toggle = () => {
-      if (sidebar.classList.contains('open')) {
-        close();
-      } else {
-        open();
-      }
-    };
+    /* ================================================================
+       Event listeners
+       ================================================================ */
 
-    // ── Event Listeners ──
-    toggleBtn.addEventListener('click', toggle);
+    /* Toggle button */
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isOpen ? closeSidebar() : openSidebar();
+    });
 
-    // Close on overlay click
-    overlay.addEventListener('click', close);
+    /* Overlay click — close sidebar
+       Use pointer-events in CSS (none when hidden) so this only
+       fires when the overlay is actually visible.               */
+    overlay.addEventListener('click', closeSidebar);
 
-    // Nav items close sidebar after navigation (use small delay to let link work)
+    /* Nav item clicks — let link navigate, then close */
     sidebar.querySelectorAll('.nav-item').forEach(link => {
-      link.addEventListener('click', (e) => {
-        // Let the link navigate naturally
-        // Close sidebar after a short delay
-        setTimeout(() => close(), 100);
+      link.addEventListener('click', () => {
+        /* Small delay so the browser processes the href first */
+        setTimeout(closeSidebar, 80);
       });
     });
 
-    // Close on Escape
+    /* Escape key */
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-        close();
-      }
+      if (e.key === 'Escape' && isOpen) closeSidebar();
     });
 
-    // Close on outside click (only if click is not on nav items)
-    document.addEventListener('click', (e) => {
-      const isOpen = sidebar.classList.contains('open');
-      const clickedNav = e.target.closest('.nav-item');
-      const clickedOutside = !sidebar.contains(e.target) && !toggleBtn.contains(e.target);
-      if (isOpen && clickedOutside && !clickedNav) {
-        close();
-      }
-    });
-
-    // Close on resize to desktop
+    /* Resize — close if window grows past mobile breakpoint */
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 768 && sidebar.classList.contains('open')) {
-        close();
-      }
+      if (window.innerWidth > 768 && isOpen) closeSidebar();
     });
 
-    // Set active nav item based on current page
+    /* ================================================================
+       Active nav item
+       ================================================================ */
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
     sidebar.querySelectorAll('.nav-item').forEach(item => {
+      /* Remove any hardcoded active classes first */
+      item.classList.remove('active');
       const href = item.getAttribute('href') || '';
-      if (href === currentPage || (currentPage === '' && href === 'index.html')) {
+      const pageName = href.split('/').pop();
+      if (
+        pageName === currentPage ||
+        (currentPage === '' && pageName === 'index.html')
+      ) {
         item.classList.add('active');
       }
     });
 
-    // Load user info
+    /* ================================================================
+       Load user display name / avatar initial
+       ================================================================ */
     try {
       const user = JSON.parse(localStorage.getItem('wt_user') || 'null');
       if (user) {
@@ -126,6 +146,7 @@
           el.textContent = (user.name || 'U').charAt(0).toUpperCase();
         });
       }
-    } catch (e) {}
+    } catch (e) { /* ignore */ }
+
   });
 })();
