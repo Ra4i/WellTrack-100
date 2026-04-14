@@ -203,7 +203,7 @@
               </div>
               <div class="req-actions">
                 <button class="btn-accept"  onclick="handleAccept(${r.fromUserId},'${escapeAttr(r.fromName)}')">✓</button>
-                <button class="btn-decline" onclick="handleDecline(${r.fromUserId})">${t('friends.decline')}</button>
+                <button class="btn-decline" onclick="handleDecline(${r.fromUserId})">✕</button>
               </div>
             </div>
           `).join('');
