@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WellTrackAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1014703e7d18b7ed36f9ae46084adb88ed682972")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+741059c491f5984c9ecf4cdcd3b21ef0b7a6c290")]
 [assembly: System.Reflection.AssemblyProductAttribute("WellTrackAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WellTrackAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
