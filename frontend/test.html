@@ -49,15 +49,7 @@
         <div class="log-section">
           <h3 style="margin-top:0">Генериране на QR код</h3>
 
-          <div class="input-group" style="margin-bottom:1.25rem;">
-            <label for="ageInput">Възраст / Age</label>
-            <div class="input-with-unit">
-              <input type="number" id="ageInput" value="25" min="1" max="120" />
-              <span class="unit">г.</span>
-            </div>
-          </div>
-
-          <button type="button" class="btn-primary" id="btn" style="margin-top:0">Генерирай</button>
+          <button type="button" class="btn-primary" id="btn" style="margin: top 25px;">Генерирай</button>
 
           <div id="status" style="margin-top:1rem;font-size:0.9rem;color:var(--text-muted);"></div>
 
@@ -81,7 +73,6 @@
   document.querySelectorAll('.user-avatar-init').forEach(el => el.textContent = user.name.charAt(0).toUpperCase());
 
     document.getElementById('btn').onclick = async () => {
-      const age     = document.getElementById('ageInput').value;
       const status  = document.getElementById('status');
       const img     = document.getElementById('qrImage');
       const result  = document.getElementById('qr-result');
@@ -92,7 +83,7 @@
       result.style.display = 'none';
 
       try {
-        const response = await fetch(`${baseUrl}/api/users/generate-age-qr/${user.id}/${age}`, {
+        const response = await fetch(`${baseUrl}/api/users/generate-age-qr/${user.id}/${user.age}`, {
           method: 'POST'
         });
 

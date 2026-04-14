@@ -121,10 +121,10 @@ function getUserProgressLocal(userId) {
 function getUsers() {
   try { return JSON.parse(localStorage.getItem('wt_users')) || []; } catch { return []; }
 }
-function registerUser(name, email, password) {
+function registerUser(name, age, email, password) {
   const users = getUsers();
   if (users.find(u => u.email === email)) return { error: 'Email already registered.' };
-  const user = { id: Date.now(), name, email, password, startDate: new Date().toISOString() };
+  const user = { id: Date.now(), name, age, email, password, startDate: new Date().toISOString() };
   users.push(user); localStorage.setItem('wt_users', JSON.stringify(users));
   return { user };
 }
@@ -375,6 +375,7 @@ function initRegister() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('name').value.trim();
+    const age = parseInt(document.getElementById('age').value.trim());
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const confirm = document.getElementById('confirm').value;
@@ -383,14 +384,14 @@ function initRegister() {
     if (password.length < 6) { alertEl.textContent = 'Password must be at least 6 characters.'; alertEl.className = 'alert error show'; return; }
     if (USE_API) {
       try {
-        const data = await apiPost('/users/register', { name, email, password });
+        const data = await apiPost('/users/register', { name, age, email, password });
         setCurrentUser(data);
         alertEl.textContent = '🎉 Your recovery journey starts now!';
         alertEl.className = 'alert success show';
         setTimeout(() => window.location.href = 'dashboard.html', 1500);
       } catch (err) { alertEl.textContent = err.message; alertEl.className = 'alert error show'; }
     } else {
-      const result = registerUser(name, email, password);
+      const result = registerUser(name, age, email, password);
       if (result.error) { alertEl.textContent = result.error; alertEl.className = 'alert error show'; return; }
       setCurrentUser(result.user);
       alertEl.textContent = '🎉 Your recovery journey starts now!';

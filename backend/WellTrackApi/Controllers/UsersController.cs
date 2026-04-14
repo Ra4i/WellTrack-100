@@ -3,8 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using QRCoder;
 using WellTrackAPI.Data;
 using WellTrackAPI.Models;
-using System.IO;
-using Microsoft.AspNetCore.Mvc;
+
 
 
 namespace WellTrackAPI.Controllers
@@ -35,6 +34,7 @@ namespace WellTrackAPI.Controllers
             {
                 Name = dto.Name.Trim(),
                 Email = dto.Email.Trim().ToLower(),
+                Age = dto.Age,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 StartDate = DateTime.UtcNow
             };
@@ -81,6 +81,7 @@ namespace WellTrackAPI.Controllers
             Id = u.Id,
             Name = u.Name,
             Email = u.Email,
+            Age = u.Age,
             StartDate = u.StartDate
         };
         
