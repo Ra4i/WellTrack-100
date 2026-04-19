@@ -13,6 +13,7 @@ namespace WellTrackAPI.Data
         public DbSet<Message> Messages => Set<Message>();
         public DbSet<Friend> Friends => Set<Friend>();
         public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
+        public DbSet<JournalInfo> JournalInfo => Set<JournalInfo>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
