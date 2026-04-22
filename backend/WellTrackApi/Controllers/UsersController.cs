@@ -68,7 +68,7 @@ namespace WellTrackAPI.Controllers
         }
 
         // GET /api/users/{id}
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var user = await _db.Users.FindAsync(id);

@@ -9,7 +9,6 @@ namespace WellTrackAPI.Data
 
         public DbSet<User> Users => Set<User>();
         public DbSet<Progress> Progress => Set<Progress>();
-        public DbSet<UserSettings> UserSettings => Set<UserSettings>();
         public DbSet<Message> Messages => Set<Message>();
         public DbSet<Friend> Friends => Set<Friend>();
         public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
@@ -27,13 +26,6 @@ namespace WellTrackAPI.Data
                 .HasOne(p => p.User)
                 .WithMany(u => u.ProgressEntries)
                 .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // One user has one settings
-            modelBuilder.Entity<UserSettings>()
-                .HasOne(s => s.User)
-                .WithOne()
-                .HasForeignKey<UserSettings>(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Messages: one sender has many messages
@@ -76,6 +68,13 @@ namespace WellTrackAPI.Data
                 .HasOne(fr => fr.ToUser)
                 .WithMany()
                 .HasForeignKey(fr => fr.ToUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // One user has many journal entries
+            modelBuilder.Entity<JournalInfo>()
+                .HasOne(j => j.User)
+                .WithMany()
+                .HasForeignKey(j => j.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

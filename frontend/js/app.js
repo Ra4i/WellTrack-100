@@ -1,5 +1,7 @@
+// Detect if running on live server (localhost:5001) or from file protocol
+const IS_LIVE_SERVER = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE = 'http://localhost:5001/api';
-const USE_API = true;
+const USE_API = IS_LIVE_SERVER; // Only use API when on live server
 
 // ── Utility ───────────────────────────────────────────────
 function escapeHtml(text) {
