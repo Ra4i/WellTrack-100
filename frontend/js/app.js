@@ -88,10 +88,42 @@ function showToast(msg, type = 'success') {
 function getCurrentUser() {
   try { return JSON.parse(localStorage.getItem('wt_user')); } catch { return null; }
 }
-function setCurrentUser(user) { localStorage.setItem('wt_user', JSON.stringify(user)); }
-function logout() { localStorage.removeItem('wt_user'); window.location.href = 'login.html'; }
-function requireAuth() {
-  if (!getCurrentUser()) { window.location.href = 'login.html'; return false; }
+
+// Normalize API response field names (backend returns PascalCase, frontend expects camelCase)
+function normalizeUser(user) {
+  if (!user) return null;
+  return {
+    id:        user.id        ?? user.Id,
+    name:      user.name      ?? user.Name,
+    email:     user.email     ?? user.Email,
+    age:       user.age       ?? user.Age,
+    startDate: user.startDate ?? user.StartDate,
+    password:  user.password  ?? user.Password,
+  };
+}
+
+function setCurrentUser(user) {
+  localStorage.setItem('wt_user', JSON.stringify(normalizeUser(user)));
+}
+
+function logout() {
+  localStorage.removeItem('wt_user');
+  window.location.href = 'login.html';
+}
+
+async function requireAuth() {
+  const user = getCurrentUser();
+  if (!user) { window.location.href = 'login.html'; return false; }
+  if (USE_API) {
+    try {
+      await apiGet(`/users/${user.id}`);
+    } catch {
+      // User no longer exists in DB (deleted), clear cache and redirect
+      localStorage.removeItem('wt_user');
+      window.location.href = 'login.html';
+      return false;
+    }
+  }
   return true;
 }
 
@@ -123,15 +155,20 @@ function getUserProgressLocal(userId) {
 function getUsers() {
   try { return JSON.parse(localStorage.getItem('wt_users')) || []; } catch { return []; }
 }
+
 function registerUser(name, age, email, password) {
   const users = getUsers();
-  if (users.find(u => u.email === email)) return { error: 'Email already registered.' };
-  const user = { id: Date.now(), name, age, email, password, startDate: new Date().toISOString() };
-  users.push(user); localStorage.setItem('wt_users', JSON.stringify(users));
+  const normalizedEmail = email.trim().toLowerCase();
+  if (users.find(u => u.email === normalizedEmail)) return { error: 'Email already registered.' };
+  const user = { id: Date.now(), name: name.trim(), age, email: normalizedEmail, password, startDate: new Date().toISOString() };
+  users.push(user);
+  localStorage.setItem('wt_users', JSON.stringify(users));
   return { user };
 }
+
 function loginUser(email, password) {
-  const user = getUsers().find(u => u.email === email && u.password === password);
+  const normalizedEmail = email.trim().toLowerCase();
+  const user = getUsers().find(u => u.email === normalizedEmail && u.password === password);
   return user ? { user } : { error: 'Invalid email or password.' };
 }
 
@@ -218,8 +255,8 @@ async function getFriendsFromAPI(userId) {
     const friends = await apiGet(`/friends/list?userId=${userId}`);
     return friends.map(f => ({
       email: f.friendEmail,
-      name: f.friendName,
-      id: f.friendUserId
+      name:  f.friendName  ?? f.FriendName,
+      id:    f.friendUserId ?? f.FriendUserId
     }));
   } catch (err) {
     console.error('Failed to load friends:', err);
@@ -232,10 +269,10 @@ async function getPendingRequestsFromAPI(userId) {
   try {
     const requests = await apiGet(`/friends/requests?userId=${userId}`);
     return requests.map(r => ({
-      fromEmail: r.fromEmail,
-      fromName: r.fromName,
-      fromUserId: r.fromUserId,
-      sentAt: r.sentAt
+      fromEmail:  r.fromEmail  ?? r.FromEmail,
+      fromName:   r.fromName   ?? r.FromName,
+      fromUserId: r.fromUserId ?? r.FromUserId,
+      sentAt:     r.sentAt     ?? r.SentAt
     }));
   } catch (err) {
     console.error('Failed to load requests:', err);
@@ -351,19 +388,20 @@ function initLogin() {
   if (!form) return;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = document.getElementById('email').value.trim();
+    const email = document.getElementById('email').value.trim().toLowerCase();
     const password = document.getElementById('password').value;
     alertEl.className = 'alert';
     if (USE_API) {
       try {
         const data = await apiPost('/users/login', { email, password });
-        setCurrentUser(data);
+        setCurrentUser(data); // normalizeUser runs inside setCurrentUser
         window.location.href = 'dashboard.html';
       } catch (err) { alertEl.textContent = err.message; alertEl.className = 'alert error show'; }
     } else {
       const result = loginUser(email, password);
       if (result.error) { alertEl.textContent = result.error; alertEl.className = 'alert error show'; return; }
-      setCurrentUser(result.user); window.location.href = 'dashboard.html';
+      setCurrentUser(result.user);
+      window.location.href = 'dashboard.html';
     }
   });
 }
@@ -376,18 +414,18 @@ function initRegister() {
   if (!form) return;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('name').value.trim();
-    const age = parseInt(document.getElementById('age').value.trim());
-    const email = document.getElementById('email').value.trim();
+    const name     = document.getElementById('name').value.trim();
+    const age      = parseInt(document.getElementById('age').value.trim());
+    const email    = document.getElementById('email').value.trim().toLowerCase();
     const password = document.getElementById('password').value;
-    const confirm = document.getElementById('confirm').value;
+    const confirm  = document.getElementById('confirm').value;
     alertEl.className = 'alert';
     if (password !== confirm) { alertEl.textContent = 'Passwords do not match.'; alertEl.className = 'alert error show'; return; }
-    if (password.length < 6) { alertEl.textContent = 'Password must be at least 6 characters.'; alertEl.className = 'alert error show'; return; }
+    if (password.length < 6)  { alertEl.textContent = 'Password must be at least 6 characters.'; alertEl.className = 'alert error show'; return; }
     if (USE_API) {
       try {
         const data = await apiPost('/users/register', { name, age, email, password });
-        setCurrentUser(data);
+        setCurrentUser(data); // normalizeUser runs inside setCurrentUser
         alertEl.textContent = '🎉 Your recovery journey starts now!';
         alertEl.className = 'alert success show';
         setTimeout(() => window.location.href = 'dashboard.html', 1500);
@@ -444,8 +482,8 @@ function initDashboard() {
   loadEntries.then(entries => {
     const today = entries.find(e => Number(e.currentDay) === Number(currentDay));
     if (today) {
-      document.getElementById('water-input').value   = today.waterIntake || 0;
-      document.getElementById('sleep-input').value   = today.sleepHours || 0;
+      document.getElementById('water-input').value     = today.waterIntake || 0;
+      document.getElementById('sleep-input').value     = today.sleepHours  || 0;
       document.getElementById('workout-input').checked = today.workoutCompleted || false;
       updateStatCards(today);
     }
@@ -462,7 +500,7 @@ function initDashboard() {
   logForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const entry = {
-      userId: user.id,
+      userId:           user.id,
       currentDay,
       waterIntake:      parseFloat(document.getElementById('water-input').value) || 0,
       sleepHours:       parseFloat(document.getElementById('sleep-input').value) || 0,
@@ -590,7 +628,6 @@ async function initLevels() {
   renderMotivation(completedLevel > 0 ? completedLevel : 1);
   renderLevelGrid(completedLevel, nextLevel, currentDay);
 
-  // Store completedLevel globally for use in showLevelDetail
   window.completedLevel = completedLevel;
 }
 
@@ -713,9 +750,7 @@ function showLevelDetail(levelNum) {
     }
   }
 
-  // Add complete level button if level is unlocked and not already completed
   if (levelNum <= currentDay && levelNum > window.completedLevel && modalExercises) {
-    // Remove any existing complete button first
     const existingBtn = document.querySelector('.level-complete-main-btn');
     if (existingBtn) existingBtn.remove();
 

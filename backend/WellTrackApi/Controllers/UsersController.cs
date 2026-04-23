@@ -85,7 +85,7 @@ namespace WellTrackAPI.Controllers
             StartDate = u.StartDate
         };
         
-        [HttpPost("generate-age-qr/{id}/{age}")]
+        [HttpPost("generate-age-qr/{id:int}/{age:int}")]
         public IActionResult GenerateAgeQr([FromRoute] int id, [FromRoute] int age)
         {
             try
