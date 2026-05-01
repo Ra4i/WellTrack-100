@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Табло · WellTrack 100</title>
+  <script>
+    // Prevent theme flash
+    try { var s=JSON.parse(localStorage.getItem('wt_user_settings')||'{}'); if(s.theme==='light') document.documentElement.setAttribute('data-theme','light'); } catch(e){}
+  </script>
+  <link rel="stylesheet" href="~/css/style.css" />
+  <link rel="stylesheet" href="~/css/navbar.css" /> 
+  <script src="~/js/i18n.js"></script>
+</head>
+<body data-page="dashboard">
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">W</div>
+        <div class="logo-text">WellTrack <small>100-дневно предизвикателство</small></div>
+      </div>
+      <span class="nav-section-label">Основно</span>
+      <a class="nav-item active" href="@Url.Action("Dashboard", "Home")"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
+      <a class="nav-item" href="@Url.Action("Levels", "Home")"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
+      <a class="nav-item" href="@Url.Action("Progress", "Home")"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
+      <a class="nav-item" href="@Url.Action("Journal", "Home")"><span class="nav-icon">📓</span> <span>Журнал</span></a>
+      <a class="nav-item" href="@Url.Action("Friends", "Home")"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Приятели</span></a>
+      <a class="nav-item" href="@Url.Action("Messages", "Home")"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
+      <a class="nav-item" href="@Url.Action("Settings", "Home")"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
+      <div class="sidebar-bottom">
+        <div class="user-chip">
+          <div class="user-avatar user-avatar-init">A</div>
+          <span class="user-name user-display-name">Зареждане...</span>
+          <a class="logout-btn" title="Изход" href="@Url.Action("Login", "Home")">⏏</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h1 data-i18n="dashboard.title">Табло</h1>
+        <p class="breadcrumb">
+          WellTrack 100 · <span class="user-display-name"></span>
+          &nbsp;·&nbsp;
+          <span id="difficulty-badge" style="font-weight:600;cursor:help;" title="Промени в Настройки">⚡ Нормално</span>
+        </p>
+      </div>
+
+      <!-- Day Hero -->
+      <div class="day-hero">
+        <div class="day-info">
+          <h2 id="current-day">Ден 1</h2>
+          <p id="days-remaining">Остават 99 дни</p>
+          <p style="margin-top:0.5rem;color:var(--text-muted);font-size:0.85rem" data-i18n="dashboard.youAreStronger">Ти си по-силен от всяко желание 💪</p>
+        </div>
+        <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;justify-content:center;">
+          <div style="text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--warn);line-height:1" id="workout-streak">0</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px" data-i18n="dashboard.dayStreak">Серия</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px" data-i18n="dashboard.resetsIfMissed">нулира се при пропуск</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent3);line-height:1" id="current-level">0</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px" data-i18n="dashboard.level">Ниво</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">наваксването е допустимо</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stats-grid">
+        <div class="stat-card water">
+          <div class="stat-icon">💧</div>
+          <div class="stat-label" data-i18n="dashboard.waterIntake">Вода днес</div>
+          <div class="stat-value" id="water-stat">0.0</div>
+          <div class="stat-target">Цел: 2.5 л / ден</div>
+        </div>
+        <div class="stat-card workout">
+          <div class="stat-icon">🏃</div>
+          <div class="stat-label" data-i18n="dashboard.workoutCompleted">Активност</div>
+          <div class="stat-value" id="workout-stat">—</div>
+          <div class="stat-target" data-i18n="dashboard.resetsIfMissed">Серията се нулира при пропуск</div>
+        </div>
+        <div class="stat-card sleep">
+          <div class="stat-icon">😴</div>
+          <div class="stat-label" data-i18n="dashboard.sleepTrack">Сън снощи</div>
+          <div class="stat-value" id="sleep-stat">0.0</div>
+          <div class="stat-target">Цел: 7–9 ч / нощ</div>
+        </div>
+      </div>
+
+      <!-- Cigarette Savings -->
+      <div class="savings-section">
+        <h3><span data-i18n="dashboard.moneySaved">💰 Спестени пари</span> <span class="badge" data-i18n="dashboard.everyDayCounts">Всеки ден има значение</span></h3>
+        <div class="savings-content">
+          <div class="savings-card">
+            <div class="savings-icon">💵</div>
+            <div class="savings-info">
+              <div class="savings-label" data-i18n="dashboard.moneySaved">Спестени пари</div>
+              <div class="savings-value" id="money-saved">$0.00</div>
+            </div>
+          </div>
+          <div class="savings-card">
+            <div class="savings-icon">🚬</div>
+            <div class="savings-info">
+              <div class="savings-label" data-i18n="dashboard.cigsSaved">Избегнати цигари</div>
+              <div class="savings-value" id="cigs-avoided">0</div>
+            </div>
+          </div>
+          <div class="savings-price-input">
+            <label for="cig-price" data-i18n="dashboard.packPrice">Цена на цигари в твоя град</label>
+            <div class="price-input-group">
+              <span class="currency">$</span>
+              <input type="number" id="cig-price" min="1" max="30" step="0.50" placeholder="7.50" value="7.50" />
+              <span class="unit">/pack</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log Form -->
+      <div class="log-section">
+        <h3><span data-i18n="dashboard.everyDayCounts">Запиши днешния си прогрес</span> <span class="badge">Ден <span id="log-day-badge">1</span></span></h3>
+        <form id="log-form" class="log-form">
+          <div class="input-group">
+            <label for="water-input" data-i18n="dashboard.waterIntake">Прием на вода</label>
+            <div class="input-with-unit">
+              <input type="number" id="water-input" min="0" max="10" step="0.1" placeholder="2.5" />
+              <span class="unit" data-i18n="dashboard.liters">л</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="sleep-input" data-i18n="dashboard.sleepTrack">Часове сън</label>
+            <div class="input-with-unit">
+              <input type="number" id="sleep-input" min="0" max="24" step="0.5" placeholder="8.0" />
+              <span class="unit" data-i18n="dashboard.hours">ч</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label data-i18n="dashboard.workoutCompleted">Извършена активност</label>
+            <label class="checkbox-group">
+              <input type="checkbox" id="workout-input" />
+              <span data-i18n="dashboard.workoutCompleted">Завърших днешната активност</span>
+            </label>
+          </div>
+          <div class="input-group">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn-primary" style="margin-top:0" data-i18n="dashboard.saveTodayProgress">Запази прогрес</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Quick tip -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;display:flex;gap:1rem;align-items:flex-start">
+        <span style="font-size:1.5rem">💡</span>
+        <div>
+          <strong style="font-family:'Syne',sans-serif;font-size:0.95rem" data-i18n="dashboard.keepStreak">Запази серията си</strong>
+          <p style="color:var(--text-muted);font-size:0.88rem;margin-top:0.3rem;line-height:1.6" data-i18n-html="dashboard.quickTipHtml">
+            Серията ти се нулира, ако пропуснеш ден — но твоят <strong>прогрес на ниво не изчезва</strong>.
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script src="~/js/app.js"></script>
+  <script src="~/js/navbar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const user = JSON.parse(localStorage.getItem('wt_user') || 'null');
+        if (!user) return;
+        const startDate = new Date(user.startDate || Date.now());
+        const day = Math.min(Math.max(Math.floor((new Date() - startDate) / 86400000) + 1, 1), 100);
+        const badge = document.getElementById('log-day-badge');
+        if (badge) badge.textContent = day;
+      }, 150);
+    });
+  </script>
+  <script>
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDashboard);
+    } else {
+      initDashboard();
+    }
+  </script>
+</body>
+</html>

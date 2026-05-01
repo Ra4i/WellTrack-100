@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Съобщения · WellTrack 100</title>
+  <script>
+    try { var s=JSON.parse(localStorage.getItem('wt_user_settings')||'{}'); if(s.theme==='light') document.documentElement.setAttribute('data-theme','light'); } catch(e){}
+  </script>
+  <link rel="stylesheet" href="~/css/style.css" />
+  <link rel="stylesheet" href="~/css/navbar.css" /> 
+  <script src="~/js/i18n.js"></script>
+</head>
+<body data-page="messages">
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">W</div>
+        <div class="logo-text">WellTrack <small>100-дневно предизвикателство</small></div>
+      </div>
+      <span class="nav-section-label">Основно</span>
+      <a class="nav-item" href="@Url.Action("Dashboard", "Home")"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
+      <a class="nav-item" href="@Url.Action("Levels", "Home")"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
+      <a class="nav-item" href="@Url.Action("Progress", "Home")"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
+      <a class="nav-item" href="@Url.Action("Journal", "Home")"><span class="nav-icon">📓</span> <span data-i18n="nav.journal">Журнал</span></a>
+      <a class="nav-item" href="@Url.Action("Friends", "Home")"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Приятели</span></a>
+      <a class="nav-item active" href="@Url.Action("Messages", "Home")"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
+      <a class="nav-item" href="@Url.Action("Settings", "Home")"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
+      <div class="sidebar-bottom">
+        <div class="user-chip">
+          <div class="user-avatar user-avatar-init">A</div>
+          <span class="user-name user-display-name">Зареждане...</span>
+          <a class="logout-btn" title="Изход" href="@Url.Action("Login", "Home")">⏏</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h1 data-i18n="messages.title">Съобщения и чат</h1>
+        <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span></p>
+      </div>
+
+      <div class="messages-container">
+        <!-- Chat Area -->
+        <div class="chat-section">
+          <div class="chat-header">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span style="font-size:1.5rem;">🤖</span>
+              <div>
+                <h2 data-i18n="messages.chatbot">Wellness Chatbot</h2>
+                <p style="font-size:0.85rem;color:var(--text-muted);" data-i18n="messages.chatbotSubtitle">Твоят личен уелнес треньор</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">
+              <div class="message-avatar">🤖</div>
+              <div class="message-content">
+                <p id="welcome-msg"></p>
+              </div>
+              <small class="message-time" id="welcome-time">Сега</small>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <textarea
+              id="message-input"
+              class="message-input"
+              rows="1"
+            ></textarea>
+            <button class="btn btn-primary send-btn" id="send-btn" title="Изпрати">↑</button>
+          </div>
+        </div>
+
+        <!-- Quick Tips Sidebar -->
+        <div class="tips-sidebar">
+          <h3>💡 <span data-i18n="messages.yourMessages">Бързи съвети</span></h3>
+          <div class="tips-list" id="tips-list">
+            <!-- tips rendered by JS so they respect language -->
+          </div>
+        </div>
+      </div>
+
+      <div id="toast-container" class="toast-container"></div>
+    </main>
+  </div>
+
+  <script src="~/js/app.js"></script>
+  <script src="~/js/navbar.js"></script>
+  <script>
+    // Fix 2 — Replace requireAuth() call with safe version
+    const user = getCurrentUser();
+    if (!user) { window.location.href = '/Home/Login'; }
+
+    // ── Topic keyword map ─────────────────────────────────────────
+    const TOPIC_KEYWORDS = {
+      en: {
+        smoking:    ['quit smoking','stop smoking','cigarette','nicotine','tobacco','smoke free','cigar'],
+        alcohol:    ['quit alcohol','stop drinking','sober','sobriety','no alcohol','beer','wine','vodka','whiskey','hangover'],
+        fitness:    ['exercise','workout','gym','run','running','cardio','training','sport','yoga','walk','fitness','lift'],
+        nutrition:  ['water','drink','diet','food','eat','nutrition','meal','snack','sugar','appetite','hunger','healthy'],
+        sleep:      ['sleep','rest','bed','bedtime','insomnia','tired','fatigue','nap'],
+        stress:     ['stress','anxiety','anger','meditation','mindfulness','relax','calm','breathing','panic','worry'],
+        health:     ['health','lung','heart','disease','benefit','healing','recover','body','wellness'],
+        motivation: ['motivation','inspire','support','goal','confident','strength','victory','success','proud','challenge'],
+        cravings:   ['craving','urge','tempt','trigger','weakness','resist','control','impulse'],
+        relapse:    ['relapse','slip','fail','mistake','smoking again','drinking again'],
+        habits:     ['habit','routine','pattern','behavior','discipline','consistency','daily'],
+        social:     ['friend','family','alone','lonely','community','group','share','support']
+      },
+      bg: {
+        smoking:    ['цигар','пуш','никотин','тютюн','без цигар','откажи цигар','спра цигар','не пуш'],
+        alcohol:    ['алкохол','пиене','трезв','пиян','бира','вино','водка','уиски','похмел','откажи алкохол','спра пи','не пи'],
+        fitness:    ['трениров','упражнен','фитнес','спорт','бяган','кардио','йога','разходк','вдигам','силов','движен'],
+        nutrition:  ['вода','диета','храна','ядене','хранен','снак','захар','апетит','глад','здравосл','пия'],
+        sleep:      ['сън','почивк','легло','безсъние','уморен','изморен','спя','спи'],
+        stress:     ['стрес','тревог','гняв','медитац','внимателн','спокойств','дишан','паника','безпокойств','напрег'],
+        health:     ['здраве','бели дроб','сърце','болест','ползи','лечен','възстановяван','тяло','благосъстоян'],
+        motivation: ['мотивац','вдъхновен','цел','уверен','сила','победа','успех','горд','предизвикател','помог','как да'],
+        cravings:   ['желан','съблазн','триггер','слабост','съпротив','контрол','импулс','не мога','трудно','изкушен'],
+        relapse:    ['рецидив','провал','грешк','пак пуш','пак пи','отново пуш','отново пи','върнах се','паднах'],
+        habits:     ['навик','рутин','модел','поведен','дисциплин','последовател','всеки ден','редовно'],
+        social:     ['приятел','семейств','самотен','общност','група','сподел','подкреп','помощ']
+      }
+    };
+
+    // ── Response bank ─────────────────────────────────────────────
+    const CHATBOT_RESPONSES = {
+      en: {
+        smoking: [
+          "Quitting smoking is one of the best decisions you'll ever make. Within 20 minutes your heart rate drops. Keep going!",
+          "Every cigarette you skip is a victory. Your lungs are already beginning to heal. Stay strong!",
+          "Replace smoking with a walk, a glass of water, or deep breathing — you're rewiring your brain for success!",
+          "Most nicotine leaves your body within 72 hours. The physical addiction is temporary. You can outlast it!",
+          "Cilia in your lungs are recovering right now — they clean out toxins. Every hour matters."
+        ],
+        alcohol: [
+          "Choosing sobriety is choosing yourself. Your liver begins recovering almost immediately — believe in the process!",
+          "Sleep quality improves dramatically without alcohol. Enjoy waking up refreshed and clear-headed.",
+          "Alcohol is a depressant. Without it, your mood will stabilize and anxiety will reduce over time.",
+          "When the urge to drink hits, wait 15 minutes. Call someone, exercise, drink water. The urge will pass.",
+          "Your skin will clear, your mind will sharpen, and relationships will improve. Sobriety is a gift to yourself."
+        ],
+        fitness: [
+          "Even a 10-minute walk crushes cravings and boosts your mood. Endorphins are nature's medicine!",
+          "Start small: 10 push-ups, a short walk, 5 minutes of stretching. Build from there — consistency beats intensity.",
+          "Exercise is your secret weapon against cravings. When an urge hits, do 20 jumping jacks. Movement saves you!",
+          "You don't need a gym. Body weight exercises at home are just as effective. Push-ups, squats, planks — start now.",
+          "A daily 15-minute walk beats occasional intense workouts. Build the habit first, then the intensity."
+        ],
+        nutrition: [
+          "Drink water constantly! It reduces cravings, boosts energy, and detoxes your body. Aim for 2–3 liters daily.",
+          "Eat protein, whole grains, and fresh fruit. Avoid refined sugar — it spikes and crashes energy, increasing cravings.",
+          "When a craving hits, drink a full glass of water and wait 10 minutes. It usually disappears!",
+          "Snack smart: almonds, berries, yogurt, vegetables. Satisfying foods that support your recovery goals.",
+          "Nutrition is the foundation of your recovery. Balanced meals stabilize mood and reduce withdrawal symptoms."
+        ],
+        sleep: [
+          "7–9 hours of quality sleep is essential. Your body and mind repair themselves during rest.",
+          "Avoid screens 1 hour before bed. Keep your room cool and dark. Try deep breathing to fall asleep faster.",
+          "Better sleep means stronger willpower tomorrow. Sleep deprivation weakens your resistance to cravings.",
+          "Establish a bedtime routine: same time, no caffeine after 2 PM, light reading or meditation before sleep.",
+          "Poor sleep increases cravings significantly. Prioritizing rest is one of the most powerful things you can do."
+        ],
+        stress: [
+          "Stress is a major trigger. Fight it with exercise, meditation, deep breathing, or talking to someone you trust.",
+          "Try box breathing: inhale 4 counts, hold 4, exhale 4, hold 4. Repeat 5 times. Feel the calm return.",
+          "Remember: alcohol and cigarettes don't solve stress — they create more problems. Healthy habits are the solution.",
+          "Meditation doesn't need an app or experience. Start with 5 minutes of slow, deep breathing. It works immediately.",
+          "Talk about your stress with friends or family. Keeping it bottled up leads to relapse. Connection is healing."
+        ],
+        health: [
+          "Your lungs start healing within 20 minutes of quitting. After 1 month, function improves by up to 30%!",
+          "After 1 year smoke-free, your heart disease risk drops by 50%. In 10 years it equals a non-smoker's risk.",
+          "Quitting alcohol reduces cancer risk, improves liver function, and strengthens your immune system significantly.",
+          "Every sober day reduces blood pressure and improves circulation. Your whole body is rebuilding itself!",
+          "Your sense of taste and smell will return. Food will taste better than it has in years."
+        ],
+        motivation: [
+          "You are stronger than your cravings. Every time you resist, you prove it. Keep building that strength!",
+          "Remember why you started — health, family, self-respect. Hold that reason close on the tough days.",
+          "Every single day without smoking or alcohol is a victory. You're building a new identity.",
+          "Progress happens inside even when it's not visible outside. Your organs are healing right now.",
+          "Millions of people have quit smoking and alcohol. You will too. You already have what it takes."
+        ],
+        cravings: [
+          "Cravings last only 3–5 minutes. Ride the wave: drink water, breathe deeply, take a short walk.",
+          "A craving is your brain seeking dopamine — not a sign of weakness. Each one you resist rewires you for success.",
+          "When cravings hit hard: cold water on your face, push-ups, a phone call. Distraction is your superpower.",
+          "Identify your triggers: stress, certain places, specific people. Plan ahead and you'll avoid most setbacks.",
+          "Craving intensity decreases every week. By week 3–4 they become very manageable. You're almost there!"
+        ],
+        relapse: [
+          "One slip doesn't erase your progress. Get right back on track — you've already proven you can do this!",
+          "Relapse is part of many people's recovery journey. Analyze what triggered it, plan ahead, and try again now.",
+          "Don't let shame pull you deeper. Tell someone, get support, and restart immediately. You are human.",
+          "Every relapse is a learning opportunity. What triggered it? How will you handle it differently? Adjust and continue.",
+          "Shame doesn't help — action does. If you slip, exercise immediately. Your next choice is what matters."
+        ],
+        habits: [
+          "It takes 21–100 days to build a new habit. You're investing in a healthier version of yourself.",
+          "Small wins build momentum. One healthy habit leads to another. Chain them together!",
+          "Track your habits visually — mark each successful day. Seeing the chain grow is incredibly motivating.",
+          "Make healthy habits easy: put water on your desk, workout clothes by your bed. Remove friction.",
+          "Your brain loves patterns. Fill the time you used for smoking/drinking with exercise or a hobby."
+        ],
+        social: [
+          "Share your journey with trusted friends and family. Their belief in you matters more than you know.",
+          "Tell people about your goals. Accountability dramatically increases your success rate.",
+          "When you feel lonely, reach out instead of relapsing. Call a friend, join a fitness class. Connection heals.",
+          "Surround yourself with people who support your goals. You deserve people who lift you up!",
+          "Find a support community online or in person. Knowing others are fighting the same battle is powerful."
+        ],
+        offTopic: [
+          "I'm here to help with quitting smoking, reducing alcohol, fitness, and wellness. What can I help you with today?",
+          "That's outside my area — I focus on smoking/alcohol cessation and healthy habits. What wellness goal can I help with?",
+          "Let's keep our chat focused on your health journey. What would you like to work on today?"
+        ]
+      },
+      bg: {
+        smoking: [
+          "Спирането на цигарите е едно от най-добрите решения в живота ти. След 20 минути кръвното налягане вече пада. Продължавай!",
+          "Всяка цигара, която не запалиш, е победа. Белите ти дробове вече започват да се лекуват. Остани силен!",
+          "Замени цигарата с разходка, чаша вода или дълбоко дишане — пренастройваш мозъка си за успех!",
+          "Повечето никотин напуска тялото ти в рамките на 72 часа. Физическата зависимост е временна — можеш да я надвиеш!",
+          "Ресничките в белите ти дробове се възстановяват и изчистват токсините. Всеки час без цигара има значение."
+        ],
+        alcohol: [
+          "Изборът да спреш алкохола е избор за самия теб. Черният ти дроб започва да се възстановява почти веднага!",
+          "Качеството на съня се подобрява значително без алкохол. Насладиш ли се да се събуждаш свеж и ясномислещ.",
+          "Алкохолът е депресант. Без него настроението ти ще се стабилизира и тревожността ще намалее с времето.",
+          "Когато желанието да пиеш е силно, изчакай 15 минути. Позвъни на някого, потренирай, пий вода. Желанието ще мине.",
+          "Кожата ти ще се изчисти, умът ще се изостри, отношенията ще се подобрят. Трезвостта е подарък за себе си."
+        ],
+        fitness: [
+          "Дори 10 минути разходка прогонва желанията и подобрява настроението. Ендорфините са природната ти медицина!",
+          "Начни с малко: 10 лицеви опори, кратка разходка, 5 минути разтягане. Постепенно увеличавай — последователността е ключова.",
+          "Физическото движение е тайното ти оръжие срещу желанията. Когато желанието удари, направи 20 скока. Движението те спасява!",
+          "Не ти трябва фитнес зала. Упражнения с тежестта на тялото вкъщи са също толкова ефективни. Започни сега.",
+          "Ежедневна 15-минутна разходка е по-добра от случайни интензивни тренировки. Изгради навика, после интензивността."
+        ],
+        nutrition: [
+          "Пий вода непрекъснато! Намалява желанията, повишава енергията и детоксира тялото. Целта е 2–3 литра дневно.",
+          "Яж протеини, пълнозърнести храни и пресни плодове. Избягвай рафинирана захар — тя предизвиква спадове на енергия и желания.",
+          "Когато желанието е силно, изпий пълна чаша вода и изчакай 10 минути. Обикновено отминава!",
+          "Яж умно: бадеми, боровинки, кисело мляко, зеленчуци. Засищащи храни, които подкрепят целите ти.",
+          "Храненето е основата на твоето възстановяване. Балансираните ястия стабилизират настроението и намаляват симптомите."
+        ],
+        sleep: [
+          "7–9 часа качествен сън са от съществено значение. Тялото и умът ти се възстановяват именно по време на почивката.",
+          "Избягвай екрани 1 час преди лягане. Поддържай стаята хладна и тъмна. Опитай дълбоко дишане за по-бърз сън.",
+          "По-добрият сън означава по-силна воля утре. Недоспиването отслабва съпротивата срещу желанията.",
+          "Установи режим за лягане: еднакво времe, без кофеин след 14:00, леко четене или медитация.",
+          "Лошият сън значително увеличава желанията. Приоритизирането на почивката е едно от най-мощните неща, които можеш да направиш."
+        ],
+        stress: [
+          "Стресът е основен предизвикател. Справяй се с него чрез упражнения, медитация, дълбоко дишане или разговор с доверен човек.",
+          "Опитай дишане в кутия: вдишай за 4 секунди, задръж 4, издишай 4, задръж 4. Повтори 5 пъти. Почувствай спокойствието.",
+          "Помни: алкохолът и цигарите не решават стреса — създават нови проблеми. Здравословните навици са истинското решение.",
+          "Медитацията не изисква приложение или опит. Начни с 5 минути бавно, дълбоко дишане. Работи веднага.",
+          "Говори за стреса си с приятели или семейство. Задържането му вътре води до рецидив. Свързаността лекува."
+        ],
+        health: [
+          "Белите ти дробове започват да се лекуват в рамките на 20 минути след спирането. След месец функцията им се подобрява с до 30%!",
+          "След 1 година без цигари рискът от сърдечни болести намалява с 50%. За 10 години се изравнява с тези на непушач.",
+          "Спирането на алкохола намалява риска от рак, подобрява чернодробната функция и укрепва имунитета значително.",
+          "Всеки трезвен ден намалява кръвното налягане и подобрява кръвообращението. Цялото ти тяло се възражда!",
+          "Вкусът и обонянието ти ще се върнат. Храната ще ти вкусва по-добре, отколкото от години."
+        ],
+        motivation: [
+          "Ти си по-силен от желанията си. Всеки път, когато устояваш, го доказваш. Продължавай да изграждаш тази сила!",
+          "Помни защо си започнал — здраве, семейство, самоуважение. Дръж тази причина близо в трудните дни.",
+          "Всеки ден без цигари или алкохол е победа. Изграждаш нова идентичност — по-силна и по-здрава.",
+          "Напредъкът се случва отвътре, дори когато не се вижда отвън. Органите ти се лекуват точно сега.",
+          "Милиони хора са се отказали от цигарите и алкохола. И ти ще успееш. Вече имаш всичко необходимо."
+        ],
+        cravings: [
+          "Желанията траят само 3–5 минути. Издържи вълната: пий вода, дишай дълбоко, разходи се за малко.",
+          "Желанието е начинът на мозъка ти да търси допамин — не признак на слабост. Всяко устоено желание те прави по-силен.",
+          "Когато желанието е силно: студена вода в лицето, лицеви опори, телефонен разговор. Разсейването е суперсилата ти.",
+          "Открий кое те предизвиква: стрес, определени места, хора. Планирай предварително и ще избегнеш повечето трудности.",
+          "Интензивността на желанията намалява всяка седмица. До 3-та–4-та седмица стават много по-управляеми. Почти си там!"
+        ],
+        relapse: [
+          "Едно лъскане не заличава напредъка ти. Върни се веднага на правия път — вече си доказал, че можеш!",
+          "Рецидивът е част от пътя на много хора. Анализирай какво го е предизвикало, планирай и опитай отново веднага.",
+          "Не позволявай на срама да те вкара по-дълбоко. Говори с някого, потърси подкрепа и започни отново. Ти си човек.",
+          "Всеки рецидив е урок. Какво го е предизвикало? Как ще го обработиш по-различно следващия път? Адаптирай се и продължи.",
+          "Срамът не помага — действието помага. Ако се подхлъзнеш, потренирай веднага. Следващият ти избор е важен."
+        ],
+        habits: [
+          "Нужни са 21–100 дни за изграждане на нов навик. Инвестираш в по-здравословна версия на себе си.",
+          "Малките победи изграждат темпото. Един здравословен навик води до следващ. Свързвай ги заедно!",
+          "Следи навиците си визуално — маркирай всеки успешен ден. Виждането на растящата верига е невероятно мотивиращо.",
+          "Направи здравословните навици лесни: сложи вода на бюрото, спортните дрехи до леглото. Премахни пречките.",
+          "Мозъкът ти обича шаблони. Запълни времето за цигари/алкохол с упражнения или хоби."
+        ],
+        social: [
+          "Сподели пътя си с доверени приятели и семейство. Тяхната вяра в теб е по-важна, отколкото мислиш.",
+          "Кажи на хората за целите си. Отговорността значително увеличава шансовете за успех.",
+          "Когато се чувстваш самотен, потърси контакт вместо да се върнеш. Позвъни на приятел, запиши се в клас. Връзката лекува.",
+          "Обкръжи се с хора, които поддържат целите ти. Заслужаваш хора, които те издигат!",
+          "Намери общност за подкрепа онлайн или лично. Знаейки, че и други се борят с това, е невероятно мощно."
+        ],
+        offTopic: [
+          "Специализирал съм се в помощ за спиране на цигари, алкохол, фитнес и благосъстояние. Как мога да те подкрепя днес?",
+          "Това е извън моята специализация — фокусирам се върху спирането на цигари и алкохол и здравословните навици. С каква цел мога да помогна?",
+          "Нека насочим разговора към твоето здравно пътуване. Върху какво искаш да работим днес?"
+        ]
+      }
+    };
+
+    // ── Tips content per language ─────────────────────────────────
+    const TIPS = {
+      en: [
+        { icon: '💧', title: 'Drink Water',       text: 'Drinking water reduces cravings and keeps you healthy.' },
+        { icon: '🏃', title: 'Exercise',           text: 'Physical activity releases endorphins — your natural mood boosters.' },
+        { icon: '😴', title: 'Sleep Well',         text: 'Good sleep reduces cravings. Aim for 7–9 hours per night.' },
+        { icon: '🧘', title: 'Meditate',           text: 'Practice mindfulness — even 5 minutes a day helps significantly!' },
+        { icon: '👥', title: 'Seek Support',       text: 'Share your journey with friends or family.' },
+        { icon: '🎯', title: 'Track Progress',     text: 'Log your daily achievements in WellTrack.' }
+      ],
+      bg: [
+        { icon: '💧', title: 'Пий вода',          text: 'Пиенето на вода намалява желанията и те държи здрав.' },
+        { icon: '🏃', title: 'Тренирай',           text: 'Физическата активност освобождава ендорфини — естествените ти стимулатори.' },
+        { icon: '😴', title: 'Спи добре',          text: 'Добрият сън намалява желанията. Целта е 7–9 часа на нощ.' },
+        { icon: '🧘', title: 'Медитирай',          text: 'Практикувай внимателност — дори 5 минути дневно помагат значително!' },
+        { icon: '👥', title: 'Потърси подкрепа',   text: 'Сподели пътя си с приятели или семейство.' },
+        { icon: '🎯', title: 'Следи прогреса',     text: 'Записвай ежедневните си постижения в WellTrack.' }
+      ]
+    };
+
+    // ── Init ──────────────────────────────────────────────────────
+    const messagesUser = getCurrentUser();
+    if (messagesUser) {
+      document.querySelectorAll('.user-display-name').forEach(el => el.textContent = messagesUser.name || 'User');
+      document.querySelectorAll('.user-avatar-init').forEach(el => el.textContent = (messagesUser.name || 'U').charAt(0).toUpperCase());
+    }
+
+    // Read language ONCE — this is the key fix so chatbot always
+    // uses the correct language, not a stale closure
+    function getLang() {
+      return (typeof getCurrentLanguage === 'function') ? getCurrentLanguage() : 'bg';
+    }
+
+    function renderUI() {
+      const lang = getLang();
+
+      // Welcome message
+      const welcomeEl = document.getElementById('welcome-msg');
+      const welcomeTime = document.getElementById('welcome-time');
+      if (welcomeEl) {
+        welcomeEl.textContent = lang === 'en'
+          ? "Hello! I'm your wellness coach. I'm here to help you quit smoking and alcohol. Ask me about motivation, managing cravings, or building healthy habits! 💪"
+          : "Здравей! Аз съм твоят уелнес треньор. Тук съм, за да ти помогна да се откажеш от цигарите и алкохола. Попитай ме за мотивация, управление на желанията или изграждане на здравословни навици! 💪";
+      }
+      if (welcomeTime) welcomeTime.textContent = lang === 'en' ? 'Now' : 'Сега';
+
+      // Placeholder
+      const messageInput = document.getElementById('message-input');
+      if (messageInput) {
+        messageInput.placeholder = lang === 'bg'
+          ? 'Попитай ме за съвети как да спрем цигарите и алкохола...'
+          : 'Ask me for tips on quitting smoking and alcohol...';
+      }
+
+      // Tips
+      const tipsList = document.getElementById('tips-list');
+      if (tipsList) {
+        const tips = TIPS[lang] || TIPS.bg;
+        tipsList.innerHTML = tips.map(tip => `
+          <div class="tip-card">
+            <h4>${tip.icon} ${tip.title}</h4>
+            <p>${tip.text}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    renderUI();
+
+    // ── Chat logic ────────────────────────────────────────────────
+    const messageInput = document.getElementById('message-input');
+    const sendBtn      = document.getElementById('send-btn');
+    const chatMessages = document.getElementById('chat-messages');
+
+    sendBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+
+    function sendMessage() {
+      const content = messageInput.value.trim();
+      if (!content) return;
+      addMessage(content, 'user');
+      messageInput.value = '';
+      // Show typing indicator briefly
+      const typingId = showTyping();
+      setTimeout(() => {
+        removeTyping(typingId);
+        const response = getResponse(content.toLowerCase());
+        addMessage(response, 'bot');
+      }, 500 + Math.random() * 400);
+    }
+
+    function showTyping() {
+      const id  = 'typing-' + Date.now();
+      const div = document.createElement('div');
+      div.className = 'message bot-message';
+      div.id = id;
+      div.innerHTML = `
+        <div class="message-avatar">🤖</div>
+        <div class="message-content">
+          <div class="loading-dots"><span></span><span></span><span></span></div>
+        </div>`;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      return id;
+    }
+
+    function removeTyping(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    function addMessage(text, type) {
+      const div     = document.createElement('div');
+      div.className = `message ${type}-message`;
+
+      const avatar     = document.createElement('div');
+      avatar.className = 'message-avatar';
+      avatar.textContent = type === 'user' ? '👤' : '🤖';
+
+      const content     = document.createElement('div');
+      content.className = 'message-content';
+      content.innerHTML = `<p>${escapeHtmlLocal(text)}</p>`;
+
+      const time     = document.createElement('small');
+      time.className = 'message-time';
+      time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      div.appendChild(avatar);
+      div.appendChild(content);
+      div.appendChild(time);
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function detectTopic(input) {
+      const lang     = getLang();
+      const keywords = TOPIC_KEYWORDS[lang] || TOPIC_KEYWORDS.en;
+      const scores   = {};
+
+      for (const [topic, kwList] of Object.entries(keywords)) {
+        scores[topic] = kwList.filter(kw => input.includes(kw.toLowerCase())).length;
+      }
+
+      const maxScore = Math.max(...Object.values(scores));
+      if (maxScore === 0) return 'offTopic';
+      return Object.keys(scores).find(topic => scores[topic] === maxScore) || 'offTopic';
+    }
+
+    function getResponse(input) {
+      const lang      = getLang();
+      const responses = CHATBOT_RESPONSES[lang] || CHATBOT_RESPONSES.bg;
+      const topic     = detectTopic(input);
+      const pool      = responses[topic] || responses.offTopic;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function escapeHtmlLocal(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    applyTranslations();
+  </script>
+</body>
+</html>

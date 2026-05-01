@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Настройки · WellTrack 100</title>
+  <script>
+    try { var s=JSON.parse(localStorage.getItem('wt_user_settings')||'{}'); if(s.theme==='light') document.documentElement.setAttribute('data-theme','light'); } catch(e){}
+  </script>
+  <link rel="stylesheet" href="~/css/style.css" />
+  <link rel="stylesheet" href="~/css/navbar.css" /> 
+  <script src="~/js/i18n.js"></script>
+</head>
+<body data-page="settings">
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">W</div>
+        <div class="logo-text">WellTrack <small>100-дневно предизвикателство</small></div>
+      </div>
+      <span class="nav-section-label">Основно</span>
+      <a class="nav-item" href="@Url.Action("Dashboard", "Home")"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
+      <a class="nav-item" href="@Url.Action("Levels", "Home")"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
+      <a class="nav-item" href="@Url.Action("Progress", "Home")"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
+      <a class="nav-item" href="@Url.Action("Journal", "Home")"><span class="nav-icon">📓</span> <span data-i18n="nav.journal">Журнал</span></a>
+      <a class="nav-item" href="@Url.Action("Friends", "Home")"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Приятели</span></a>
+      <a class="nav-item" href="@Url.Action("Messages", "Home")"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
+      <a class="nav-item active" href="@Url.Action("Settings", "Home")"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
+      <div class="sidebar-bottom">
+        <div class="user-chip">
+          <div class="user-avatar user-avatar-init">A</div>
+          <span class="user-name user-display-name">Зареждане...</span>
+          <a class="logout-btn" title="Изход" href="@Url.Action("Login", "Home")">⏏</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h1 data-i18n="settings.title">Настройки</h1>
+        <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span></p>
+      </div>
+
+      <div class="settings-grid">
+        <!-- Language -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <h3 data-i18n="settings.language">Език</h3>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">Избери предпочитан език</p>
+          </div>
+          <div class="settings-options">
+            <label class="radio-option">
+              <input type="radio" name="language" value="en" id="lang-en" />
+              <span>English</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="language" value="bg" id="lang-bg" />
+              <span>Български</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Theme -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <h3 data-i18n="settings.theme">Тема</h3>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">Избери визуална тема</p>
+          </div>
+          <div class="settings-options">
+            <label class="radio-option">
+              <input type="radio" name="theme" value="light" id="theme-light" />
+              <span data-i18n="settings.light">Светла</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="theme" value="dark" id="theme-dark" />
+              <span data-i18n="settings.dark">Тъмна</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Difficulty -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <h3 data-i18n="settings.difficulty">Ниво на трудност</h3>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">Настрой интензивността на упражненията</p>
+          </div>
+          <div class="settings-options">
+            <label class="radio-option">
+              <input type="radio" name="difficulty" value="easy" id="diff-easy" />
+              <span data-i18n="settings.easy">🌱 Лесно</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="difficulty" value="normal" id="diff-normal" />
+              <span data-i18n="settings.normal">⚡ Нормално</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="difficulty" value="hard" id="diff-hard" />
+              <span data-i18n="settings.hard">🔥 Трудно</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Notifications — custom toggle, no visible checkbox -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <h3 data-i18n="settings.notifications">Известия</h3>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">Получавай напомняния и актуализации</p>
+          </div>
+          <label class="toggle-option" for="toggle-notifications">
+            <input type="checkbox" id="toggle-notifications" />
+            <span class="toggle-slider"></span>
+            <span id="notif-status">Включено</span>
+          </label>
+        </div>
+
+        <!-- Motivational Quotes — custom toggle -->
+        <div class="settings-card">
+          <div class="settings-header">
+            <h3 data-i18n="settings.motivationalQuotes">Мотивиращи цитати</h3>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.5rem;">Показвай вдъхновяващи съобщения</p>
+          </div>
+          <label class="toggle-option" for="toggle-quotes">
+            <input type="checkbox" id="toggle-quotes" />
+            <span class="toggle-slider"></span>
+            <span id="quotes-status">Включено</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="save-settings" data-i18n="settings.save">Запази настройките</button>
+        <button class="btn btn-secondary" onclick="window.history.back()" data-i18n="common.back">Обратно</button>
+      </div>
+
+      <div id="toast-container" class="toast-container"></div>
+    </main>
+  </div>
+
+  <script src="~/js/app.js"></script>
+  <script src="~/js/navbar.js"></script>
+  <script>
+    // Fix 2 — Replace requireAuth() call with safe version
+    const user = getCurrentUser();
+    if (!user) { window.location.href = '/Home/Login'; }
+
+    const storedSettings = JSON.parse(localStorage.getItem('wt_user_settings') || '{}');
+    const settings = {
+      language:      storedSettings.language      || getCurrentLanguage() || 'bg',
+      theme:         storedSettings.theme         || 'dark',
+      difficulty:    storedSettings.difficulty    || 'normal',
+      notifications: typeof storedSettings.notifications === 'boolean' ? storedSettings.notifications : true,
+      quotes:        typeof storedSettings.quotes === 'boolean'        ? storedSettings.quotes        : true
+    };
+
+    // Load saved settings
+    document.getElementById(`lang-${settings.language}`).checked    = true;
+    document.getElementById(`theme-${settings.theme}`).checked      = true;
+    document.getElementById(`diff-${settings.difficulty}`).checked  = true;
+    document.getElementById('toggle-notifications').checked          = settings.notifications;
+    document.getElementById('toggle-quotes').checked                 = settings.quotes;
+
+    // Status labels
+    function updateStatus(id, checked) {
+      const lang = getCurrentLanguage();
+      document.getElementById(id).textContent = checked
+        ? (lang === 'bg' ? 'Включено' : 'Enabled')
+        : (lang === 'bg' ? 'Изключено' : 'Disabled');
+    }
+
+    updateStatus('notif-status',  settings.notifications);
+    updateStatus('quotes-status', settings.quotes);
+
+    document.getElementById('toggle-notifications').addEventListener('change', e => updateStatus('notif-status',  e.target.checked));
+    document.getElementById('toggle-quotes').addEventListener('change',        e => updateStatus('quotes-status', e.target.checked));
+
+    // Save
+    document.getElementById('save-settings').addEventListener('click', () => {
+      const newSettings = {
+        language:      document.querySelector('input[name="language"]:checked').value,
+        theme:         document.querySelector('input[name="theme"]:checked').value,
+        difficulty:    document.querySelector('input[name="difficulty"]:checked').value,
+        notifications: document.getElementById('toggle-notifications').checked,
+        quotes:        document.getElementById('toggle-quotes').checked
+      };
+
+      localStorage.setItem('wt_user_settings', JSON.stringify(newSettings));
+
+      // Apply theme immediately across the page
+      if (newSettings.theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+
+      const oldLang = settings.language;
+      showToast(t('settings.saved'), 'success');
+
+      if (oldLang !== newSettings.language) {
+        setTimeout(() => setLanguage(newSettings.language), 500);
+      }
+    });
+
+    // Load user display
+    const settingsUser = getCurrentUser();
+    if (settingsUser) {
+      document.querySelectorAll('.user-display-name').forEach(el => el.textContent = settingsUser.name || 'User');
+      document.querySelector('.user-avatar-init').textContent = (settingsUser.name || 'U').charAt(0).toUpperCase();
+    }
+
+    applyTranslations();
+  </script>
+</body>
+</html>

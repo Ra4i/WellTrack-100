@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Нива · WellTrack 100</title>
+  <script>
+    try { var s=JSON.parse(localStorage.getItem('wt_user_settings')||'{}'); if(s.theme==='light') document.documentElement.setAttribute('data-theme','light'); } catch(e){}
+  </script>
+  <link rel="stylesheet" href="~/css/style.css" />
+  <link rel="stylesheet" href="~/css/navbar.css" /> 
+  <script src="~/js/i18n.js"></script>
+</head>
+<body data-page="levels">
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">W</div>
+        <div class="logo-text">WellTrack <small>100-дневно предизвикателство</small></div>
+      </div>
+      <span class="nav-section-label">Основно</span>
+      <a class="nav-item" href="@Url.Action("Dashboard", "Home")"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
+      <a class="nav-item active" href="@Url.Action("Levels", "Home")"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
+      <a class="nav-item" href="@Url.Action("Progress", "Home")"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
+      <a class="nav-item" href="@Url.Action("Journal", "Home")"><span class="nav-icon">📓</span> <span data-i18n="nav.journal">Журнал</span></a>
+      <a class="nav-item" href="@Url.Action("Friends", "Home")"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Приятели</span></a>
+      <a class="nav-item" href="@Url.Action("Messages", "Home")"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
+      <a class="nav-item" href="@Url.Action("Settings", "Home")"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
+      <div class="sidebar-bottom">
+        <div class="user-chip">
+          <div class="user-avatar user-avatar-init">A</div>
+          <span class="user-name user-display-name">Зареждане...</span>
+          <a class="logout-btn" title="Изход" href="@Url.Action("Login", "Home")">⏏</a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h1 data-i18n="levels.title">Нива</h1>
+        <p class="breadcrumb">WellTrack 100 · <span class="user-display-name"></span>
+          &nbsp;·&nbsp;
+          <span id="difficulty-badge" style="font-weight:600;cursor:help;" title="Промени в Настройки">⚡ Нормално</span>
+        </p>
+      </div>
+
+      <!-- Level Hero -->
+      <div class="level-hero">
+        <div class="level-hero-top">
+          <div>
+            <div class="level-number-big">
+              <span style="font-size:1rem;color:var(--text-muted);font-weight:500" data-i18n="levels.levelLabel">Ниво</span>
+              <span id="level-number">0</span>
+            </div>
+            <div class="level-title-big" id="level-title">Продължавай!</div>
+            <div class="level-pct" id="level-pct">0/100</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem" data-i18n="levels.catchUpRule">Правило за наваксване</div>
+            <div style="font-size:0.88rem;color:var(--text-dim);max-width:180px;line-height:1.5" data-i18n="levels.catchUpRuleDesc">Пропуснеш ли ден? Завърши нивото на следващия ден — никога не губиш прогрес.</div>
+          </div>
+        </div>
+        <div class="level-progress-track">
+          <div class="level-progress-fill" id="level-bar-fill"></div>
+        </div>
+      </div>
+
+      <!-- Today's Motivation -->
+      <div class="motivation-section">
+        <h3>🌟 <span id="motivation-title" data-i18n="levels.todayMotivation">Днешна мотивация</span></h3>
+        <div class="motivation-cards">
+          <div class="motivation-card smoke">
+            <div class="mot-label" data-i18n="levels.modalExercises">💪 Днешни упражнения</div>
+            <p id="motivation-smoke" data-i18n="levels.motivationHint">Запиши първия си ден, за да отключиш мотивацията.</p>
+          </div>
+          <div class="motivation-card alcohol">
+            <div class="mot-label" data-i18n="levels.quitAlcohol">🍺 Откажи алкохола</div>
+            <p id="motivation-alcohol" data-i18n="levels.motivationHint">Запиши първия си ден, за да отключиш мотивацията.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level Grid -->
+      <div class="level-grid-section">
+        <h3>🗺️ <span data-i18n="levels.allLevels">Всички 100 нива</span>
+          <span style="color:var(--text-muted);font-weight:400;font-size:0.85rem;margin-left:8px" data-i18n="levels.allLevelsHint">Кликни ниво, за да прочетеш съобщението</span>
+        </h3>
+        <div class="level-grid" id="level-grid"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Level Detail Modal -->
+  <div class="level-modal-overlay" id="level-modal" onclick="if(event.target===this)closeLevelModal()">
+    <div class="level-modal">
+      <div class="modal-header">
+        <span class="modal-level-badge" id="modal-level-num">Ниво 1</span>
+        <button class="modal-close" onclick="closeLevelModal()">✕</button>
+      </div>
+      <div class="modal-title" id="modal-title">Заглавие на ниво</div>
+      <div class="modal-cards">
+        <div class="modal-card exercises">
+          <div class="mot-label" data-i18n="levels.modalExercises">💪 Днешни упражнения</div>
+          <ul id="modal-exercises" style="list-style:none;padding:0;margin:0;"></ul>
+        </div>
+        <div class="modal-card smoke">
+          <div class="mot-label" data-i18n="levels.modalQuitSmoke">🚬 Откажи цигарите</div>
+          <p id="modal-smoke"></p>
+        </div>
+        <div class="modal-card alcohol">
+          <div class="mot-label" data-i18n="levels.modalQuitAlcohol">🍺 Откажи алкохола</div>
+          <p id="modal-alcohol"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Load levels data BEFORE app.js so getLevels() is available -->
+  <script src="~/js/levels.js"></script>
+  <script src="~/js/app.js"></script>
+  <script src="~/js/navbar.js"></script>
+  <script>
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initLevels);
+    } else {
+      initLevels();
+    }
+  </script>
+</body>
+</html>

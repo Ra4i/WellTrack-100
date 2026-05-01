@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="bg">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Регистрация · WellTrack 100</title>
+  <link rel="stylesheet" href='@Url.Content("~/css/style.css")' />
+</head>
+
+<body data-page="register">
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-mark">W</div>
+        <span>WellTrack <em>100</em></span>
+      </div>
+
+      <h1 data-i18n="auth.registerTitle">Започни предизвикателството</h1>
+      <p class="subtitle" data-i18n="auth.registerDescription">Ден 1 започва в момента, в който се регистрираш.</p>
+
+      <div id="alert" class="alert"></div>
+
+      <form id="register-form">
+        <div class="form-group">
+          <label for="name" data-i18n="auth.name">Пълно име</label>
+          <input type="text" id="name" placeholder="Alex Johnson" data-i18n="auth.name" required />
+        </div>
+        <div class="form-group">
+          <label for="age" data-i18n="auth.age">Години</label>
+          <input type="number" id="age" placeholder="25" data-i18n="auth.age" required />
+        </div>
+        <div class="form-group">
+          <label for="email" data-i18n="auth.email">Имейл</label>
+          <input type="email" id="email" placeholder="you@example.com" data-i18n="auth.email" required />
+        </div>
+        <div class="form-group">
+          <label for="password" data-i18n="auth.password">Парола</label>
+          <input type="password" id="password" placeholder="Мин. 6 символа" data-i18n="auth.password" required />
+        </div>
+        <div class="form-group">
+          <label for="confirm" data-i18n="auth.confirmPassword">Потвърди парола</label>
+          <input type="password" id="confirm" placeholder="••••••••" data-i18n="auth.confirmPassword" required />
+        </div>
+        <button type="submit" class="btn-primary" data-i18n="auth.register">Започни 100-дневното предизвикателство
+          🚀</button>
+      </form>
+
+      <div class="auth-footer">
+        <span data-i18n="auth.alreadyHaveAccount">Вече имаш акаунт?</span>
+        <a href="@Url.Action("Login", "Home")" data-i18n="auth.login">Вход</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script src='@Url.Content("~/js/i18n.js")'></script>
+  <script src='@Url.Content("~/js/app.js")'></script>
+  <script>
+    // Ensure init runs even if DOMContentLoaded already fired
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initRegister);
+    } else {
+      initRegister();
+    }
+  </script>
+</body>
+
+</html>
