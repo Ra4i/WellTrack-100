@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WellTrackAPI.Data;
+using WellTrackAPI.DTOs.Progress;
 using WellTrackAPI.Models;
 
 namespace WellTrackAPI.Controllers

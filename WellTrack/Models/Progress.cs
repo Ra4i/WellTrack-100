@@ -26,15 +26,6 @@ namespace WellTrackAPI.Models
         public User? User { get; set; }
     }
 
-    public class ProgressUpdateDto
-    {
-        [Required] public int UserId { get; set; }
-        [Required, Range(1, 100)] public int CurrentDay { get; set; }
-        [Range(0, 20)] public double WaterIntake { get; set; }
-        public bool WorkoutCompleted { get; set; }
-        [Range(0, 24)] public double SleepHours { get; set; }
-    }
-
     public class Message
     {
         public int Id { get; set; }
@@ -55,13 +46,6 @@ namespace WellTrackAPI.Models
         // Navigation
         public User? Sender { get; set; }
         public User? Receiver { get; set; }
-    }
-
-    public class MessageDto
-    {
-        [Required] public int SenderId { get; set; }
-        public int? ReceiverId { get; set; }
-        [Required, MaxLength(2000)] public string Content { get; set; } = string.Empty;
     }
 
     public class Friend
@@ -96,40 +80,5 @@ namespace WellTrackAPI.Models
         // Navigation
         public User? FromUser { get; set; }
         public User? ToUser { get; set; }
-    }
-
-    public class FriendDto
-    {
-        public int Id { get; set; }
-        public int FriendUserId { get; set; }
-        public string FriendName { get; set; } = string.Empty;
-        public string FriendEmail { get; set; } = string.Empty;
-        public DateTime ConnectedSince { get; set; }
-    }
-
-    public class FriendRequestDto
-    {
-        public int Id { get; set; }
-        public int FromUserId { get; set; }
-        public string FromName { get; set; } = string.Empty;
-        public string FromEmail { get; set; } = string.Empty;
-        public DateTime SentAt { get; set; }
-    }
-
-    public class SendMessageDto
-    {
-        [Required] public int SenderId { get; set; }
-        [Required] public int ReceiverId { get; set; }
-        [Required, MaxLength(2000)] public string Content { get; set; } = string.Empty;
-    }
-
-    public class ConversationMessageDto
-    {
-        public int Id { get; set; }
-        public int SenderId { get; set; }
-        public int ReceiverId { get; set; }
-        public string SenderName { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
     }
 }

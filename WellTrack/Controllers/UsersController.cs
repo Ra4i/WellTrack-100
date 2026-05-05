@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QRCoder;
 using WellTrackAPI.Data;
+using WellTrackAPI.DTOs.Auth;
 using WellTrackAPI.Models;
-
 
 
 namespace WellTrackAPI.Controllers

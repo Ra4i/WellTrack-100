@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WellTrackAPI.Data;
+using WellTrackAPI.DTOs.Messages;
 using WellTrackAPI.Models;
 
 namespace WellTrackAPI.Controllers
@@ -196,33 +197,4 @@ namespace WellTrackAPI.Controllers
         }
     }
 
-    // Response DTOs
-    public class ConversationResponse
-    {
-        public List<ConversationMessageDto> Messages { get; set; } = new();
-        public int Page { get; set; }
-        public int Limit { get; set; }
-        public int Total { get; set; }
-        public bool HasMore { get; set; }
-    }
-
-    public class ConversationPreviewDto
-    {
-        public int FriendId { get; set; }
-        public string FriendName { get; set; } = string.Empty;
-        public string FriendEmail { get; set; } = string.Empty;
-        public string LastMessage { get; set; } = string.Empty;
-        public DateTime LastMessageTime { get; set; }
-        public int UnreadCount { get; set; }
-    }
-
-    public class MessageResponseDto
-    {
-        public int Id { get; set; }
-        public int SenderId { get; set; }
-        public int ReceiverId { get; set; }
-        public string SenderName { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
-    }
 }

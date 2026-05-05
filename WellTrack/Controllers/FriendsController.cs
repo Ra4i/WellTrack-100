@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WellTrackAPI.Data;
+using WellTrackAPI.DTOs.Friends;
 using WellTrackAPI.Models;
 
 namespace WellTrackAPI.Controllers
@@ -183,18 +184,5 @@ namespace WellTrackAPI.Controllers
 
             return Ok(new { message = "Friend removed" });
         }
-    }
-
-    // DTOs for Friend requests
-    public class SendFriendRequestDto
-    {
-        public int FromUserId { get; set; }
-        public string ToUserEmail { get; set; } = string.Empty;
-    }
-
-    public class RespondFriendRequestDto
-    {
-        public int FromUserId { get; set; }
-        public int ToUserId { get; set; }
     }
 }
