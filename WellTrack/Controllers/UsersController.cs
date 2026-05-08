@@ -53,8 +53,11 @@ namespace WellTrackAPI.Controllers
                 return BadRequest(ModelState);
 
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == dto.Email.ToLower());
-            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-                return Unauthorized(new { error = "Invalid email or password." });
+            if (user == null)
+                return Unauthorized(new { error = "No account found with this email address", errorCode = "NoUser" });
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+                return Unauthorized(new { error = "Incorrect password, please try again", errorCode = "WrongPassword" });
 
             return Ok(ToDto(user));
         }
@@ -76,13 +79,35 @@ namespace WellTrackAPI.Controllers
             return Ok(ToDto(user));
         }
 
+        // PUT /api/users/{id}/settings
+        [HttpPut("{id:int}/settings")]
+        public async Task<IActionResult> UpdateSettings(int id, [FromBody] UpdateSettingsDto dto)
+        {
+            var user = await _db.Users.FindAsync(id);
+            if (user == null) return NotFound(new { error = "User not found" });
+
+            if (!string.IsNullOrEmpty(dto.Theme)) user.Theme = dto.Theme;
+            if (!string.IsNullOrEmpty(dto.Difficulty)) user.Difficulty = dto.Difficulty;
+            if (dto.Notifications.HasValue) user.Notifications = dto.Notifications.Value;
+            if (dto.Quotes.HasValue) user.Quotes = dto.Quotes.Value;
+            if (!string.IsNullOrEmpty(dto.Language)) user.Language = dto.Language;
+
+            await _db.SaveChangesAsync();
+            return Ok(new { message = "Settings saved successfully" });
+        }
+
         private static UserResponseDto ToDto(User u) => new()
         {
             Id = u.Id,
             Name = u.Name,
             Email = u.Email,
             Age = u.Age,
-            StartDate = u.StartDate
+            StartDate = u.StartDate,
+            Theme = u.Theme,
+            Difficulty = u.Difficulty,
+            Notifications = u.Notifications,
+            Quotes = u.Quotes,
+            Language = u.Language
         };
         
         [HttpPost("generate-age-qr/{id:int}/{age:int}")]

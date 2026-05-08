@@ -18,13 +18,13 @@
     <aside class="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">W</div>
-        <div class="logo-text">WellTrack <small>100-дневно предизвикателство</small></div>
+        <div class="logo-text">WellTrack <small data-translate="challenge">100-дневно предизвикателство</small></div>
       </div>
-      <span class="nav-section-label">Основно</span>
+      <span class="nav-section-label" data-translate="navMain">Основно</span>
       <a class="nav-item active" href="@Url.Action("Dashboard", "Home")"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
       <a class="nav-item" href="@Url.Action("Levels", "Home")"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
       <a class="nav-item" href="@Url.Action("Progress", "Home")"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
-      <a class="nav-item" href="@Url.Action("Journal", "Home")"><span class="nav-icon">📓</span> <span>Журнал</span></a>
+      <a class="nav-item" href="@Url.Action("Journal", "Home")"><span class="nav-icon">📓</span> <span data-i18n="nav.journal">Журнал</span></a>
       <a class="nav-item" href="@Url.Action("Friends", "Home")"><span class="nav-icon">👥</span> <span data-i18n="nav.friends">Приятели</span></a>
       <a class="nav-item" href="@Url.Action("Messages", "Home")"><span class="nav-icon">💬</span> <span data-i18n="nav.messages">Съобщения</span></a>
       <a class="nav-item" href="@Url.Action("Settings", "Home")"><span class="nav-icon">⚙️</span> <span data-i18n="nav.settings">Настройки</span></a>
@@ -32,7 +32,7 @@
         <div class="user-chip">
           <div class="user-avatar user-avatar-init">A</div>
           <span class="user-name user-display-name">Зареждане...</span>
-          <a class="logout-btn" title="Изход" href="@Url.Action("Login", "Home")">⏏</a>
+          <a class="logout-btn" data-translate-title="logoutTitle" title="Изход" href="@Url.Action("Login", "Home")">⏏</a>
         </div>
       </div>
     </aside>
@@ -43,7 +43,7 @@
         <p class="breadcrumb">
           WellTrack 100 · <span class="user-display-name"></span>
           &nbsp;·&nbsp;
-          <span id="difficulty-badge" style="font-weight:600;cursor:help;" title="Промени в Настройки">⚡ Нормално</span>
+          <span id="difficulty-badge" data-translate-title="difficultyTooltip" style="font-weight:600;cursor:help;" title="Промени в Настройки">⚡ <span data-translate="difficultyNormal">Нормално</span></span>
         </p>
       </div>
 
@@ -63,7 +63,7 @@
           <div style="text-align:center">
             <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent3);line-height:1" id="current-level">0</div>
             <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px" data-i18n="dashboard.level">Ниво</div>
-            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">наваксването е допустимо</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px" data-translate="levelCatchUp">наваксването е допустимо</div>
           </div>
         </div>
       </div>
@@ -74,7 +74,7 @@
           <div class="stat-icon">💧</div>
           <div class="stat-label" data-i18n="dashboard.waterIntake">Вода днес</div>
           <div class="stat-value" id="water-stat">0.0</div>
-          <div class="stat-target">Цел: 2.5 л / ден</div>
+          <div class="stat-target" data-translate="waterTarget">Цел: 2.5 л / ден</div>
         </div>
         <div class="stat-card workout">
           <div class="stat-icon">🏃</div>
@@ -86,7 +86,7 @@
           <div class="stat-icon">😴</div>
           <div class="stat-label" data-i18n="dashboard.sleepTrack">Сън снощи</div>
           <div class="stat-value" id="sleep-stat">0.0</div>
-          <div class="stat-target">Цел: 7–9 ч / нощ</div>
+          <div class="stat-target" data-translate="sleepTarget">Цел: 7–9 ч / нощ</div>
         </div>
       </div>
 
@@ -111,9 +111,9 @@
           <div class="savings-price-input">
             <label for="cig-price" data-i18n="dashboard.packPrice">Цена на цигари в твоя град</label>
             <div class="price-input-group">
-              <span class="currency">$</span>
+              <span class="currency" data-translate="currency">$</span>
               <input type="number" id="cig-price" min="1" max="30" step="0.50" placeholder="7.50" value="7.50" />
-              <span class="unit">/pack</span>
+              <span class="unit" data-translate="packUnit">/pack</span>
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@
 
       <!-- Log Form -->
       <div class="log-section">
-        <h3><span data-i18n="dashboard.everyDayCounts">Запиши днешния си прогрес</span> <span class="badge">Ден <span id="log-day-badge">1</span></span></h3>
+        <h3><span data-i18n="dashboard.everyDayCounts">Запиши днешния си прогрес</span> <span class="badge"><span data-translate="dayLabel">Ден</span> <span id="log-day-badge">1</span></span></h3>
         <form id="log-form" class="log-form">
           <div class="input-group">
             <label for="water-input" data-i18n="dashboard.waterIntake">Прием на вода</label>
@@ -165,26 +165,9 @@
   </div>
 
   <div id="toast-container" class="toast-container"></div>
+  <script src="~/js/i18n.js"></script>
   <script src="~/js/app.js"></script>
   <script src="~/js/navbar.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        const user = JSON.parse(localStorage.getItem('wt_user') || 'null');
-        if (!user) return;
-        const startDate = new Date(user.startDate || Date.now());
-        const day = Math.min(Math.max(Math.floor((new Date() - startDate) / 86400000) + 1, 1), 100);
-        const badge = document.getElementById('log-day-badge');
-        if (badge) badge.textContent = day;
-      }, 150);
-    });
-  </script>
-  <script>
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initDashboard);
-    } else {
-      initDashboard();
-    }
-  </script>
+  <script src="~/js/dashboard.js"></script>
 </body>
 </html>

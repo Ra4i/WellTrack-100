@@ -369,8 +369,12 @@ async function apiPost(endpoint, body) {
     body: JSON.stringify(body)
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-    throw new Error(err.error || `HTTP ${res.status}`);
+    const errorBody = await res.json().catch(() => null);
+    const errorMessage = errorBody?.error || errorBody?.message || `HTTP ${res.status}`;
+    const error = new Error(errorMessage);
+    error.status = res.status;
+    error.body = errorBody;
+    throw error;
   }
   return res.json();
 }
@@ -404,7 +408,13 @@ function initLogin() {
         const data = await apiPost('/users/login', { email, password });
         setCurrentUser(data); // normalizeUser runs inside setCurrentUser
         window.location.href = '/Home/Dashboard';
-      } catch (err) { alertEl.textContent = err.message; alertEl.className = 'alert error show'; }
+      } catch (err) {
+        const message = typeof handleLoginError === 'function'
+          ? handleLoginError(err)
+          : err.message;
+        alertEl.textContent = message;
+        alertEl.className = 'alert error show';
+      }
     } else {
       const result = loginUser(email, password);
       console.log('LOGIN RESULT:', result);
@@ -439,7 +449,7 @@ function initRegister() {
         setCurrentUser(data); // normalizeUser runs inside setCurrentUser
         alertEl.textContent = '🎉 Your recovery journey starts now!';
         alertEl.className = 'alert success show';
-        setTimeout(() => window.location.href = '/Home/Settings', 1500);
+        setTimeout(() => window.location.href = '/Home/Settings', 15);
       } catch (err) { alertEl.textContent = err.message; alertEl.className = 'alert error show'; }
     } else {
       const result = registerUser(name, age, email, password);
@@ -447,7 +457,7 @@ function initRegister() {
       setCurrentUser(result.user);
       alertEl.textContent = '🎉 Your recovery journey starts now!';
       alertEl.className = 'alert success show';
-      setTimeout(() => window.location.href = '/Home/Settings', 1500);
+      setTimeout(() => window.location.href = '/Home/Settings', 15);
     }
   });
 }

@@ -434,6 +434,8 @@
       btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === lang);
     });
     document.documentElement.lang = lang;
+    // Call page-specific translations if available
+    if (window.applyPageTranslations) window.applyPageTranslations();
   }
 
   window.t = t;
