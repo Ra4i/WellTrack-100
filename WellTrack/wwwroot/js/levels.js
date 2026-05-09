@@ -4,6 +4,15 @@
    Exercises scale with app.js difficulty system automatically.
    ================================================================ */
 
+function applyLevelsTranslations() {
+  document.querySelectorAll("[data-translate]").forEach(el => {
+    const key = el.getAttribute("data-translate");
+    if (key) {
+      el.textContent = t(key);
+    }
+  });
+}
+
 function getLevels() {
   const lang = (typeof getCurrentLanguage === 'function') ? getCurrentLanguage() : 'bg';
 
@@ -1124,4 +1133,8 @@ function getLevels() {
   ];
 
   return levels;
+}
+
+// Make applyLevelsTranslations global
+window.applyPageTranslations = applyLevelsTranslations;
 }

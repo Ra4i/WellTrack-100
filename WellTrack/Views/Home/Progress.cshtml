@@ -8,6 +8,7 @@
     try { var s=JSON.parse(localStorage.getItem('wt_user_settings')||'{}'); if(s.theme==='light') document.documentElement.setAttribute('data-theme','light'); } catch(e){}
   </script>
   <link rel="stylesheet" href="~/css/style.css" />
+  <link rel="stylesheet" href="~/css/progress.css" />
   <link rel="stylesheet" href="~/css/navbar.css" /> 
   <script src="~/js/i18n.js"></script>
 </head>
@@ -20,6 +21,10 @@
         <div class="logo-text">WellTrack <small data-translate="challenge">100-дневно предизвикателство</small></div>
       </div>
       <span class="nav-section-label" data-translate="navMain">Основно</span>
+      <div class="lang-switcher">
+        <button class="lang-btn" onclick="setLanguage('en')" title="English">EN</button>
+        <button class="lang-btn" onclick="setLanguage('bg')" title="Български">BG</button>
+      </div>
       <a class="nav-item" href="@Url.Action("Dashboard", "Home")"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
       <a class="nav-item" href="@Url.Action("Levels", "Home")"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
       <a class="nav-item active" href="@Url.Action("Progress", "Home")"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>

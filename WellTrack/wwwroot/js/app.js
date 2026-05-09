@@ -171,10 +171,7 @@ function registerUser(name, age, email, password) {
 function loginUser(email, password) {
   const normalizedEmail = email.trim().toLowerCase();
   const users = getUsers();
-  console.log('LOGINUSER: Looking for user with email:', normalizedEmail);
-  console.log('LOGINUSER: Users in localStorage:', users);
   const user = users.find(u => u.email === normalizedEmail && u.password === password);
-  console.log('LOGINUSER: Found user:', user);
   return user ? { user } : { error: 'Invalid email or password.' };
 }
 
@@ -265,7 +262,6 @@ async function getFriendsFromAPI(userId) {
       id:    f.friendUserId ?? f.FriendUserId
     }));
   } catch (err) {
-    console.error('Failed to load friends:', err);
     return [];
   }
 }
@@ -281,7 +277,6 @@ async function getPendingRequestsFromAPI(userId) {
       sentAt:     r.sentAt     ?? r.SentAt
     }));
   } catch (err) {
-    console.error('Failed to load requests:', err);
     return [];
   }
 }
@@ -335,7 +330,6 @@ async function getConversationFromAPI(userId, friendId, page = 0, limit = 50) {
     const response = await apiGet(`/messages/thread?userId=${userId}&friendId=${friendId}&page=${page}&limit=${limit}`);
     return response.messages || [];
   } catch (err) {
-    console.error('Failed to load conversation:', err);
     return [];
   }
 }
@@ -417,11 +411,8 @@ function initLogin() {
       }
     } else {
       const result = loginUser(email, password);
-      console.log('LOGIN RESULT:', result);
       if (result.error) { alertEl.textContent = result.error; alertEl.className = 'alert error show'; return; }
-      console.log('LOGIN SUCCESSFUL, setting user:', result.user);
       setCurrentUser(result.user);
-      console.log('REDIRECTING TO DASHBOARD');
       window.location.href = '/Home/Dashboard';
     }
   });
@@ -809,7 +800,6 @@ function setActiveNav() {
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme();
   const page = (document.body?.dataset?.page || '').toLowerCase();
-  console.log('PAGE DETECTED:', page);
   document.querySelectorAll('.logout-btn').forEach(btn => btn.addEventListener('click', logout));
   if (page === 'index.html' || page === '' || page === 'home') initHome();
   else if (page === 'login' || page === 'login.html')     initLogin();

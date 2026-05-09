@@ -2,55 +2,14 @@
    settings.js — Settings page logic
    ================================================================ */
 
-const settingsTranslations = {
-  en: {
-    navMain: "Main",
-    challenge: "100-day challenge",
-    "settings.title": "Settings",
-    "settings.language": "Language",
-    "settings.theme": "Theme",
-    "settings.light": "Light",
-    "settings.dark": "Dark",
-    "settings.difficulty": "Difficulty Level",
-    "settings.easy": "🌱 Easy",
-    "settings.normal": "⚡ Normal",
-    "settings.hard": "🔥 Hard",
-    "settings.notifications": "Notifications",
-    "settings.motivationalQuotes": "Motivational Quotes",
-    "settings.save": "Save settings",
-    "common.back": "Back"
-  },
-  bg: {
-    navMain: "Основно",
-    challenge: "100-дневно предизвикателство",
-    "settings.title": "Настройки",
-    "settings.language": "Език",
-    "settings.theme": "Тема",
-    "settings.light": "Светла",
-    "settings.dark": "Тъмна",
-    "settings.difficulty": "Ниво на трудност",
-    "settings.easy": "🌱 Лесно",
-    "settings.normal": "⚡ Нормално",
-    "settings.hard": "🔥 Трудно",
-    "settings.notifications": "Известия",
-    "settings.motivationalQuotes": "Мотивиращи цитати",
-    "settings.save": "Запази настройките",
-    "common.back": "Обратно"
-  }
-};
-
 function applySettingsTranslations() {
-  const currentLang = getCurrentLanguage() || 'bg';
   document.querySelectorAll("[data-translate]").forEach(el => {
     const key = el.getAttribute("data-translate");
-    if (settingsTranslations[currentLang] && settingsTranslations[currentLang][key]) {
-      el.textContent = settingsTranslations[currentLang][key];
+    if (key) {
+      el.textContent = t(key);
     }
   });
 }
-
-// Make function global for i18n.js
-window.applyPageTranslations = applySettingsTranslations;
 
 // Fix 2 — Replace requireAuth() call with safe version
 const user = getCurrentUser();

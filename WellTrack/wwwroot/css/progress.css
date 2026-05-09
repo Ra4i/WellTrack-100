@@ -1,0 +1,81 @@
+/* progress.css — Progress page styles */
+
+/* ================================================================
+   PROGRESS PAGE
+   ================================================================ */
+.progress-overview {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.progress-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.progress-history {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  overflow-x: auto;
+  margin-top: 1.5rem;
+}
+
+.progress-history h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1.5rem; }
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  min-width: 400px;
+}
+
+.history-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.history-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: var(--text-dim);
+}
+
+.history-table tr:hover td { background: rgba(255,255,255,0.02); color: var(--text); }
+.history-table .day-num    { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--text); }
+.history-table .workout-check { color: var(--accent); }
+.history-table .workout-no    { color: var(--text-muted); }
+
+.mini-bar { display: flex; align-items: center; gap: 8px; }
+
+.mini-bar-track {
+  flex: 1;
+  height: 4px;
+  background: var(--surface2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mini-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent2);
+}

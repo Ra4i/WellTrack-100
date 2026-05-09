@@ -2,29 +2,14 @@
    journal.js — Journal page logic
    ================================================================ */
 
-const journalTranslations = {
-  en: {
-    navMain: "Main",
-    challenge: "100-day challenge"
-  },
-  bg: {
-    navMain: "Основно",
-    challenge: "100-дневно предизвикателство"
-  }
-};
-
 function applyJournalTranslations() {
-  const currentLang = getCurrentLanguage() || 'bg';
   document.querySelectorAll("[data-translate]").forEach(el => {
     const key = el.getAttribute("data-translate");
-    if (journalTranslations[currentLang] && journalTranslations[currentLang][key]) {
-      el.textContent = journalTranslations[currentLang][key];
+    if (key) {
+      el.textContent = t(key);
     }
   });
 }
-
-// Make function global for i18n.js
-window.applyPageTranslations = applyJournalTranslations;
 
 // Fix 2 — Replace requireAuth() call with safe version
 const user = getCurrentUser();

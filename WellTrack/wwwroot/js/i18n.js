@@ -56,14 +56,24 @@
         registerTitle: 'Start the Challenge',
         registerDescription: 'Day 1 starts the moment you register.',
         email: 'Email',
+        emailPlaceholder: 'you@example.com',
         password: 'Password',
+        passwordPlaceholder: 'Min. 6 characters',
         name: 'Full Name',
+        namePlaceholder: 'Alex Johnson',
         age: 'Age',
+        agePlaceholder: '25',
         confirmPassword: 'Confirm Password',
+        confirmPasswordPlaceholder: '••••••••',
         login: 'Login',
         register: 'Start the 100-Day Challenge 🚀',
         noAccount: "Don't have an account?",
-        alreadyHaveAccount: 'Already have an account?'
+        alreadyHaveAccount: 'Already have an account?',
+        documentTitle: 'Login · WellTrack 100',
+        registerDocumentTitle: 'Register · WellTrack 100',
+        languageToggle: 'EN / BG',
+        errorNoUser: 'No account found with this email address',
+        errorWrongPassword: 'Incorrect password, please try again'
       },
       dashboard: {
         title: 'Dashboard',
@@ -89,7 +99,18 @@
         levelNotAvailable: 'Level {0} is not available yet.',
         levelCompleted: 'Level {0} completed! 🏆',
         exercisesDone: 'Exercises marked as done! 💪',
-        failed: 'Error: {0}'
+        failed: 'Error: {0}',
+        navMain: "Main",
+        challenge: "100-day challenge",
+        logoutTitle: "Logout",
+        difficultyTooltip: "Change in Settings",
+        difficultyNormal: "Normal",
+        waterTarget: "Goal: 2.5 L / day",
+        sleepTarget: "Goal: 7–9 h / night",
+        currency: "$",
+        packUnit: "/pack",
+        dayLabel: "Day",
+        levelCatchUp: "catching up is allowed"
       },
       progress: {
         title: 'Progress',
@@ -106,7 +127,9 @@
         tableWater: 'Water',
         tableSleep: 'Sleep',
         tableActivity: 'Activity',
-        tableDate: 'Date'
+        tableDate: 'Date',
+        navMain: "Main",
+        challenge: "100-day challenge"
       },
       levels: {
         title: 'Levels',
@@ -124,7 +147,9 @@
         quitAlcohol: '🍺 Quit Alcohol',
         modalQuitSmoke: '🚬 Quit Smoking',
         modalQuitAlcohol: '🍺 Quit Alcohol',
-        motivationHint: 'Log your first day to unlock motivation.'
+        motivationHint: 'Log your first day to unlock motivation.',
+        navMain: "Main",
+        challenge: "100-day challenge"
       },
       messages: {
         title: 'Messages & Chat',
@@ -134,7 +159,9 @@
         tipWater: 'Drinking water reduces cravings and keeps you healthy.',
         tipExercise: 'Physical activity releases endorphins — your natural mood boosters.',
         tipSupport: 'Share your journey with friends or family.',
-        tipProgress: 'Log your daily achievements in WellTrack.'
+        tipProgress: 'Log your daily achievements in WellTrack.',
+        navMain: "Main",
+        challenge: "100-day challenge"
       },
       friends: {
         title: 'Friends & Messages',
@@ -153,7 +180,9 @@
         selectFriendTitle: 'Select a friend to chat',
         selectFriendDescription: 'Choose someone from your friends list to start a conversation',
         friend: 'Friend',
-        block: '🚫 Block'
+        block: '🚫 Block',
+        navMain: "Main",
+        challenge: "100-day challenge"
       },
       settings: {
         title: 'Settings',
@@ -170,7 +199,9 @@
         save: 'Save Settings',
         saved: '✓ Settings saved!',
         enabled: 'Enabled',
-        disabled: 'Disabled'
+        disabled: 'Disabled',
+        navMain: "Main",
+        challenge: "100-day challenge"
       },
       journal: {
         title: 'Journal — Path to Freedom',
@@ -184,7 +215,9 @@
         saveEntry: 'Save to History',
         resetConfirm: 'Are you sure you want to reset progress for {0}?',
         resetMsg: 'Progress reset for {0}. New beginning!',
-        emptyNote: 'Write something in the journal!'
+        emptyNote: 'Write something in the journal!',
+        navMain: "Main",
+        challenge: "100-day challenge"
       }
     },
 
@@ -237,14 +270,24 @@
         registerTitle: 'Започни предизвикателството',
         registerDescription: 'Ден 1 започва в момента, в който се регистрираш.',
         email: 'Имейл',
+        emailPlaceholder: 'you@example.com',
         password: 'Парола',
+        passwordPlaceholder: 'Мин. 6 символа',
         name: 'Пълно име',
+        namePlaceholder: 'Alex Johnson',
         age: 'Години',
+        agePlaceholder: '25',
         confirmPassword: 'Потвърди парола',
+        confirmPasswordPlaceholder: '••••••••',
         login: 'Вход',
         register: 'Започни 100-дневното предизвикателство 🚀',
         noAccount: 'Нямаш акаунт?',
-        alreadyHaveAccount: 'Вече имаш акаунт?'
+        alreadyHaveAccount: 'Вече имаш акаунт?',
+        documentTitle: 'Вход · WellTrack 100',
+        registerDocumentTitle: 'Регистрация · WellTrack 100',
+        languageToggle: 'BG / EN',
+        errorNoUser: 'Няма намерен акаунт с този имейл адрес',
+        errorWrongPassword: 'Грешна парола, моля опитайте отново'
       },
       dashboard: {
         title: 'Табло',
@@ -270,7 +313,18 @@
         levelNotAvailable: 'Ниво {0} все още не е достъпно.',
         levelCompleted: 'Ниво {0} завършено! 🏆',
         exercisesDone: 'Упражненията са отбелязани! 💪',
-        failed: 'Грешка: {0}'
+        failed: 'Грешка: {0}',
+        navMain: "Основно",
+        challenge: "100-дневно предизвикателство",
+        logoutTitle: "Изход",
+        difficultyTooltip: "Промени в Настройки",
+        difficultyNormal: "Нормално",
+        waterTarget: "Цел: 2.5 л / ден",
+        sleepTarget: "Цел: 7–9 ч / нощ",
+        currency: "$",
+        packUnit: "/pack",
+        dayLabel: "Ден",
+        levelCatchUp: "наваксването е допустимо"
       },
       progress: {
         title: 'Прогрес',
@@ -287,7 +341,9 @@
         tableWater: 'Вода',
         tableSleep: 'Сън',
         tableActivity: 'Активност',
-        tableDate: 'Дата'
+        tableDate: 'Дата',
+        navMain: "Основно",
+        challenge: "100-дневно предизвикателство"
       },
       levels: {
         title: 'Нива',
@@ -305,7 +361,9 @@
         quitAlcohol: '🍺 Откажи алкохола',
         modalQuitSmoke: '🚬 Откажи цигарите',
         modalQuitAlcohol: '🍺 Откажи алкохола',
-        motivationHint: 'Запиши първия си ден, за да отключиш мотивацията.'
+        motivationHint: 'Запиши първия си ден, за да отключиш мотивацията.',
+        navMain: "Основно",
+        challenge: "100-дневно предизвикателство"
       },
       messages: {
         title: 'Съобщения и чат',
@@ -315,7 +373,9 @@
         tipWater: 'Пиенето на вода намалява желанията и те държи здрав.',
         tipExercise: 'Физическата активност освобождава ендорфини — естествените ти стимулатори.',
         tipSupport: 'Сподели пътя си с приятели или семейство.',
-        tipProgress: 'Записвай ежедневните си постижения в WellTrack.'
+        tipProgress: 'Записвай ежедневните си постижения в WellTrack.',
+        navMain: "Основно",
+        challenge: "100-дневно предизвикателство"
       },
       friends: {
         title: 'Приятели и съобщения',
@@ -334,7 +394,9 @@
         selectFriendTitle: 'Избери приятел за чат',
         selectFriendDescription: 'Избери някого от своя списък с приятели, за да започнеш разговор',
         friend: 'Приятел',
-        block: '🚫 Блокирай'
+        block: '🚫 Блокирай',
+        navMain: "Основно",
+        challenge: "100-дневно предизвикателство"
       },
       settings: {
         title: 'Настройки',
@@ -351,7 +413,9 @@
         save: 'Запази настройките',
         saved: '✓ Настройките са запазени!',
         enabled: 'Включено',
-        disabled: 'Изключено'
+        disabled: 'Изключено',
+        navMain: "Основно",
+        challenge: "100-дневно предизвикателство"
       },
       journal: {
         title: 'Журнал — Пътят към Свободата',
@@ -365,7 +429,9 @@
         saveEntry: 'Запази в историята',
         resetConfirm: 'Сигурен ли си, че искаш да нулираш прогреса за {0}?',
         resetMsg: 'Нулиране на прогреса за {0}. Ново начало!',
-        emptyNote: 'Напиши нещо в дневника!'
+        emptyNote: 'Напиши нещо в дневника!',
+        navMain: "Основно",
+        challenge: "100-дневно предизвикателство"
       }
     }
   };

@@ -47,38 +47,4 @@ namespace WellTrackAPI.Models
         public User? Sender { get; set; }
         public User? Receiver { get; set; }
     }
-
-    public class Friend
-    {
-        public int Id { get; set; }
-
-        [Required]
-        public int UserId { get; set; }
-
-        [Required]
-        public int FriendUserId { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        // Navigation
-        public User? User { get; set; }
-        public User? FriendUser { get; set; }
-    }
-
-    public class FriendRequest
-    {
-        public int Id { get; set; }
-
-        [Required]
-        public int FromUserId { get; set; }
-
-        [Required]
-        public int ToUserId { get; set; }
-
-        public DateTime SentAt { get; set; } = DateTime.UtcNow;
-
-        // Navigation
-        public User? FromUser { get; set; }
-        public User? ToUser { get; set; }
-    }
 }

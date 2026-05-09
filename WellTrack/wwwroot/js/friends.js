@@ -2,59 +2,14 @@
    friends.js — Friends page logic
    ================================================================ */
 
-const friendsTranslations = {
-  en: {
-    navMain: "Main",
-    challenge: "100-day challenge",
-    "friends.title": "Friends and messages",
-    "friends.tabFriends": "Friends",
-    "friends.tabRequests": "Requests",
-    "friends.addFriend": "Add",
-    "friends.searchPlaceholder": "Search friends...",
-    "friends.emptyState": "You don't have any friends yet. Add someone! 👋",
-    "friends.pendingRequests": "Pending friend requests:",
-    "friends.noRequests": "No pending requests 🎉",
-    "friends.selectFriendTitle": "Select a friend to chat",
-    "friends.selectFriendDescription": "Choose someone from your friend list to start a conversation",
-    "friends.friend": "Friend",
-    "friends.offline": "Offline",
-    "friends.block": "🚫 Block",
-    "common.cancel": "Cancel",
-    "common.success": "Success"
-  },
-  bg: {
-    navMain: "Основно",
-    challenge: "100-дневно предизвикателство",
-    "friends.title": "Приятели и съобщения",
-    "friends.tabFriends": "Приятели",
-    "friends.tabRequests": "Заявки",
-    "friends.addFriend": "Добави",
-    "friends.searchPlaceholder": "Търси приятели...",
-    "friends.emptyState": "Все още нямаш приятели. Добави някого! 👋",
-    "friends.pendingRequests": "Очакващи заявки за приятелство:",
-    "friends.noRequests": "Няма чакащи заявки 🎉",
-    "friends.selectFriendTitle": "Избери приятел за чат",
-    "friends.selectFriendDescription": "Избери някого от своя списък с приятели, за да започнеш разговор",
-    "friends.friend": "Приятел",
-    "friends.offline": "Офлайн",
-    "friends.block": "🚫 Блокирай",
-    "common.cancel": "Отказ",
-    "common.success": "Успех"
-  }
-};
-
 function applyFriendsTranslations() {
-  const currentLang = getCurrentLanguage() || 'bg';
   document.querySelectorAll("[data-translate]").forEach(el => {
     const key = el.getAttribute("data-translate");
-    if (friendsTranslations[currentLang] && friendsTranslations[currentLang][key]) {
-      el.textContent = friendsTranslations[currentLang][key];
+    if (key) {
+      el.textContent = t(key);
     }
   });
 }
-
-// Make function global for i18n.js
-window.applyPageTranslations = applyFriendsTranslations;
 
 // Fix 2 — Replace requireAuth() call with safe version
 const user = getCurrentUser();

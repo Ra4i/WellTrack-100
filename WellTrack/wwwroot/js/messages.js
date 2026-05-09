@@ -2,37 +2,14 @@
    messages.js — Messages (Chatbot) page logic
    ================================================================ */
 
-const messagesTranslations = {
-  en: {
-    navMain: "Main",
-    challenge: "100-day challenge",
-    "messages.title": "Messages and chat",
-    "messages.chatbot": "Wellness Chatbot",
-    "messages.chatbotSubtitle": "Your personal wellness coach",
-    "messages.yourMessages": "Quick tips"
-  },
-  bg: {
-    navMain: "Основно",
-    challenge: "100-дневно предизвикателство",
-    "messages.title": "Съобщения и чат",
-    "messages.chatbot": "Wellness Chatbot",
-    "messages.chatbotSubtitle": "Твоят личен уелнес треньор",
-    "messages.yourMessages": "Бързи съвети"
-  }
-};
-
 function applyMessagesTranslations() {
-  const currentLang = getCurrentLanguage() || 'bg';
   document.querySelectorAll("[data-translate]").forEach(el => {
     const key = el.getAttribute("data-translate");
-    if (messagesTranslations[currentLang] && messagesTranslations[currentLang][key]) {
-      el.textContent = messagesTranslations[currentLang][key];
+    if (key) {
+      el.textContent = t(key);
     }
   });
 }
-
-// Make function global for i18n.js
-window.applyPageTranslations = applyMessagesTranslations;
 
 // Fix 2 — Replace requireAuth() call with safe version
 const user = getCurrentUser();
