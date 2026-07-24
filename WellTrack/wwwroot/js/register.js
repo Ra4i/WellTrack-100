@@ -41,9 +41,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // Ensure initRegister runs
   if (typeof initRegister === 'function') initRegister();
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-  initRegisterPageLanguage();
-  // Ensure initRegister runs
-  if (typeof initRegister === 'function') initRegister();
-});

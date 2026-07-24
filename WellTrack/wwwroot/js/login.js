@@ -54,9 +54,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // Ensure initLogin runs
   if (typeof initLogin === 'function') initLogin();
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-  initLoginPageLanguage();
-  // Ensure initLogin runs
-  if (typeof initLogin === 'function') initLogin();
-});

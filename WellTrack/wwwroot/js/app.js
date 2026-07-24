@@ -383,12 +383,13 @@ async function apiGet(endpoint) {
 function initHome() {
   const user = getCurrentUser();
   const loginLink = document.getElementById('nav-login');
-  if (user && loginLink) { loginLink.textContent = 'Dashboard'; loginLink.href = '/Home/Dashboard'; }
+    if (user && loginLink) { loginLink.textContent = 'Test'; loginLink.href = '/Home/Dashboard'; }
 }
 
 // ── Login ─────────────────────────────────────────────────
 function initLogin() {
-  if (getCurrentUser()) { window.location.href = '/Home/Dashboard'; return; }
+  const page = (document.body?.dataset?.page || '').toLowerCase();
+  if (page !== 'login' && getCurrentUser()) { window.location.href = '/Home/Dashboard'; return; }
   const form = document.getElementById('login-form');
   const alertEl = document.getElementById('alert');
   if (!form) return;
@@ -420,7 +421,9 @@ function initLogin() {
 
 // ── Register ──────────────────────────────────────────────
 function initRegister() {
-  if (getCurrentUser()) { window.location.href = '/Home/Dashboard'; return; }
+  // Redirect only if user is logged in AND we're not on the register page
+  const page = (document.body?.dataset?.page || '').toLowerCase();
+  if (page !== 'register' && getCurrentUser()) { window.location.href = '/Home/Dashboard'; return; }
   const form = document.getElementById('register-form');
   const alertEl = document.getElementById('alert');
   if (!form) return;

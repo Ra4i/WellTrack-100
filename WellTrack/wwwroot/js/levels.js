@@ -1137,4 +1137,3 @@ function getLevels() {
 
 // Make applyLevelsTranslations global
 window.applyPageTranslations = applyLevelsTranslations;
-}
