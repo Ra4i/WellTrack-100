@@ -8,6 +8,7 @@
     try { var s=JSON.parse(localStorage.getItem('wt_user_settings')||'{}'); if(s.theme==='light') document.documentElement.setAttribute('data-theme','light'); } catch(e){}
   </script>
   <link rel="stylesheet" href="~/css/style.css" />
+  <link rel="stylesheet" href="~/css/settings.css" />
   <link rel="stylesheet" href="~/css/navbar.css" /> 
   <script src="~/js/i18n.js"></script>
 </head>
@@ -17,9 +18,9 @@
     <aside class="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">W</div>
-        <div class="logo-text">WellTrack <small>100-дневно предизвикателство</small></div>
+        <div class="logo-text">WellTrack <small data-translate="challenge">100-дневно предизвикателство</small></div>
       </div>
-      <span class="nav-section-label">Основно</span>
+      <span class="nav-section-label" data-translate="navMain">Основно</span>
       <a class="nav-item" href="@Url.Action("Dashboard", "Home")"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
       <a class="nav-item" href="@Url.Action("Levels", "Home")"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
       <a class="nav-item" href="@Url.Action("Progress", "Home")"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
@@ -138,6 +139,30 @@
     </main>
   </div>
 
+  <script>
+    const translations = {
+      en: {
+        navMain: "Main",
+        challenge: "100-day challenge"
+      },
+      bg: {
+        navMain: "Основно",
+        challenge: "100-дневно предизвикателство"
+      }
+    };
+
+    function applySettingsTranslations() {
+      const currentLang = getCurrentLanguage() || 'bg';
+      document.querySelectorAll("[data-translate]").forEach(el => {
+        const key = el.getAttribute("data-translate");
+        if (translations[currentLang] && translations[currentLang][key]) {
+          el.textContent = translations[currentLang][key];
+        }
+      });
+    }
+
+    window.applyPageTranslations = applySettingsTranslations;
+  </script>
   <script src="~/js/app.js"></script>
   <script src="~/js/navbar.js"></script>
   <script>
@@ -145,68 +170,103 @@
     const user = getCurrentUser();
     if (!user) { window.location.href = '/Home/Login'; }
 
-    const storedSettings = JSON.parse(localStorage.getItem('wt_user_settings') || '{}');
-    const settings = {
-      language:      storedSettings.language      || getCurrentLanguage() || 'bg',
-      theme:         storedSettings.theme         || 'dark',
-      difficulty:    storedSettings.difficulty    || 'normal',
-      notifications: typeof storedSettings.notifications === 'boolean' ? storedSettings.notifications : true,
-      quotes:        typeof storedSettings.quotes === 'boolean'        ? storedSettings.quotes        : true
-    };
-
-    // Load saved settings
-    document.getElementById(`lang-${settings.language}`).checked    = true;
-    document.getElementById(`theme-${settings.theme}`).checked      = true;
-    document.getElementById(`diff-${settings.difficulty}`).checked  = true;
-    document.getElementById('toggle-notifications').checked          = settings.notifications;
-    document.getElementById('toggle-quotes').checked                 = settings.quotes;
-
-    // Status labels
-    function updateStatus(id, checked) {
-      const lang = getCurrentLanguage();
-      document.getElementById(id).textContent = checked
-        ? (lang === 'bg' ? 'Включено' : 'Enabled')
-        : (lang === 'bg' ? 'Изключено' : 'Disabled');
+    // Fetch user settings from backend
+    async function loadUserSettings() {
+      if (!USE_API) return null;
+      try {
+        const response = await fetch(`/api/users/${user.id}`);
+        if (response.ok) {
+          const userData = await response.json();
+          return userData;
+        }
+      } catch (err) {
+        console.error('Failed to load user settings:', err);
+      }
+      return null;
     }
 
-    updateStatus('notif-status',  settings.notifications);
-    updateStatus('quotes-status', settings.quotes);
+    const storedSettings = JSON.parse(localStorage.getItem('wt_user_settings') || '{}');
 
-    document.getElementById('toggle-notifications').addEventListener('change', e => updateStatus('notif-status',  e.target.checked));
-    document.getElementById('toggle-quotes').addEventListener('change',        e => updateStatus('quotes-status', e.target.checked));
-
-    // Save
-    document.getElementById('save-settings').addEventListener('click', () => {
-      const newSettings = {
-        language:      document.querySelector('input[name="language"]:checked').value,
-        theme:         document.querySelector('input[name="theme"]:checked').value,
-        difficulty:    document.querySelector('input[name="difficulty"]:checked').value,
-        notifications: document.getElementById('toggle-notifications').checked,
-        quotes:        document.getElementById('toggle-quotes').checked
+    // Load settings with priority: backend > localStorage > defaults
+    loadUserSettings().then(userData => {
+      const settings = {
+        language:      userData?.language      || storedSettings.language      || getCurrentLanguage() || 'bg',
+        theme:         userData?.theme         || storedSettings.theme         || 'dark',
+        difficulty:    userData?.difficulty    || storedSettings.difficulty    || 'normal',
+        notifications: userData?.notifications !== undefined ? userData.notifications : (typeof storedSettings.notifications === 'boolean' ? storedSettings.notifications : true),
+        quotes:        userData?.quotes        !== undefined ? userData.quotes        : (typeof storedSettings.quotes        === 'boolean' ? storedSettings.quotes        : true)
       };
 
-      localStorage.setItem('wt_user_settings', JSON.stringify(newSettings));
+      // Load saved settings into form
+      document.getElementById(`lang-${settings.language}`).checked    = true;
+      document.getElementById(`theme-${settings.theme}`).checked      = true;
+      document.getElementById(`diff-${settings.difficulty}`).checked  = true;
+      document.getElementById('toggle-notifications').checked          = settings.notifications;
+      document.getElementById('toggle-quotes').checked                 = settings.quotes;
 
-      // Apply theme immediately across the page
-      if (newSettings.theme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-      } else {
-        document.documentElement.removeAttribute('data-theme');
+      // Status labels
+      function updateStatus(id, checked) {
+        const lang = getCurrentLanguage();
+        document.getElementById(id).textContent = checked
+          ? (lang === 'bg' ? 'Включено' : 'Enabled')
+          : (lang === 'bg' ? 'Изключено' : 'Disabled');
       }
 
-      const oldLang = settings.language;
-      showToast(t('settings.saved'), 'success');
+      updateStatus('notif-status',  settings.notifications);
+      updateStatus('quotes-status', settings.quotes);
 
-      if (oldLang !== newSettings.language) {
-        setTimeout(() => setLanguage(newSettings.language), 500);
-      }
+      document.getElementById('toggle-notifications').addEventListener('change', e => updateStatus('notif-status',  e.target.checked));
+      document.getElementById('toggle-quotes').addEventListener('change',        e => updateStatus('quotes-status', e.target.checked));
+
+      // Save
+      document.getElementById('save-settings').addEventListener('click', async () => {
+        const newSettings = {
+          language:      document.querySelector('input[name="language"]:checked').value,
+          theme:         document.querySelector('input[name="theme"]:checked').value,
+          difficulty:    document.querySelector('input[name="difficulty"]:checked').value,
+          notifications: document.getElementById('toggle-notifications').checked,
+          quotes:        document.getElementById('toggle-quotes').checked
+        };
+
+        // Save to backend
+        if (USE_API) {
+          try {
+            const response = await fetch(`/api/users/${user.id}/settings`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(newSettings)
+            });
+            if (!response.ok) throw new Error('Failed to save settings');
+            const result = await response.json();
+            showToast(result.message || 'Settings saved successfully', 'success');
+          } catch (err) {
+            showToast('Failed to save settings, please try again', 'error');
+            console.error('Save error:', err);
+            return;
+          }
+        }
+
+        // Update localStorage
+        localStorage.setItem('wt_user_settings', JSON.stringify(newSettings));
+
+        // Apply theme immediately across the page
+        if (newSettings.theme === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+        }
+
+        const oldLang = settings.language;
+        if (oldLang !== newSettings.language) {
+          setTimeout(() => setLanguage(newSettings.language), 500);
+        }
+      });
     });
 
     // Load user display
-    const settingsUser = getCurrentUser();
-    if (settingsUser) {
-      document.querySelectorAll('.user-display-name').forEach(el => el.textContent = settingsUser.name || 'User');
-      document.querySelector('.user-avatar-init').textContent = (settingsUser.name || 'U').charAt(0).toUpperCase();
+    if (user) {
+      document.querySelectorAll('.user-display-name').forEach(el => el.textContent = user.name || 'User');
+      document.querySelector('.user-avatar-init').textContent = (user.name || 'U').charAt(0).toUpperCase();
     }
 
     applyTranslations();

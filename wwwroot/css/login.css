@@ -1,0 +1,38 @@
+/* ================================================================
+   login.css — Login page styles
+   ================================================================ */
+
+.auth-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.lang-toggle-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: inherit;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.lang-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 560px) {
+  .auth-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lang-toggle-btn {
+    width: 100%;
+  }
+}

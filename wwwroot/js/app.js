@@ -171,10 +171,7 @@ function registerUser(name, age, email, password) {
 function loginUser(email, password) {
   const normalizedEmail = email.trim().toLowerCase();
   const users = getUsers();
-  console.log('LOGINUSER: Looking for user with email:', normalizedEmail);
-  console.log('LOGINUSER: Users in localStorage:', users);
   const user = users.find(u => u.email === normalizedEmail && u.password === password);
-  console.log('LOGINUSER: Found user:', user);
   return user ? { user } : { error: 'Invalid email or password.' };
 }
 
@@ -265,7 +262,6 @@ async function getFriendsFromAPI(userId) {
       id:    f.friendUserId ?? f.FriendUserId
     }));
   } catch (err) {
-    console.error('Failed to load friends:', err);
     return [];
   }
 }
@@ -281,7 +277,6 @@ async function getPendingRequestsFromAPI(userId) {
       sentAt:     r.sentAt     ?? r.SentAt
     }));
   } catch (err) {
-    console.error('Failed to load requests:', err);
     return [];
   }
 }
@@ -335,7 +330,6 @@ async function getConversationFromAPI(userId, friendId, page = 0, limit = 50) {
     const response = await apiGet(`/messages/thread?userId=${userId}&friendId=${friendId}&page=${page}&limit=${limit}`);
     return response.messages || [];
   } catch (err) {
-    console.error('Failed to load conversation:', err);
     return [];
   }
 }
@@ -369,8 +363,12 @@ async function apiPost(endpoint, body) {
     body: JSON.stringify(body)
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-    throw new Error(err.error || `HTTP ${res.status}`);
+    const errorBody = await res.json().catch(() => null);
+    const errorMessage = errorBody?.error || errorBody?.message || `HTTP ${res.status}`;
+    const error = new Error(errorMessage);
+    error.status = res.status;
+    error.body = errorBody;
+    throw error;
   }
   return res.json();
 }
@@ -385,12 +383,13 @@ async function apiGet(endpoint) {
 function initHome() {
   const user = getCurrentUser();
   const loginLink = document.getElementById('nav-login');
-  if (user && loginLink) { loginLink.textContent = 'Dashboard'; loginLink.href = '/Home/Dashboard'; }
+    if (user && loginLink) { loginLink.textContent = 'Test'; loginLink.href = '/Home/Dashboard'; }
 }
 
 // ── Login ─────────────────────────────────────────────────
 function initLogin() {
-  if (getCurrentUser()) { window.location.href = '/Home/Dashboard'; return; }
+  const page = (document.body?.dataset?.page || '').toLowerCase();
+  if (page !== 'login' && getCurrentUser()) { window.location.href = '/Home/Dashboard'; return; }
   const form = document.getElementById('login-form');
   const alertEl = document.getElementById('alert');
   if (!form) return;
@@ -404,14 +403,17 @@ function initLogin() {
         const data = await apiPost('/users/login', { email, password });
         setCurrentUser(data); // normalizeUser runs inside setCurrentUser
         window.location.href = '/Home/Dashboard';
-      } catch (err) { alertEl.textContent = err.message; alertEl.className = 'alert error show'; }
+      } catch (err) {
+        const message = typeof handleLoginError === 'function'
+          ? handleLoginError(err)
+          : err.message;
+        alertEl.textContent = message;
+        alertEl.className = 'alert error show';
+      }
     } else {
       const result = loginUser(email, password);
-      console.log('LOGIN RESULT:', result);
       if (result.error) { alertEl.textContent = result.error; alertEl.className = 'alert error show'; return; }
-      console.log('LOGIN SUCCESSFUL, setting user:', result.user);
       setCurrentUser(result.user);
-      console.log('REDIRECTING TO DASHBOARD');
       window.location.href = '/Home/Dashboard';
     }
   });
@@ -419,7 +421,9 @@ function initLogin() {
 
 // ── Register ──────────────────────────────────────────────
 function initRegister() {
-  if (getCurrentUser()) { window.location.href = '/Home/Dashboard'; return; }
+  // Redirect only if user is logged in AND we're not on the register page
+  const page = (document.body?.dataset?.page || '').toLowerCase();
+  if (page !== 'register' && getCurrentUser()) { window.location.href = '/Home/Dashboard'; return; }
   const form = document.getElementById('register-form');
   const alertEl = document.getElementById('alert');
   if (!form) return;
@@ -439,7 +443,7 @@ function initRegister() {
         setCurrentUser(data); // normalizeUser runs inside setCurrentUser
         alertEl.textContent = '🎉 Your recovery journey starts now!';
         alertEl.className = 'alert success show';
-        setTimeout(() => window.location.href = '/Home/Settings', 1500);
+        setTimeout(() => window.location.href = '/Home/Settings', 15);
       } catch (err) { alertEl.textContent = err.message; alertEl.className = 'alert error show'; }
     } else {
       const result = registerUser(name, age, email, password);
@@ -447,7 +451,7 @@ function initRegister() {
       setCurrentUser(result.user);
       alertEl.textContent = '🎉 Your recovery journey starts now!';
       alertEl.className = 'alert success show';
-      setTimeout(() => window.location.href = '/Home/Settings', 1500);
+      setTimeout(() => window.location.href = '/Home/Settings', 15);
     }
   });
 }
@@ -799,7 +803,6 @@ function setActiveNav() {
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme();
   const page = (document.body?.dataset?.page || '').toLowerCase();
-  console.log('PAGE DETECTED:', page);
   document.querySelectorAll('.logout-btn').forEach(btn => btn.addEventListener('click', logout));
   if (page === 'index.html' || page === '' || page === 'home') initHome();
   else if (page === 'login' || page === 'login.html')     initLogin();

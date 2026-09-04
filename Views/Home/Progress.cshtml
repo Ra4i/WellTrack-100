@@ -8,6 +8,7 @@
     try { var s=JSON.parse(localStorage.getItem('wt_user_settings')||'{}'); if(s.theme==='light') document.documentElement.setAttribute('data-theme','light'); } catch(e){}
   </script>
   <link rel="stylesheet" href="~/css/style.css" />
+  <link rel="stylesheet" href="~/css/progress.css" />
   <link rel="stylesheet" href="~/css/navbar.css" /> 
   <script src="~/js/i18n.js"></script>
 </head>
@@ -17,9 +18,9 @@
     <aside class="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">W</div>
-        <div class="logo-text">WellTrack <small>100-дневно предизвикателство</small></div>
+        <div class="logo-text">WellTrack <small data-translate="challenge">100-дневно предизвикателство</small></div>
       </div>
-      <span class="nav-section-label">Основно</span>
+      <span class="nav-section-label" data-translate="navMain">Основно</span>
       <a class="nav-item" href="@Url.Action("Dashboard", "Home")"><span class="nav-icon">⚡</span> <span data-i18n="nav.dashboard">Табло</span></a>
       <a class="nav-item" href="@Url.Action("Levels", "Home")"><span class="nav-icon">🏆</span> <span data-i18n="nav.levels">Нива</span></a>
       <a class="nav-item active" href="@Url.Action("Progress", "Home")"><span class="nav-icon">📈</span> <span data-i18n="nav.progress">Прогрес</span></a>
@@ -90,6 +91,31 @@
   </div>
 
   <div id="toast-container" class="toast-container"></div>
+  <script></script>
+  <script>
+    const translations = {
+      en: {
+        navMain: "Main",
+        challenge: "100-day challenge"
+      },
+      bg: {
+        navMain: "Основно",
+        challenge: "100-дневно предизвикателство"
+      }
+    };
+
+    function applyProgressTranslations() {
+      const currentLang = getCurrentLanguage() || 'bg';
+      document.querySelectorAll("[data-translate]").forEach(el => {
+        const key = el.getAttribute("data-translate");
+        if (translations[currentLang] && translations[currentLang][key]) {
+          el.textContent = translations[currentLang][key];
+        }
+      });
+    }
+
+    window.applyPageTranslations = applyProgressTranslations;
+  </script>
   <script src="~/js/app.js"></script>
   <script src="~/js/navbar.js"></script>
   <script>
