@@ -34,13 +34,15 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Database schema is managed by EF Core migrations.
-// If you want to use migrations, do not call EnsureCreated() here.
-// using (var scope = app.Services.CreateScope())
-// {
-//     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//     db.Database.EnsureCreated();
-// }
+
+// Apply pending migrations so a fresh checkout has the database schema before
+// the first API request is handled.
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 // ── Middleware ────────────────────────────────────────────────
 if (app.Environment.IsDevelopment())
